@@ -1,10 +1,12 @@
 #pragma once
+#include <iostream>
 #include <vector>
 
 namespace Stack {
 	// 스택
-	// 스택은 자료구조 중 하나로 사전적 의미인 쌓아놓은 더미라는 것에서 유추할 수 있듯이 데이터를 차곡차곡 쌓아두는 형태의 자료구조를 말한다.
+	// 스택은 자료구조 중 하나로 사전적 의미인 쌓아놓은 더미라는 것으로 의미로 유추할 수 있듯이 데이터를 차곡차곡 쌓아두는 형태의 자료구조를 말한다.
 	// 아래에서 위로 차곡차곡 쌓아두는 형태이니 이를 하나씩 꺼내 쓸 때는 위에서부터 꺼내서 쓰게 될 것이다.
+	// 이를 이해하기 쉽게 예를 들면 접시가 있을 수 있다. 
 	// 즉 후입선출(LIFO : Last In First Out) 방식으로 늦게 들어온 데이터를 먼저 사용하는 방식의 자료구조이다.
 	// 기본 기능은 총 5가지 존재한다.
 	// 비어있는지 확인 - IsEmpty, 가득 찼는지 확인 - IsFull, 데이터 삽입 - Push, 데이터 삭제 - Pop, 스택의 맨 위 데이터를 조회(없다면 비어있음을 반환) - Peek
@@ -16,9 +18,9 @@ namespace Stack {
 	class OwnStack
 	{
 	public:
-		OwnStack(max) {
-			this.max = max;
-			stackVector = new vector<T>[max];
+		OwnStack(int max) {  // 생성자의 매개 변수의 자료형을 정해주지 않으면 에러가 눈으로 명시되지 않지만 큰 에러가 발생하기 때문에 주의해야 한다.(생성자도 함수라는 것을 기억하자.)
+			this->max = max;
+			stackVector.reserve(max);  // vector의 공간을 미리 확보해주는 함수(vector는 스스로 크기를 변화시키는 가변 배열로 굳이 크기를 정해줄 필요가 없지만 필요하다면 reverse 함수로 가능하다.)
 			top = -1;
 		}
 
@@ -43,8 +45,15 @@ namespace Stack {
 		}
 
 		// 데이터 삽입 - 스택이 가득 차서 안 되는 상황이라면 가득 찼음을 알려야 한다.
-		void Push() {
-
+		void Push(T data) {
+			// 스택이 가득찼다면 가득 찼음을 알리고 함수 종료
+			if (IsFull() == 1) {
+				std::cout << "Stack is full. Can't data push.";
+				return;
+			}
+			
+			// 스택이 가득차지 않았다면 해당 데이터를 배열에 저장
+			stackVector.push_back(data);
 		}
 
 		// 데이터 삭제 - 스택이 비어서 삭제할 데이터가 없다면 비었음을 알려야 한다. 성공적으로 삭제하였다면 삭제한 데이터의 값을 반환한다.
@@ -57,23 +66,8 @@ namespace Stack {
 			return;
 		}
 
-		// 최대 길이 반환
-		int GetMax() {
-			return max;
-		}
-
-		// 마지막 요소의 인덱스 번호 1추가
-		void AddTop() {
-			top++;
-		}
-
-		// 마지막 요소의 인덱스 번호 반환
-		int GetTop() {
-			return top;
-		}
-
 	private:
-		vector<T> stackVector;  // 스택에 삽입된 데이터를 저장할 배열
+		std::vector<T> stackVector;  // 스택에 삽입된 데이터를 저장할 배열
 		int max;  // 스택의 최대 길이
 		int top;  // 마지막 요소의 인덱스 번호(빈 스택인 경우 -1)
 	};
