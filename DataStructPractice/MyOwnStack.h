@@ -28,7 +28,8 @@ namespace Stack {
 		int IsEmpty() {
 			// 비어있는지 확인하려면 마지막 요소의 인덱스를 저장하고 있는 top을 비교해보면 된다.
 			// top이 -1이면 빈 스택이라는 의미이고 아니라면 스택에 데이터가 있다는 것을 의미한다.
-			if (OwnStack::GetTop() == -1)
+
+			if (top == -1)
 				return 1;
 
 			return 0;
@@ -38,6 +39,7 @@ namespace Stack {
 		int IsFull() {
 			// 가득 찼는지 확인하려면 마지막 인덱스 번호가 스택의 최대 길이 - 1을 비교하면 된다.
 			// top이 스택의 최대 길이 - 1과 동일하다면 가득찬 것이고 아니라면 아직 빈 공간이 있다는 것을 의미한다.
+
 			if (top == (max - 1))
 				return 1;
 
@@ -47,23 +49,49 @@ namespace Stack {
 		// 데이터 삽입 - 스택이 가득 차서 안 되는 상황이라면 가득 찼음을 알려야 한다.
 		void Push(T data) {
 			// 스택이 가득찼다면 가득 찼음을 알리고 함수 종료
+			// 스택이 가득차지 않았다면 해당 데이터를 배열에 저장
+
 			if (IsFull() == 1) {
 				std::cout << "Stack is full. Can't data push.";
 				return;
 			}
 			
-			// 스택이 가득차지 않았다면 해당 데이터를 배열에 저장
 			stackVector.push_back(data);
+			top++;
 		}
 
 		// 데이터 삭제 - 스택이 비어서 삭제할 데이터가 없다면 비었음을 알려야 한다. 성공적으로 삭제하였다면 삭제한 데이터의 값을 반환한다.
 		T Pop() {
-			return;
+			// 비어있는지 확인 - 비어있으면 비어있다고 알리고 함수 종료
+			// 비어있지 않다면 배열에 있는 마지막 요소의 데이터를 따로 저장
+			// 배열의 마지막 요소 삭제
+			// 저장한 데이터 반환
+
+			T data = stackVector[top];
+
+			if (IsEmpty() == 1) {
+				std::cout << "Stack is empty. Can't data pop.";
+				return data;
+			}
+
+			stackVector.pop_back();
+			top--;
+
+			return data;
 		}
 
 		// 스택의 맨 위 데이터를 조회하는 Peek 함수 - 스택의 맨 위 데이터를 조회하여 반환한다. 없다면 없음을 알려야 한다.
 		T Peek() {
 			return;
+		}
+
+		// 현재 스택에 저장된 모든 정보를 출력하는 함수
+		void NowStack() {
+			for (int i = 0; i < top + 1; i++) {
+				std::cout << stackVector[i] << " ";
+			}
+
+			std::cout << std::endl;
 		}
 
 	private:
