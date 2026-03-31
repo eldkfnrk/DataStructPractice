@@ -18,12 +18,18 @@
     <ClInclude Include="MyOwnStack.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="MyOwnQueue.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonInclude.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MyOwnStack.cpp">
+    <ClCompile Include="Test.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Test.cpp">
+    <ClCompile Include="MyOwnQueue.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

@@ -123,10 +123,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CommonInclude.h" />
+    <ClInclude Include="MyOwnQueue.h" />
     <ClInclude Include="MyOwnStack.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MyOwnStack.cpp" />
+    <ClCompile Include="MyOwnQueue.cpp" />
     <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

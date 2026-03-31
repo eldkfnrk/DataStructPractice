@@ -1,10 +1,9 @@
 #pragma once
-#include <iostream>
-#include <vector>
+#include "CommonInclude.h"
 
 namespace Stack {
 	// 스택
-	// 스택은 자료구조 중 하나로 사전적 의미인 쌓아놓은 더미라는 것으로 의미로 유추할 수 있듯이 데이터를 차곡차곡 쌓아두는 형태의 자료구조를 말한다.
+	// 스택은 사전적 의미인 쌓아놓은 더미라는 것으로 의미로 유추할 수 있듯이 데이터를 차곡차곡 쌓아두는 형태의 자료구조를 말한다.
 	// 아래에서 위로 차곡차곡 쌓아두는 형태이니 이를 하나씩 꺼내 쓸 때는 위에서부터 꺼내서 쓰게 될 것이다.
 	// 이를 이해하기 쉽게 예를 들면 접시가 있을 수 있다. 
 	// 즉 후입선출(LIFO : Last In First Out) 방식으로 늦게 들어온 데이터를 먼저 사용하는 방식의 자료구조이다.
@@ -52,7 +51,7 @@ namespace Stack {
 			// 스택이 가득차지 않았다면 해당 데이터를 배열에 저장
 
 			if (IsFull() == 1) {
-				std::cout << "Stack is full. Can't data push.";
+				std::cout << "Stack is full. Can't data push." << std::endl;
 				return;
 			}
 			
@@ -70,7 +69,7 @@ namespace Stack {
 			T data = stackVector[top];
 
 			if (IsEmpty() == 1) {
-				std::cout << "Stack is empty. Can't data pop.";
+				std::cout << "Stack is empty. Can't data pop." << std::endl;
 				return data;
 			}
 
@@ -82,11 +81,17 @@ namespace Stack {
 
 		// 스택의 맨 위 데이터를 조회하는 Peek 함수 - 스택의 맨 위 데이터를 조회하여 반환한다. 없다면 없음을 알려야 한다.
 		T Peek() {
-			return;
+			T data = stackVector[top];
+
+			if (IsEmpty() == 1) {
+				std::cout << "Stack is empty. Can't data pop." << std::endl;
+			}
+
+			return data;
 		}
 
 		// 현재 스택에 저장된 모든 정보를 출력하는 함수
-		void NowStack() {
+		void StackState() {
 			for (int i = 0; i < top + 1; i++) {
 				std::cout << stackVector[i] << " ";
 			}
