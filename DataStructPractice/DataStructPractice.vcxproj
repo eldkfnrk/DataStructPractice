@@ -102,6 +102,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,10 +125,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CommonInclude.h" />
+    <ClInclude Include="MyOwnLinkedList.h" />
     <ClInclude Include="MyOwnQueue.h" />
     <ClInclude Include="MyOwnStack.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MyOwnLinkedList.cpp" />
     <ClCompile Include="MyOwnQueue.cpp" />
     <ClCompile Include="Test.cpp" />
   </ItemGroup>
