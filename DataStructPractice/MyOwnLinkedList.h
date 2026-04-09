@@ -29,7 +29,7 @@ namespace DataStruct {
 		}
 
 		// 맨 처음 요소로 삽입
-		void InsertFront(T data) {
+		void InsertHeader(T data) {
 			Node* newNode = new Node();  // 새 노드 생성
 			newNode->data = data;
 
@@ -40,7 +40,7 @@ namespace DataStruct {
 				tailNode = headerNode;
 				listLength = 1;
 			}
-			else {
+			else {  
 				newNode->node = headerNode;
 				headerNode = newNode;
 				listLength++;
@@ -50,7 +50,7 @@ namespace DataStruct {
 		// 중간 요소로 삽입(특정 인덱스 위치에 삽입)
 		void InsertNode(int index, T data) {
 			// 혹시나 연결 리스트가 비어있거나 1개 밖에 없는 경우에는 중간에 삽입하는 것은 불가능하기 때문에 불가하다는 메시지를 전달하고 함수 종료
-			if (listLength <= 1) {
+			if (listLength <= 1 || index >= listLength - 1) {
 				std::cout << "Can't insert data in the middle of linked list." << std::endl;
 				return;
 			}
@@ -78,6 +78,110 @@ namespace DataStruct {
 			prevNode->node = newNode;
 			newNode->node = nextNode;
 			listLength++;  // 리스트의 길이 1 상승
+		}
+
+		// 맨 마지막 요소로 삽입
+		void InsertTail (T data) {
+			Node* newNode = new Node();  
+			newNode->data = data;
+			newNode->node = nullptr;
+
+			// 빈 연결 리스트일 경우
+			if (!headerNode) {
+				headerNode = newNode;
+				tailNode = headerNode;
+				listLength = 1;
+			}
+			else {
+				tailNode->node = newNode;
+				tailNode = newNode;
+				listLength++;
+			}
+		}
+
+		// STL에서는 안 그럴 수도 있지만 내가 정의하는 리스트는 삭제 시 값을 반환하도록 생성할 것이다.
+		// 맨 처음 요소 삭제
+		std::optional<T> DeleteHeader() {
+			// 만약 리스트가 비어있다면 삭제 불가능을 통보하고 값이 없음을 반환
+			if (listLength == 0) {
+				std::cout << "Can't delete data. List is empty." << std::endl;
+				return std::nullopt;
+			}
+			// 만약 리스트의 길이가 1이라면(헤더와 테일이 동일하다) 삭제는 동일하게 진행하되 헤더와 테일 모두 빈 값으로 만들어 주어야 한다.
+			else if (listLength == 1) {
+				// 테일 노드를 굳이 삭제하지 않는 이유는 헤더 노드와 테일 노드가 가리키는 메모리 주소가 같기 때문에 헤더 노드가 가리키는 데이터의 메모리를 해제했을 때 이미 테일 노드가 가리키는 메모리는 해제된 상태가 되기 때문이다.
+				delete(headerNode);
+				listLength = 0;
+			}
+
+			// 메모리 손실이 발생하지 않도록 헤더 노드였던 노드 값을 따로 저장한 후 삭제시키는 작업을 진행
+			Node* deleteNode = headerNode;
+			headerNode = headerNode->node;
+			delete(deleteNode);
+		}
+
+		// 특정 요소 삭제
+		std::optional<T> DeleteNode(int index) {
+			// 특정 요소 삭제는 특수하게 인덱스를 1 ~ (마지막 인덱스-1) 범위 내에서만 가능하도록 할 것이다.
+			// 왜냐하면 0과 마지막 인덱스 삭제는 각각 따로 삭제 연산을 만들었는데 굳이 또 여기서까지 실행하게 할 의미가 없기 때문이다.
+			// 만약 리스트가 비어있거나 길이가 2 이하이면 삭제 불가능을 통보하고 값이 없음을 반환(길이가 3이상이어야 중간 노드가 생기기 때문이다.)
+			// 그리고 인덱스 값이 1 미만이거나 마지막 인덱스 값보다 크면 안 되도록 한다.
+			if (listLength <= 2 || (index < 1 && index >= listLength)) {
+				std::cout << "Can't delete data. List is empty." << std::endl;
+				return std::nullopt;
+			}
+
+			Node* curNode = headerNode->node;  // 헤더 노드는 삭제하지 않을 것이기 때문에 그 다음 노드부터 검사해보도록 한다.
+
+			for (int i = 1; i < index; i++) {  // 인덱스까지만 이동하도록 값을 주었고 i가 1부터 시작하는 것은 헤더부터 가져온 것이 아니라 그 다음 값인 인덱스 1번의 값부터 가져왔기 때문이다.
+
+			}
+
+			// 삭제할 노드를 찾으면 어떻게 메모리 해제시킬 수 있도록 할 수 있을지를 고민해보아야 한다.(04-09)
+		}
+
+		// 맨 마지막 요소 삭제
+		std::optional<T> DeleteTail() {
+			// 만약 리스트가 비어있다면 삭제 불가능을 통보하고 값이 없음을 반환
+			if (listLength == 0) {
+				std::cout << "Can't delete data. List is empty." << std::endl;
+				return std::nullopt;
+			}
+			// 만약 리스트의 길이가 1이라면(헤더와 테일이 동일하다) 삭제는 동일하게 진행하되 헤더와 테일 모두 빈 값으로 만들어 주어야 한다.
+			else if (listLength == 1) {
+				// 테일 노드를 굳이 삭제하지 않는 이유는 헤더 노드와 테일 노드가 가리키는 메모리 주소가 같기 때문에 헤더 노드가 가리키는 데이터의 메모리를 해제했을 때 이미 테일 노드가 가리키는 메모리는 해제된 상태가 되기 때문이다.
+				delete(headerNode);
+				listLength = 0;
+			}
+		}
+
+		// 현재 리스트에 저장된 데이터 출력
+		void CurrentListState() {
+			Node* curNode = headerNode;
+
+			for (int i = 0; i < listLength; i++) {
+				std::cout << curNode->data << " ";
+				curNode = curNode->node;
+			}
+
+			std::cout << std::endl;
+		}
+
+		// 특정 요소 데이터 검색
+		std::optional<T> SearchData(int index) {
+			// 만약 검색하고자 하는 요소의 인덱스가 없다면 잘못된 것이니 못 찾음을 통보하고 함수 종료(인덱스가 음수인 경우에도 불가능하도록 막아두고자 한다.)
+			if (index >= listLength || index < 0) {
+				std::cout << "Can't search data " << index << " index in list. List's last index is " << listLength - 1 << "." << std::endl;
+				return std::nullopt;
+			}
+
+			Node* curNode = headerNode;
+
+			for (int i = 0; i < index; i++) {
+				curNode = curNode->node;
+			}
+
+			return curNode->data;
 		}
 
 	private:
