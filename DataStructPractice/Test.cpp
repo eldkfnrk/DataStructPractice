@@ -1,5 +1,6 @@
 #include "MyOwnStack.h"
 #include "MyOwnQueue.h"
+#include "MyOwnLinkedList.h"
 
 int main() {
 	using namespace std;
@@ -82,6 +83,44 @@ int main() {
 	cout << "삭제된 요소 : " << intQueue.Dequeue().value_or(0) << endl;
 	cout << "삭제될 요소 : " << intQueue.Peek().value_or(0) << endl;
 	intQueue.QueueState();
+
+	cout << "-----------------------------------------------------------------------------------" << endl;
+
+	OwnLinkedList<int> firstIntList;  // 빈 리스트
+	OwnLinkedList<int> secondIntList(12);  // 하나의 요소를 가진 리스트;
+
+	firstIntList.CurrentListState();
+	secondIntList.CurrentListState();
+
+	firstIntList.InsertHeader(23);
+	firstIntList.InsertHeader(46);
+	firstIntList.InsertTail(520);
+	firstIntList.InsertTail(461);
+	firstIntList.InsertHeader(200);
+	firstIntList.CurrentListState();
+
+	cout << firstIntList.GetListLength() << endl << endl;
+	//firstIntList.InsertNode(6, 50);
+	firstIntList.CurrentListState();
+	firstIntList.InsertNode(3, 50);
+	firstIntList.CurrentListState();
+	cout << endl;
+
+	cout << "삭제한 값 : " << firstIntList.DeleteHeader().value_or(0) << endl;
+	firstIntList.CurrentListState();
+	cout << "삭제한 값 : " << firstIntList.DeleteHeader().value_or(0) << endl;
+	firstIntList.CurrentListState();
+	cout << "삭제한 값 : " << firstIntList.DeleteTail().value_or(0) << endl;
+	firstIntList.CurrentListState();
+	firstIntList.InsertHeader(120);
+	firstIntList.InsertHeader(180);
+	firstIntList.InsertTail(457);
+	firstIntList.InsertTail(300);
+	firstIntList.CurrentListState();
+
+	cout << "삭제한 값 : " << firstIntList.DeleteNode(3).value_or(0) << endl;
+	firstIntList.CurrentListState();
+
 
 	return 0;
 }
