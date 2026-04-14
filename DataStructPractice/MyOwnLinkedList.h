@@ -8,6 +8,14 @@ namespace DataStruct {
 		Node<T>* node;  // 다음 노드 시작 주소
 	};
 
+
+	// 연결 리스트
+	// 연결 리스트는 메모리 상에서 연속적으로 저장하지 않고 따로 있는 노드들을 간접적으로 연결해서 여러 데이터를 저장할 수 있는 자료구조를 말한다.
+	// 자세히 말하면 배열은 메모리를 크기만큼 할당받으면 그 안에 모든 데이터가 들어있는 것인데 연결 리스트는 메모리 상에 따로 존재하고 각 노드가 어디 있는지에 대한 주소 값을 아는 것으로 간접적으로 연결되도록 한다.
+	// C++의 vector는 가변 배열이지만 C++에서 구현된 새로운 컨테이너이기 때문에 논외로 치고 사실 배열은 크기를 정하고 해당 크기만큼 메모리를 할당받아 각 크기만큼 연속적으로 데이터를 저장한다.(배열은 스택 영역에서 관리되고 스택은 한 번 정하면 바뀔 수 없기 때문이다. 동적 배열은 힙 영역에 저장 및 관리되기 때문에 크기 변환 가능)
+	// 이 배열은 연속된 데이터를 저장하는 연속된 자료구조이기 때문에 배열 중간에 데이터 삽입 시 그 뒤에 요소들을 전부 뒤로 이동시키는 동작도 해야 해서 중간에 데이터 삽입이 어렵다.
+	// 연결 리스트는 이름 그대로 데이터를 연결하는 연결된 자료구조이기 때문에 중간에 데이터 삽입 시 그 앞의 노드와 원래 그 자리였던 노드의 다음 노드를 가르키는 주소 값만 수정하면 되기에 중간에 데이터 삽입이 좀 더 쉽다.
+	// 배열과 연결 리스트 두 개의 장단점이 있기에 적절한 자료구조를 활용하면 된다.
 	template <typename T>
 	class OwnLinkedList
 	{
@@ -49,15 +57,18 @@ namespace DataStruct {
 
 		// 중간 요소로 삽입(특정 인덱스 위치에 삽입)
 		void InsertNode(int index, T data) {
-			// 혹시나 연결 리스트가 비어있거나 1개 밖에 없는 경우에는 중간에 삽입하는 것은 불가능하기 때문에 불가하다는 메시지를 전달하고 함수 종료(리스트의 길이보다 큰 인덱스도 불가능하도록 막아야 한다. 왜냐하면 그건 범위 초과이기 때문이다.)
-			if (listLength <= 1 || index > listLength) {
+			// 혹시나 연결 리스트가 비어있거나 2개 밖에 없는 경우에는 중간에 삽입하는 것은 불가능하기 때문에(헤더와 테일에 삽입은 이 연산에서는 불가능하게 설정) 불가하다는 메시지를 전달하고 함수 종료(리스트의 길이보다 큰 인덱스도 불가능하도록 막아야 한다. 왜냐하면 그건 범위 초과이기 때문이다.)
+			if (listLength <= 2 || index > listLength) {
 				std::cout << "Can't insert data in the middle of linked list." << std::endl;
 				return;
 			}
 
 			// 인덱스 0번(헤더)에 넣는다거나 마지막 인덱스 다음 인덱스(테일. 이 인덱스의 크기는 리스트의 길이가 된다.)에 넣는 행위를 막아놓아야 한다.
-			// 다음에 이걸 할 때는 인덱스가 0이거나 배열의 길이이면 불가능하도록 막는 것을 추가해야 한다.(04-11)
 			// 왜냐하면 이걸 하게 두면 굳이 헤더와 테일 삽입 기능을 만든 이유도 없는 것이고 혹시 다른 문제가 생길 수도 있기 때문에 그렇다.
+			if (index == 0 || index == listLength) {
+				std::cout << "Can't insert this index. Index is " << index << std::endl;
+				return;
+			}
 
 			Node<T>* newNode = new Node<T>();
 			newNode->data = data;
@@ -65,7 +76,7 @@ namespace DataStruct {
 			Node<T>* prevNode = nullptr;  // 해당 인덱스 앞에 있는 인덱스 요소(해당 요소의 다음 데이터를 가리키는 요소의 주소 값을 저장하기 위해 가져와야 한다.)
 			Node<T>* nextNode = nullptr;  // 해당 인덱스의 요소(새로 삽입한 요소의 다음 데이터를 가리키는 요소의 주소 값을 저장하기 위해 가져와야 한다.)
 			Node<T>* curNode = headerNode;  // 반복문을 돌 때 현재 노드가 무엇인지를 찾기 위해 만든 노드 검색용 노드(헤더 노드부터 검사하기 때문에 헤더 노드를 가지고 온다.)
-			for (int i = 0; i < listLength - 1; i++) {
+			for (int i = 0; i < listLength; i++) {
 				// 해당 인덱스의 앞 인덱스인 경우 prevNode에 현재 검사 중인 노드를 저장
 				if (i == (index - 1)) {
 					prevNode = curNode;
@@ -229,6 +240,21 @@ namespace DataStruct {
 
 		int GetListLength() {
 			return listLength;
+		}
+
+		// 배열처럼 []으로 인덱스 데이터 검색이 가능하도록 연산자 오버로딩 수행
+		T& operator[](int index) {
+			if (listLength == 0 || index >= listLength || index < 0) {
+				std::cout << "Error! List is empty." << std::endl;
+				exit(1);  // 강제 종료
+			}
+
+			Node<T>* resultNode = headerNode;
+			for (int i = 0; i < index; i++) {
+				resultNode = resultNode->node;
+			}
+
+			return resultNode->data;
 		}
 
 	private:

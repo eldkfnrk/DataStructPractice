@@ -128,10 +128,12 @@
     <ClInclude Include="MyOwnLinkedList.h" />
     <ClInclude Include="MyOwnQueue.h" />
     <ClInclude Include="MyOwnStack.h" />
+    <ClInclude Include="MyOwnTree.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MyOwnLinkedList.cpp" />
     <ClCompile Include="MyOwnQueue.cpp" />
+    <ClCompile Include="MyOwnTree.cpp" />
     <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

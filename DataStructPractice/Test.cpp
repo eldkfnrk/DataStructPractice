@@ -121,6 +121,24 @@ int main() {
 	cout << "삭제한 값 : " << firstIntList.DeleteNode(3).value_or(0) << endl;
 	firstIntList.CurrentListState();
 
+	secondIntList.DeleteNode(3);
+	secondIntList.DeleteNode(1);
+	cout << "삭제한 값 : " << secondIntList.DeleteHeader().value_or(0) << endl;
+	secondIntList.CurrentListState();
+	secondIntList.InsertNode(4, 12);
+	secondIntList.InsertNode(0, 12);
+	secondIntList.InsertHeader(32);
+	secondIntList.CurrentListState();
+	secondIntList.InsertHeader(74);
+	secondIntList.InsertNode(1, 99);
+	secondIntList.CurrentListState();
+
+	cout << "Index 3 data : " << firstIntList[3] << endl;
+	cout << "List operation test : " << firstIntList[3]++ << endl;
+	cout << "List operation test : " << firstIntList[3] << endl;
+	firstIntList[1] += 40;
+	cout << "Index 1 data : " << firstIntList[1] << endl;
+	firstIntList.CurrentListState();
 
 	return 0;
 }
