@@ -92,6 +92,11 @@ namespace DataStruct {
 			std::cout << std::endl;
 		}
 
+		int GetLength() {
+			// top은 가장 마지막 인덱스 값을 가지기 때문에 길이는 top 값보다 1 높다.
+			return ++top;
+		}
+
 	private:
 		std::vector<T> queueVector;
 		int max;

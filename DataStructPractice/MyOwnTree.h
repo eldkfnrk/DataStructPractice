@@ -1,5 +1,6 @@
 #pragma once
 #include "CommonInclude.h"
+#include "MyOwnQueue.h"
 
 namespace DataStruct {
 	// 트리의 노드
@@ -60,17 +61,102 @@ namespace DataStruct {
 			//   2     3
 			// 4  5  6   7
 			// 탐색 순서 : 1 - 2 - 4 - 5 - 3 - 6 - 7
+			// 이것은 전위 순회 방법과 유사하다.
 		}
 
 		// 삽입 기능
 		// 매개변수에 const 참조형을 사용한 이유는 혹시 모를 값 변형을 막고 배열 등의 데이터가 매개변수로 들어올 수 있도록 하기 위해서이다.
 		// 앞의 매개변수는 삽입할 위치의 상위 노드 데이터, 뒤의 매개변수는 삽입할 데이터를 나타낸다.
 		bool InsertNode(const T& topData, const T& data) {
+			// 삽입 과정
+			// 삽입은 특정 노드의 자식 노드로 들어가는 것을 의미. 그렇기에 부모가 될 노드를 찾는 것부터 시작.
+			// 부모가 될 노드가 없다면 불가능을 알리고 실패를 전달. 있다면 그 노드에 빈 자식 노드 자리가 있는지 확인. 왼쪽부터 채우는 것을 규칙으로 설정.
+			// 빈 자식 노드 자리가 없다면 삽입 불가를 알리고 실패를 전달. 있다면 해당 자리에 삽입 후 삽입 성공을 전달.
+			// 부모 노드 탐색 -> 부모 노드의 빈 자식 노드 자리 탐색 -> 빈 자식 노드 자리에 삽입
+			
 			Node<T>* parentNode = FindNode(topData);
 
-			// 삽입할 위치는 상위 노드의 아래이기 때문에 상위 노드를 먼저 찾고 그 아래에 삽입 가능한지를 찾는 연산이 진행되어야 한다.(04-21)
+			if (!parentNode) {
+				std::cout << "Can't insert data. Can't find \"" << topData << "\" node." << std::endl;
+				return false;
+			}
+
+			Node<T>* newNode = new Node<T>{ data, nullptr,nullptr };
+
+			if (!parentNode->firstNode) {
+				parentNode->firstNode = newNode;
+			}
+			else if (!parentNode->secondNode) {
+				parentNode->secondNode = newNode;
+			}
+			else {
+				std::cout << "Can't insert data. \"" << topData << "\" node is full." << std::endl;
+				delete(newNode);  // 생성된 노드는 메모리 상에 남게 되기에 메모리 낭비가 발생. 이를 막기 위해 메모리 해제가 필요
+				return false;
+			}
+
+			return true;
 		}
 
+		// 삭제 기능
+		// 삭제할 데이터를 찾아서 해당 데이터를 삭제
+		bool DeleteNode(const T& data) {
+			// 삭제 과정
+			// 해당 데이터를 가진 노드를 탐색. 탐색 결과 그런 노드가 없으면 노드가 없어서 삭제 불가하다는 것을 알리고 실패 전달.
+			// 있다면 해당 데이터가 자식 노드를 가지고 있는가 확인. 1개라도 가지고 있다면 자식 노드가 있어 삭제 불가하다는 것을 알리고 실패 전달.
+			// 자식 노드가 하나도 없다면 해당 노드와 부모 노드의 연결을 끊고 해당 노드의 메모리 해제 후 성공 전달.
+			// 부모 노드는 현 상황에서 찾을 수 있는 방법이 없다. 그러니 부모 노드와 삭제할 노드의 연결을 어떻게 끊어야 할지 고민해보아야 한다.(04-23)
+
+			Node<T>* searchNode = FindNode(data);
+
+			if (!searchNode) {
+				std::cout << "Failed to find delete node." << std::endl;
+				return false;
+			}
+			else if (searchNode->firstNode || searchNode->secondNode) {
+				std::cout << "Can't delete this node. This node has child node." << std::endl;
+				return false;
+			}
+
+
+		}
+
+		// 순회 기능
+		// 모든 트리의 요소를 보여주는 순회 기능을 레벨 순서 순회로 생성(순회는 영어로 order, 순서도 영어로 order라 그냥 레벨 순서 순회를 levelorder 명명)
+		void LevelOrder() {
+			// 큐에 노드 저장 - 현재 큐에 저장된 노드들을 반복문을 사용하여 순서대로 삭제 - 각 노드들이 큐에서 삭제될 때 값을 출력 및 자식 노드들을 큐에 저장
+			// 위의 과정을 반복하면 큐에는 각 계층의 노드 값들만이 저장되고 그러면 계층 별로 값이 출력되도록 할 수 있다.
+			if (!root)
+				return;
+
+			OwnQueue<Node<T>*> treeNodes(root);
+			Node<T>* currentNode = nullptr;
+
+			while (1) {
+				if (treeNodes.GetLength() == 0)
+					break;
+
+				for (int i = 0; i < treeNodes.GetLength(); i++) {
+					currentNode = treeNodes.Dequeue().value_or(nullptr);
+
+					if (!currentNode)
+						break;
+
+					std::cout << currentNode->data << " ";
+
+					if (!currentNode->firstNode)
+						continue;
+					else
+						treeNodes.Enqueue(currentNode->firstNode);
+
+					if (!currentNode->secondNode)
+						continue;
+					else
+						treeNodes.Enqueue(currentNode->secondNode);
+				}
+				std::cout << std::endl;
+			}
+		}
 
 	private:
 		Node<T>* root;  // 최상위 노드를 저장하는 변수.
