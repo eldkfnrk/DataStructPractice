@@ -71,11 +71,11 @@ namespace DataStruct {
 		std::optional<T> Peek() {
 			// 삭제할 데이터는 큐의 맨 앞에 있는 요소
 			// 만약 큐가 비어있다면 데이터를 못 찾음을 통보
-			T data = queueVector[0];
 			if (IsEmpty() == 1) {
 				std::cout << "Queue is empty. Can't peek." << std::endl;
 				return std::nullopt;
 			}
+			T data = queueVector[0];
 
 			return data;
 		}
@@ -94,7 +94,7 @@ namespace DataStruct {
 
 		int GetLength() {
 			// top은 가장 마지막 인덱스 값을 가지기 때문에 길이는 top 값보다 1 높다.
-			return ++top;
+			return top + 1;
 		}
 
 	private:

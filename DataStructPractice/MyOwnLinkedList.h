@@ -147,7 +147,7 @@ namespace DataStruct {
 			// 왜냐하면 0과 마지막 인덱스 삭제는 각각 따로 삭제 연산을 만들었는데 굳이 또 여기서까지 실행하게 할 의미가 없기 때문이다.
 			// 만약 리스트가 비어있거나 길이가 2 이하이면 삭제 불가능을 통보하고 값이 없음을 반환(길이가 3이상이어야 중간 노드가 생기기 때문이다.)
 			// 그리고 인덱스 값이 1 미만이거나 마지막 인덱스 값보다 크면 안 되도록 한다.
-			if (listLength <= 2 || (index < 1 && index >= listLength - 1)) {
+			if (listLength <= 2 || index < 1 || index >= listLength - 1) {
 				std::cout << "Can't delete data." << std::endl;
 				return std::nullopt;
 			}
@@ -224,7 +224,7 @@ namespace DataStruct {
 		// 특정 요소 데이터 검색
 		std::optional<T> SearchData(int index) {
 			// 만약 검색하고자 하는 요소의 인덱스가 없다면 잘못된 것이니 못 찾음을 통보하고 함수 종료(인덱스가 음수인 경우에도 불가능하도록 막아두고자 한다.)
-			if (index >= listLength || index <= 0) {
+			if (index >= listLength || index < 0) {
 				std::cout << "Can't search data " << index << " index in list. List's last index is " << listLength - 1 << "." << std::endl;
 				return std::nullopt;
 			}

@@ -81,7 +81,7 @@ namespace DataStruct {
 		// 스택의 맨 위 데이터를 조회하는 Peek 함수 - 스택의 맨 위 데이터를 조회하여 반환한다. 없다면 없음을 알려야 한다.
 		std::optional<T> Peek() {
 			if (IsEmpty() == 1) {
-				std::cout << "Stack is empty. Can't data pop." << std::endl;
+				std::cout << "Stack is empty. Can't data peek." << std::endl;
 				return std::nullopt;
 			}
 

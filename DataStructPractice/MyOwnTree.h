@@ -39,7 +39,7 @@ namespace DataStruct {
 		// 그러나 트리는 계층 구조이기 때문에 특정 노드가 특정 노드 밑으로 삽입되어야 한다는 것을 알게 되었다.
 		// 그렇기 때문에 특정 노드를 찾고 그 아래에 들어갈 공간이 있는지 확인하고 없다면 삽입 불가를 있다면 삽입을 진행하는 구조로 가야 한다.
 
-		// 탐색 기능
+		// 전위 탐색 기능
 		Node<T>* FindNode(const T& data, Node<T>* checkNode = root) {
 			if (!checkNode) 
 				return nullptr;
@@ -64,15 +64,43 @@ namespace DataStruct {
 			// 이것은 전위 순회 방법과 유사하다.
 		}
 
+		// 찾고자 하는 노드의 부모 노드를 탐색하는 기능
+		Node<T>* FindParentNode(const T& data, Node<T>* checkNode = root) {
+			if (!checkNode)
+				return nullptr;
+			
+			if (checkNode->firstNode) {
+				if (checkNode->firstNode->data == data)
+					return checkNode;
+			}
+
+			if (checkNode->secondNode) {
+				if (checkNode->secondNode->data == data)
+					return checkNode;
+			}
+
+			Node<T>* searchFirstNode = FindParentNode(data, checkNode->firstNode);
+
+			if (searchFirstNode)
+				return searchFirstNode;
+
+			return FindParentNode(data, checkNode->secondNode);
+		}
+
 		// 삽입 기능
 		// 매개변수에 const 참조형을 사용한 이유는 혹시 모를 값 변형을 막고 배열 등의 데이터가 매개변수로 들어올 수 있도록 하기 위해서이다.
 		// 앞의 매개변수는 삽입할 위치의 상위 노드 데이터, 뒤의 매개변수는 삽입할 데이터를 나타낸다.
 		bool InsertNode(const T& topData, const T& data) {
 			// 삽입 과정
-			// 삽입은 특정 노드의 자식 노드로 들어가는 것을 의미. 그렇기에 부모가 될 노드를 찾는 것부터 시작.
+			// 삽입은 특정 노드의 자식 노드로 들어가는 것을 의미. 그렇기에 부모가 될 노드를 찾는 것부터 시작. 그 전에 동일한 데이터가 있는지부터 확인하여 만약 있다면 삽입 불가 통보 후 실패 전달.
 			// 부모가 될 노드가 없다면 불가능을 알리고 실패를 전달. 있다면 그 노드에 빈 자식 노드 자리가 있는지 확인. 왼쪽부터 채우는 것을 규칙으로 설정.
 			// 빈 자식 노드 자리가 없다면 삽입 불가를 알리고 실패를 전달. 있다면 해당 자리에 삽입 후 삽입 성공을 전달.
 			// 부모 노드 탐색 -> 부모 노드의 빈 자식 노드 자리 탐색 -> 빈 자식 노드 자리에 삽입
+
+			if (FindNode(data)) {
+				std::cout << "This data already exists. Can't insert data." << std::endl;
+				return false;
+			}
 			
 			Node<T>* parentNode = FindNode(topData);
 
@@ -105,20 +133,44 @@ namespace DataStruct {
 			// 해당 데이터를 가진 노드를 탐색. 탐색 결과 그런 노드가 없으면 노드가 없어서 삭제 불가하다는 것을 알리고 실패 전달.
 			// 있다면 해당 데이터가 자식 노드를 가지고 있는가 확인. 1개라도 가지고 있다면 자식 노드가 있어 삭제 불가하다는 것을 알리고 실패 전달.
 			// 자식 노드가 하나도 없다면 해당 노드와 부모 노드의 연결을 끊고 해당 노드의 메모리 해제 후 성공 전달.
-			// 부모 노드는 현 상황에서 찾을 수 있는 방법이 없다. 그러니 부모 노드와 삭제할 노드의 연결을 어떻게 끊어야 할지 고민해보아야 한다.(04-23)
 
-			Node<T>* searchNode = FindNode(data);
-
-			if (!searchNode) {
-				std::cout << "Failed to find delete node." << std::endl;
-				return false;
-			}
-			else if (searchNode->firstNode || searchNode->secondNode) {
-				std::cout << "Can't delete this node. This node has child node." << std::endl;
+			if (!root) {
+				std::cout << "Can't delete node. This tree is empty." << std::endl;
 				return false;
 			}
 
+			Node<T>* deleteNode = FindNode(data);
+			if (!deleteNode) {  // 삭제할 노드가 없는 경우
+				std::cout << "Can't delete node. Because can't find \"" << data << "\" node." << std::endl;
+				return false;
+			}
+			else if (deleteNode->firstNode || deleteNode->secondNode) {  // 삭제할 노드에 자식 노드가 있는 경우
+				std::cout << "Can't delete Node. Because this node has at least one child node." << std::endl;
+				return false;
+			}
 
+			// 삭제할 노드를 찾았고 자식 노드가 1개도 없는 상황에서 만약 삭제할 노드가 root 노드라면 root 노드가 가리키는 노드를 없애고 해당 노드를 삭제
+			if (deleteNode == root) {  
+				root = nullptr;
+				delete(deleteNode);
+				return true;
+			}
+
+			// 삭제 노드를 찾았으니 해당 노드의 부모 노드를 찾아서 부모 노드와 해당 노드 간 연결을 끊어주고 해당 노드를 삭제
+			Node<T>* parentNode = FindParentNode(data);
+
+			switch (data)
+			{
+			case parentNode->firstNode->data:
+				parentNode->firstNode = nullptr;
+				break;
+			case parentNode->secondNode->data:
+				parentNode->secondNode = nullptr;
+				break;
+			}
+
+			delete(deleteNode);
+			return true;
 		}
 
 		// 순회 기능
@@ -133,10 +185,12 @@ namespace DataStruct {
 			Node<T>* currentNode = nullptr;
 
 			while (1) {
-				if (treeNodes.GetLength() == 0)
+				int queueLength = treeNodes.GetLength();
+
+				if (queueLength == 0)
 					break;
 
-				for (int i = 0; i < treeNodes.GetLength(); i++) {
+				for (int i = 0; i < queueLength; i++) {
 					currentNode = treeNodes.Dequeue().value_or(nullptr);
 
 					if (!currentNode)
