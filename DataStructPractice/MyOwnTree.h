@@ -126,6 +126,17 @@ namespace DataStruct {
 			return true;
 		}
 
+		// 루트 값이 없는 경우 삽입을 위한 함수 오버로딩
+		bool InsertNode(const T& data) {
+			if (root) {
+				std::cout << "Can't insert data. Already exist root." << std::endl;
+				return false;
+			}
+
+			root = new Node<T>{ data,nullptr,nullptr };
+			return true;
+		}
+
 		// 삭제 기능
 		// 삭제할 데이터를 찾아서 해당 데이터를 삭제
 		bool DeleteNode(const T& data) {

@@ -1,6 +1,7 @@
 #include "MyOwnStack.h"
 #include "MyOwnQueue.h"
 #include "MyOwnLinkedList.h"
+#include "MyOwnTree.h"
 
 int main() {
 	using namespace std;
@@ -139,6 +140,12 @@ int main() {
 	firstIntList[1] += 40;
 	cout << "Index 1 data : " << firstIntList[1] << endl;
 	firstIntList.CurrentListState();
+
+	cout << "-----------------------------------------------------------------------------------" << endl;
+
+	OwnTree<string> stringTestTree;
+	stringTestTree.InsertNode("CEO");
+	stringTestTree.LevelOrder();
 
 	return 0;
 }

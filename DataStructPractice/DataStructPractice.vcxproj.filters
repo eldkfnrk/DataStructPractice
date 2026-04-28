@@ -30,6 +30,9 @@
     <ClInclude Include="MyOwnTree.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="MyOwnBST.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Test.cpp">
@@ -42,6 +45,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="MyOwnTree.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MyOwnBST.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
