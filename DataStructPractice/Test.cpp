@@ -144,7 +144,21 @@ int main() {
 	cout << "-----------------------------------------------------------------------------------" << endl;
 
 	OwnTree<string> stringTestTree;
-	stringTestTree.InsertNode("CEO");
+	stringTestTree.InsertNode("회장");
+	stringTestTree.LevelOrder();
+	stringTestTree.InsertNode("회장", "부회장");
+	stringTestTree.InsertNode("회장", "비서실장");
+	stringTestTree.InsertNode("회장", "경호부장");
+	stringTestTree.LevelOrder();
+	stringTestTree.InsertNode("부회장", "경호부장");
+	stringTestTree.InsertNode("부회장", "기획실장");
+	stringTestTree.InsertNode("비서실장", "비서1팀장");
+	stringTestTree.InsertNode("비서실장", "비서2팀장");
+	stringTestTree.InsertNode("비서실장", "비서2팀장");
+	stringTestTree.LevelOrder();
+	stringTestTree.DeleteNode("부회장");
+	stringTestTree.DeleteNode("경호부장");
+	stringTestTree.DeleteNode("비서2팀장");
 	stringTestTree.LevelOrder();
 
 	return 0;

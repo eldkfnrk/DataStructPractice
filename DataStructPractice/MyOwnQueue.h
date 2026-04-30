@@ -11,6 +11,11 @@ namespace DataStruct {
 	class OwnQueue
 	{
 	public:
+		OwnQueue() : max(1000) {
+			queueVector.reserve(max);
+			top = -1;
+		}
+
 		OwnQueue(int max) : max(max) {
 			queueVector.reserve(max);
 			top = -1;
@@ -95,6 +100,10 @@ namespace DataStruct {
 		int GetLength() {
 			// top은 가장 마지막 인덱스 값을 가지기 때문에 길이는 top 값보다 1 높다.
 			return top + 1;
+		}
+
+		~OwnQueue() {
+
 		}
 
 	private:

@@ -5,11 +5,11 @@
 namespace DataStruct {
 	// 트리의 노드
 	template <typename T>
-	struct Node {
+	struct TreeNode {
 		// 노드의 구성은 데이터와 자식 노드들을 가리키는 주소 값들로 자식 노드는 최대 2개로 지정
 		T data;
-		Node<T>* firstNode;
-		Node<T>* secondNode;
+		TreeNode<T>* firstNode;
+		TreeNode<T>* secondNode;
 	};
 
 	// 트리
@@ -32,7 +32,7 @@ namespace DataStruct {
 
 		OwnTree(T data) {
 			// 이런 식으로 new를 사용함과 동시에 구조체 멤버 값 초기화가 가능하다.
-			root = new Node<T>{ data, nullptr, nullptr };
+			root = new TreeNode<T>{ data, nullptr, nullptr };
 		}
 
 		// 그 동안 순차적 자료구조를 알아보면서 나도 모르게 이것 또한 정해진 순서대로 값을 삽입해야 한다는 착각을 해버렸다.
@@ -40,7 +40,7 @@ namespace DataStruct {
 		// 그렇기 때문에 특정 노드를 찾고 그 아래에 들어갈 공간이 있는지 확인하고 없다면 삽입 불가를 있다면 삽입을 진행하는 구조로 가야 한다.
 
 		// 전위 탐색 기능
-		Node<T>* FindNode(const T& data, Node<T>* checkNode = root) {
+		TreeNode<T>* FindNode(const T& data, TreeNode<T>* checkNode) {
 			if (!checkNode) 
 				return nullptr;
 
@@ -49,7 +49,7 @@ namespace DataStruct {
 			if (checkNode->data == data)
 				return checkNode;
 
-			Node<T>* firstFindNode = FindNode(data, checkNode->firstNode);  // 왼쪽 노드를 쭉 순회해서 해당 데이터를 가진 노드가 있는지 확인
+			TreeNode<T>* firstFindNode = FindNode(data, checkNode->firstNode);  // 왼쪽 노드를 쭉 순회해서 해당 데이터를 가진 노드가 있는지 확인
 
 			if (firstFindNode)
 				return firstFindNode;
@@ -65,7 +65,7 @@ namespace DataStruct {
 		}
 
 		// 찾고자 하는 노드의 부모 노드를 탐색하는 기능
-		Node<T>* FindParentNode(const T& data, Node<T>* checkNode = root) {
+		TreeNode<T>* FindParentNode(const T& data, TreeNode<T>* checkNode) {
 			if (!checkNode)
 				return nullptr;
 			
@@ -79,7 +79,7 @@ namespace DataStruct {
 					return checkNode;
 			}
 
-			Node<T>* searchFirstNode = FindParentNode(data, checkNode->firstNode);
+			TreeNode<T>* searchFirstNode = FindParentNode(data, checkNode->firstNode);
 
 			if (searchFirstNode)
 				return searchFirstNode;
@@ -88,6 +88,17 @@ namespace DataStruct {
 		}
 
 		// 삽입 기능
+		// 루트 값이 없는 경우 삽입을 위한 함수 오버로딩
+		bool InsertNode(const T& data) {
+			if (root) {
+				std::cout << "Can't insert data. Already exist root." << std::endl;
+				return false;
+			}
+
+			root = new TreeNode<T>{ data,nullptr,nullptr };
+			return true;
+		}
+
 		// 매개변수에 const 참조형을 사용한 이유는 혹시 모를 값 변형을 막고 배열 등의 데이터가 매개변수로 들어올 수 있도록 하기 위해서이다.
 		// 앞의 매개변수는 삽입할 위치의 상위 노드 데이터, 뒤의 매개변수는 삽입할 데이터를 나타낸다.
 		bool InsertNode(const T& topData, const T& data) {
@@ -97,19 +108,19 @@ namespace DataStruct {
 			// 빈 자식 노드 자리가 없다면 삽입 불가를 알리고 실패를 전달. 있다면 해당 자리에 삽입 후 삽입 성공을 전달.
 			// 부모 노드 탐색 -> 부모 노드의 빈 자식 노드 자리 탐색 -> 빈 자식 노드 자리에 삽입
 
-			if (FindNode(data)) {
-				std::cout << "This data already exists. Can't insert data." << std::endl;
+			if (FindNode(data, root)) {
+				std::cout << "\"" << data << "\" data already exists.Can't insert data." << std::endl;
 				return false;
 			}
 			
-			Node<T>* parentNode = FindNode(topData);
+			TreeNode<T>* parentNode = FindNode(topData, root);
 
 			if (!parentNode) {
-				std::cout << "Can't insert data. Can't find \"" << topData << "\" node." << std::endl;
+				std::cout << "Can't insert data. Can't find \"" << topData << "\" TreeNode." << std::endl;
 				return false;
 			}
 
-			Node<T>* newNode = new Node<T>{ data, nullptr,nullptr };
+			TreeNode<T>* newNode = new TreeNode<T>{ data, nullptr,nullptr };
 
 			if (!parentNode->firstNode) {
 				parentNode->firstNode = newNode;
@@ -118,7 +129,7 @@ namespace DataStruct {
 				parentNode->secondNode = newNode;
 			}
 			else {
-				std::cout << "Can't insert data. \"" << topData << "\" node is full." << std::endl;
+				std::cout << "Can't insert data. \"" << topData << "\" TreeNode is full." << std::endl;
 				delete(newNode);  // 생성된 노드는 메모리 상에 남게 되기에 메모리 낭비가 발생. 이를 막기 위해 메모리 해제가 필요
 				return false;
 			}
@@ -126,16 +137,6 @@ namespace DataStruct {
 			return true;
 		}
 
-		// 루트 값이 없는 경우 삽입을 위한 함수 오버로딩
-		bool InsertNode(const T& data) {
-			if (root) {
-				std::cout << "Can't insert data. Already exist root." << std::endl;
-				return false;
-			}
-
-			root = new Node<T>{ data,nullptr,nullptr };
-			return true;
-		}
 
 		// 삭제 기능
 		// 삭제할 데이터를 찾아서 해당 데이터를 삭제
@@ -146,17 +147,17 @@ namespace DataStruct {
 			// 자식 노드가 하나도 없다면 해당 노드와 부모 노드의 연결을 끊고 해당 노드의 메모리 해제 후 성공 전달.
 
 			if (!root) {
-				std::cout << "Can't delete node. This tree is empty." << std::endl;
+				std::cout << "Can't delete TreeNode. This tree is empty." << std::endl;
 				return false;
 			}
 
-			Node<T>* deleteNode = FindNode(data);
+			TreeNode<T>* deleteNode = FindNode(data, root);
 			if (!deleteNode) {  // 삭제할 노드가 없는 경우
-				std::cout << "Can't delete node. Because can't find \"" << data << "\" node." << std::endl;
+				std::cout << "Can't delete TreeNode. Because can't find \"" << data << "\" TreeNode." << std::endl;
 				return false;
 			}
 			else if (deleteNode->firstNode || deleteNode->secondNode) {  // 삭제할 노드에 자식 노드가 있는 경우
-				std::cout << "Can't delete Node. Because this node has at least one child node." << std::endl;
+				std::cout << "Can't delete TreeNode. Because this TreeNode has at least one child TreeNode." << std::endl;
 				return false;
 			}
 
@@ -168,16 +169,13 @@ namespace DataStruct {
 			}
 
 			// 삭제 노드를 찾았으니 해당 노드의 부모 노드를 찾아서 부모 노드와 해당 노드 간 연결을 끊어주고 해당 노드를 삭제
-			Node<T>* parentNode = FindParentNode(data);
+			TreeNode<T>* parentNode = FindParentNode(data, root);
 
-			switch (data)
-			{
-			case parentNode->firstNode->data:
+			if (parentNode->firstNode == deleteNode) {
 				parentNode->firstNode = nullptr;
-				break;
-			case parentNode->secondNode->data:
+			}
+			else {
 				parentNode->secondNode = nullptr;
-				break;
 			}
 
 			delete(deleteNode);
@@ -192,8 +190,9 @@ namespace DataStruct {
 			if (!root)
 				return;
 
-			OwnQueue<Node<T>*> treeNodes(root);
-			Node<T>* currentNode = nullptr;
+			OwnQueue<TreeNode<T>*> treeNodes;
+			treeNodes.Enqueue(root);
+			TreeNode<T>* currentNode = nullptr;
 
 			while (1) {
 				int queueLength = treeNodes.GetLength();
@@ -202,21 +201,17 @@ namespace DataStruct {
 					break;
 
 				for (int i = 0; i < queueLength; i++) {
-					currentNode = treeNodes.Dequeue().value_or(nullptr);
+					currentNode = treeNodes.Dequeue().value_or(nullptr);  // 만약 값이 없다면 nullptr이 반환될 것이고 있다면 주소 값을 가지고 있을 것이다.
 
 					if (!currentNode)
 						break;
 
 					std::cout << currentNode->data << " ";
 
-					if (!currentNode->firstNode)
-						continue;
-					else
+					if (currentNode->firstNode)
 						treeNodes.Enqueue(currentNode->firstNode);
 
-					if (!currentNode->secondNode)
-						continue;
-					else
+					if (currentNode->secondNode)
 						treeNodes.Enqueue(currentNode->secondNode);
 				}
 				std::cout << std::endl;
@@ -224,6 +219,6 @@ namespace DataStruct {
 		}
 
 	private:
-		Node<T>* root;  // 최상위 노드를 저장하는 변수.
+		TreeNode<T>* root;  // 최상위 노드를 저장하는 변수.
 	};
 }
