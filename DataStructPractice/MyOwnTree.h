@@ -183,6 +183,21 @@ namespace DataStruct {
 		}
 
 		// 순회 기능
+		// 전위 순회
+		void PreOrder() {
+
+		}
+
+		// 중위 순회
+		void InOrder() {
+
+		}
+
+		// 후위 순회
+		void PostOrder() {
+
+		}
+
 		// 모든 트리의 요소를 보여주는 순회 기능을 레벨 순서 순회로 생성(순회는 영어로 order, 순서도 영어로 order라 그냥 레벨 순서 순회를 levelorder 명명)
 		void LevelOrder() {
 			// 큐에 노드 저장 - 현재 큐에 저장된 노드들을 반복문을 사용하여 순서대로 삭제 - 각 노드들이 큐에서 삭제될 때 값을 출력 및 자식 노드들을 큐에 저장

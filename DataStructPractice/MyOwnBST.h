@@ -30,7 +30,11 @@ namespace DataStruct {
 		// 삽입, 검색(최대, 최소, 해당 값이 있는가), 삭제, 순회 기능
 		
 		bool InsertNode(const int& data);  // 삽입
-		BSTNode* FindNode(const int& data);  // 검색
+		int SearchData(const int& data);  // 특정 값 검색
+		int SearchMin();  // 최소 값 검색
+		int SearchMax();  // 최대 값 검색
+		BSTNode* FindNode(const int& data);  // 탐색
+		BSTNode* FindParentNode(const int& data);  // 찾고자 하는 노드의 부모 노드 탐색
 		bool DeleteNode(const int& data);  // 삭제
 		void PreOrderTree();  // 전위 순회
 		void InOrderTree();  // 중위 순회
