@@ -19,7 +19,7 @@ namespace DataStruct {
 	class OwnBST
 	{
 	public:
-		OwnBST() : n(0), h(0) {
+		OwnBST() : n(0), h(-1) {
 			root = nullptr;
 		}
 
@@ -36,14 +36,26 @@ namespace DataStruct {
 		BSTNode* FindNode(const int& data);  // 탐색
 		BSTNode* FindParentNode(const int& data);  // 찾고자 하는 노드의 부모 노드 탐색
 		bool DeleteNode(const int& data);  // 삭제
-		void PreOrderTree();  // 전위 순회
-		void InOrderTree();  // 중위 순회
-		void PostOrderTree();  // 후위 순회
+		void PreOrderTree(BSTNode* checkNode);  // 전위 순회
+		void InOrderTree(BSTNode* checkNode);  // 중위 순회
+		void PostOrderTree(BSTNode* checkNode);  // 후위 순회
 		void LevelOrderTree();  // 레벨 순서 순회
 
+		int GetLength() {
+			return n;
+		}
+
+		int GetHeight() {
+			return h;
+		}
+
+	private:
+		void SetHeight();  // 트리의 높이를 수정하는 함수
+		
 	private:
 		BSTNode* root;
 		int n;  // BST 내에 있는 노드의 개수를 저장하는 변수
-		int h;  // BST의 계층 수(root가 있는 계층은 제외하고 계산)
+		int h;  // BST의 높이(root가 있는 계층은 제외하고 계산)
+		// 트리의 높이는 가장 멀리 떨어진 리프 노드까지 경로에 있는 간선의 수를 의미한다.
 	};
 }

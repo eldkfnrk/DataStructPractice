@@ -184,18 +184,33 @@ namespace DataStruct {
 
 		// 순회 기능
 		// 전위 순회
-		void PreOrder() {
+		void PreOrder(TreeNode<T>* checkNode) {
+			if (!checkNode)
+				return;
 
+			std::cout << checkNode->data << " ";
+			PreOrder(checkNode->firstNode);
+			PreOrder(checkNode->secondNode);
 		}
 
 		// 중위 순회
-		void InOrder() {
+		void InOrder(TreeNode<T>* checkNode) {
+			if (!checkNode)
+				return;
 
+			InOrder(checkNode->firstNode);
+			std::cout << checkNode->data << " ";
+			InOrder(checkNode->secondNode);
 		}
 
 		// 후위 순회
-		void PostOrder() {
+		void PostOrder(TreeNode<T>* checkNode) {
+			if (!checkNode)
+				return;
 
+			PostOrder(checkNode->firstNode);
+			PostOrder(checkNode->secondNode);
+			std::cout << checkNode->data << " ";
 		}
 
 		// 모든 트리의 요소를 보여주는 순회 기능을 레벨 순서 순회로 생성(순회는 영어로 order, 순서도 영어로 order라 그냥 레벨 순서 순회를 levelorder 명명)
