@@ -55,7 +55,14 @@ namespace DataStruct {
 
 	int OwnBST::SearchData(const int& data)
 	{
-		return 0;
+		BSTNode* findNode = FindNode(data);
+
+		if (!findNode) {
+			std::cout << "Data \"" << data << "\" doesn't exist in BST." << std::endl;
+			return -10000;
+		}
+
+		return findNode->data;
 	}
 
 	int OwnBST::SearchMin()
@@ -158,9 +165,91 @@ namespace DataStruct {
 
 	bool OwnBST::DeleteNode(const int& data)
 	{
+		if (!root) {
+			std::cout << "This BST is empty. Can't delete node." << std::endl;
+			return false;
+		}
+
 		// BST의 삭제는 트리의 삭제처럼 자식이 있다고 실패하는 것이 아니라 노드를 삭제하고 노드 간 크기를 비교하여 삭제된 쪽을 재편하는 과정을 가진다.
-		// 삭제 시 자식 노드들이 있는 경우 자식의 자식까지 다 찾아서 삭제한 노드보다 큰 값을 가진 노드 중 가장 작은 노드가 삭제된 노드의 자리를 대체한다.
-		return false;
+		// 삭제 시 자식 노드들이 있는 경우 자식의 자식까지 다 찾아서 삭제한 노드의 값보다 큰 값을 가진 노드 중 가장 작은 값을 가진 노드가 삭제된 노드의 자리를 대체한다.
+		// 삭제하는 상황은 3개가 나온다.
+		// 1. 자식이 없는 노드 삭제  2. 자식이 하나만 있는 노드 삭제  3. 자식이 두 개 다 있는 노드 삭제
+		// 1번은 간단하다. 그냥 연결 끊고 삭제하면 된다. 2번도 크게 어렵지 않다. 삭제할 노드의 자식을 부모와 연결시키고 삭제할 노드는 연결 끊고 삭제하면 된다. 조부모가 손자를 입양하는 모습으로 보면 편하다.
+		// 3번이 살짝 복잡하다. 어떤 노드가 삭제된 자리를 대체하느냐가 곤란하다는 것이다. BST를 만족하려면 이 조건을 맞춰야 한다. "왼쪽 서브 트리의 모든 값 < 대체 노드 < 오른쪽 서브 트리의 모든 값"
+		// 이 조건을 만족시키는 값은 BST 내의 2개 밖에 없다. 1번 오른쪽 서브 트리에서 가장 작은 값을 대체 노드로 사용 2번 왼쪽 서브 트리에서 가장 큰 값을 대체 노드로 사용.
+		// 그리고 이 두 방법 중 1번 방법(오른쪽 서브 트리 가장 작은 값)이 일반적으로 사용되는 구현 방법이다.
+		BSTNode* deleteNode = FindNode(data);
+
+		if (!deleteNode) {
+			std::cout << "Data \"" << data << "\" doesn't exist in BST. Can't delete data." << std::endl;
+			return false;
+		}
+
+		BSTNode* parentNode = FindParentNode(data);
+
+		// root 노드도 아닌데 부모 노드를 찾지 못했다는 것은 문제가 있는 것이기 때문에 오류 처리한다.
+		if (deleteNode != root && !parentNode) {
+			std::cout << "Error! Can't find Data \"" << data << "\"'s parent node. Stop deleting node." << std::endl;
+			return false;
+		}
+
+		// 1. 자식이 없는 노드 삭제 
+		if (!deleteNode->leftNode && !deleteNode->rightNode) {
+			if (deleteNode == root) {
+				root = nullptr;
+				delete(deleteNode);
+				return true;
+			}
+			
+			if (parentNode->leftNode == deleteNode) {
+				parentNode->leftNode = nullptr;
+			}
+			else {
+				parentNode->rightNode = nullptr;
+			}
+
+			delete(deleteNode);
+			return true;
+		}
+		// 2. 자식이 하나만 있는 노드 삭제
+		else if (!deleteNode->leftNode || !deleteNode->rightNode) {
+			bool isRightNode = deleteNode->rightNode ? true : false;
+
+			if (deleteNode == root) {
+				if (isRightNode) {
+					root = deleteNode->rightNode;
+				}
+				else {
+					root = deleteNode->leftNode;
+				}
+				delete(deleteNode);
+				return true;
+			}
+
+			if (parentNode->rightNode == deleteNode) {
+				if (isRightNode) {
+					parentNode->rightNode = deleteNode->rightNode;
+				}
+				else {
+					parentNode->rightNode = deleteNode->leftNode;
+				}
+			}
+			else {
+				if (isRightNode) {
+					parentNode->leftNode = deleteNode->rightNode;
+				}
+				else {
+					parentNode->leftNode = deleteNode->leftNode;
+				}
+			}
+			delete(deleteNode);
+			return true;
+		}
+		// 3. 자식이 둘 다 있는 노드 삭제
+		else
+		{
+
+		}
 	}
 
 	void OwnBST::PreOrderTree(BSTNode* checkNode)
