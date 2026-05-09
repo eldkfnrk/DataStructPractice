@@ -257,6 +257,10 @@ namespace DataStruct {
 			return resultNode->data;
 		}
 
+		~OwnLinkedList() {
+			
+		}
+
 	private:
 		// 연결 리스트에는 이 2개는 가지고 있어야 동작을 할 때 어려움이 없다.
 		Node<T>* headerNode;  // 맨 처음 노드(헤더 노드)

@@ -103,7 +103,9 @@ namespace DataStruct {
 		}
 
 		~OwnQueue() {
-
+			queueVector.clear();
+			top = -1;
+			max = 0;
 		}
 
 	private:

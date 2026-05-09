@@ -248,7 +248,41 @@ namespace DataStruct {
 		// 3. 자식이 둘 다 있는 노드 삭제
 		else
 		{
+			// 삭제할 노드의 오른쪽에 있는 서브 트리를 따로 저장. 이 서브 트리에서 최소 값 탐색
+			// 찾은 최소 값으로 삭제할 노드의 데이터를 바꾸고 최소 값을 지닌 노드를 삭제
+			// 만약 최소 값을 지닌 노드가 자식이 있는 경우(이 경우에는 오른쪽 자식 밖에 없을 것이다.)는 그 부모 노드와 연결해주고 넘어가야 한다.
+			OwnBST rightSubTree;
+			OwnQueue<BSTNode*> rightSubTreeDatas;
+			BSTNode* checkNode = deleteNode->rightNode;
+			rightSubTreeDatas.Enqueue(checkNode);
+			
+			while (1) {
+				int queueLength = rightSubTreeDatas.GetLength();
 
+				if (queueLength == 0)
+					break;
+
+				for (int i = 0; i < queueLength; i++) {
+					checkNode = rightSubTreeDatas.Dequeue().value_or(nullptr);
+					rightSubTree.InsertNode(checkNode->data);
+					
+					if (checkNode->leftNode)
+						rightSubTreeDatas.Enqueue(checkNode->leftNode);
+
+					if (checkNode->rightNode)
+						rightSubTreeDatas.Enqueue(checkNode->rightNode);
+				}
+			}
+
+			int subTreeMinData = rightSubTree.SearchMin();
+			checkNode = FindNode(subTreeMinData);
+			// 만약 삭제할 노드(최소 값을 가지고 있는 노드)의 자식이 있는 경우(이 경우에 자식은 오른쪽에만 있을 수 있다. 왜냐하면 왼쪽 노드가 있다는 것은 더 작은 값이 있다는 건데 그건 모순이 되기 때문이다.) 삭제할 노드의 부모 노드와 자식 노드를 연결시켜주어야 한다. 
+			if (checkNode->rightNode) {
+				BSTNode* checkNodeParent = FindParentNode(subTreeMinData);
+				checkNodeParent->leftNode = checkNode->rightNode;
+			}
+			deleteNode->data = subTreeMinData;
+			delete(checkNode);
 		}
 	}
 
@@ -346,5 +380,9 @@ namespace DataStruct {
 		h = height;
 
 		delete(deleteNode);
+	}
+
+	OwnBST::~OwnBST()
+	{
 	}
 }

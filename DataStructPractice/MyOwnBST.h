@@ -53,6 +53,8 @@ namespace DataStruct {
 			return root;
 		}
 
+		~OwnBST();
+
 	private:
 		void SetHeight();  // 트리의 높이를 수정하는 함수
 		
