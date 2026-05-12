@@ -8,6 +8,11 @@ namespace DataStruct {
 		int data;
 		BSTNode* leftNode;
 		BSTNode* rightNode;
+
+		~BSTNode() {
+			leftNode = nullptr;
+			rightNode = nullptr;
+		}
 	};
 
 	// BST(Binary Search Tree : 이진 탐색 트리)
@@ -19,11 +24,11 @@ namespace DataStruct {
 	class OwnBST
 	{
 	public:
-		OwnBST() : n(0), h(-1) {
+		OwnBST() : n(0) {
 			root = nullptr;
 		}
 
-		OwnBST(int data) : n(1), h(0) {
+		OwnBST(int data) : n(1) {
 			root = new BSTNode{ data, nullptr, nullptr };
 		}
 
@@ -45,23 +50,19 @@ namespace DataStruct {
 			return n;
 		}
 
-		int GetHeight() {
-			return h;
-		}
-
-		const BSTNode* GetRoot() {
+		BSTNode* GetRoot() {
 			return root;
 		}
 
 		~OwnBST();
 
 	private:
-		void SetHeight();  // 트리의 높이를 수정하는 함수
+		void DeleteBST(BSTNode* checkNode);  // BST 전체 노드 삭제
 		
 	private:
 		BSTNode* root;
 		int n;  // BST 내에 있는 노드의 개수를 저장하는 변수
-		int h;  // BST의 높이(root가 있는 계층은 제외하고 계산)
+		// int h;  // BST의 높이(root가 있는 계층은 제외하고 계산) 이번엔 사용 x
 		// 트리의 높이는 가장 멀리 떨어진 리프 노드까지 경로에 있는 간선의 수를 의미한다.
 	};
 }

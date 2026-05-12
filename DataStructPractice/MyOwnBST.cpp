@@ -23,7 +23,7 @@ namespace DataStruct {
 		bool isSuccess = false;
 
 		// BST의 탐색 횟수는 BST의 높이 + 1과 동일하다. 그렇기 때문에 이런 반복문이 될 수 있다.
-		for(int i = 0; i < h + 1; i++) {
+		while(1) {
 			// 삽입 값이 현재 확인 중인 노드의 데이터 값보다 작은 경우
 			// 현재 확인 중인 노드의 왼쪽 노드가 비어있다면 그대로 삽입을 하고 종료, 비어있지 않다면 왼쪽에 있는 노드를 확인하도록 검색 노드 변환
 			if (checkNode->data > data) {
@@ -47,8 +47,6 @@ namespace DataStruct {
 				checkNode = checkNode->rightNode;
 			}
 		}
-
-		SetHeight();  // 높이 재설정(높이가 안 달라질 수도 있지만 혹시 달라질 경우 이를 적용시켜야 하기 때문에 호출한다.)
 
 		return isSuccess;
 	}
@@ -74,7 +72,7 @@ namespace DataStruct {
 
 		BSTNode* checkNode = root;
 
-		for (int i = 0; i < h + 1; i++) {
+		while(0) {
 			if (!checkNode->leftNode)
 				break;
 			checkNode = checkNode->leftNode;
@@ -92,7 +90,7 @@ namespace DataStruct {
 
 		BSTNode* checkNode = root;
 
-		for (int i = 0; i < h + 1; i++) {
+		while(1) {
 			if (!checkNode->rightNode)
 				break;
 			checkNode = checkNode->rightNode;
@@ -111,8 +109,8 @@ namespace DataStruct {
 
 		BSTNode* checkNode = root;
 
-		for(int i = 0; i < h + 1; i++){
-			if (checkNode->data == data || !checkNode)
+		while(1){
+			if (!checkNode || checkNode->data == data)
 				break;
 			
 			if (checkNode->data > data) {
@@ -142,20 +140,21 @@ namespace DataStruct {
 
 		BSTNode* checkNode = root;
 
-		for (int i = 0; i < h + 1; i++) {
-			if (checkNode->leftNode->data == data || checkNode->rightNode->data == data || !checkNode)
+		while(1) {
+			if (!checkNode)
 				break;
 
-			if (checkNode->data > data) {
+			if ((checkNode->leftNode && checkNode->leftNode->data == data) || (checkNode->rightNode && checkNode->rightNode->data == data))
+				break;
+
+			if (checkNode->data > data)
 				checkNode = checkNode->leftNode;
-			}
-			else {
+			else 
 				checkNode = checkNode->rightNode;
-			}
 		}
 
 		if (checkNode) {
-			if (checkNode->leftNode->data != data && checkNode->rightNode->data != data) {
+			if ((checkNode->leftNode && checkNode->leftNode->data != data) && (checkNode->rightNode && checkNode->rightNode->data != data)) {
 				checkNode = nullptr;
 			}
 		}
@@ -248,42 +247,67 @@ namespace DataStruct {
 		// 3. 자식이 둘 다 있는 노드 삭제
 		else
 		{
-			// 삭제할 노드의 오른쪽에 있는 서브 트리를 따로 저장. 이 서브 트리에서 최소 값 탐색
-			// 찾은 최소 값으로 삭제할 노드의 데이터를 바꾸고 최소 값을 지닌 노드를 삭제
-			// 만약 최소 값을 지닌 노드가 자식이 있는 경우(이 경우에는 오른쪽 자식 밖에 없을 것이다.)는 그 부모 노드와 연결해주고 넘어가야 한다.
-			OwnBST rightSubTree;
-			OwnQueue<BSTNode*> rightSubTreeDatas;
-			BSTNode* checkNode = deleteNode->rightNode;
-			rightSubTreeDatas.Enqueue(checkNode);
-			
+			// 이 경우에는 살짝 다른 방식을 사용하여야 한다. 그 방식은 삭제할 노드의 오른쪽 서브 트리에서 최소 값을 찾아서 해당 값을 삭제할 노드의 값으로 변경하는 것이다.
+			// 그리고 찾은 오른쪽 서브 트리의 최소 값을 가지고 있던 노드를 삭제한다. 이러면 결과적으로는 BST를 만족하는 삭제 연산이 된다.
+			BSTNode* rightSubTreeMinNode = deleteNode->rightNode;
+
+			// 삭제할 노드의 오른쪽 서브 트리의 최소 값을 보유한 노드 찾기
+			// 트리에서 가장 왼쪽에 있는 값이 최소 값이기 때문에 계속하여 왼쪽 노드만 탐색하고 왼쪽 노드가 없다면 해당 노드가 최소 값을 가진 노드가 되는 것이다.
 			while (1) {
-				int queueLength = rightSubTreeDatas.GetLength();
-
-				if (queueLength == 0)
+				if (!rightSubTreeMinNode->leftNode)
 					break;
+				rightSubTreeMinNode = rightSubTreeMinNode->leftNode;
+			}
 
-				for (int i = 0; i < queueLength; i++) {
-					checkNode = rightSubTreeDatas.Dequeue().value_or(nullptr);
-					rightSubTree.InsertNode(checkNode->data);
-					
-					if (checkNode->leftNode)
-						rightSubTreeDatas.Enqueue(checkNode->leftNode);
+			// 혹시 모를 문제 발생 시 프로그램 강제 종료
+			if (!rightSubTreeMinNode) {
+				std::cout << "Error! Problem occurred. Force Quit." << std::endl;
+				exit(1);
+				return false;
+			}
 
-					if (checkNode->rightNode)
-						rightSubTreeDatas.Enqueue(checkNode->rightNode);
+			// 삭제할 오른쪽 서브 트리에서 최소 값을 가진 노드의 부모 노드
+			BSTNode* minParentNode = FindParentNode(rightSubTreeMinNode->data);
+
+			deleteNode->data = rightSubTreeMinNode->data;
+
+			// 오른쪽 서브 트리의 최소 값을 가진 노드가 삭제할 노드의 자식 노드인 경우(삭제할 노드의 오른쪽 노드일 경우)
+			// 해당 노드에 자식이 없는 경우 - 오른쪽 노드와의 연결을 끊고 오른쪽 자식 노드 메모리 해제
+			// 해당 노드에 자식이 있는 경우(오른쪽 자식만 있을 수 있다.) - 삭제할 노드와 오른쪽 자식 노드의 자식 노드를 연결 후 오른쪽 자식 노드 메모리 해제
+			if (minParentNode == deleteNode) {
+				if (!rightSubTreeMinNode->rightNode) {
+					deleteNode->rightNode = nullptr;
+				}
+				else {
+					deleteNode->rightNode = rightSubTreeMinNode->rightNode;
+				}
+			}
+			// 오른쪽 서브 트리의 최소 값을 가진 노드가 삭제할 노드의 자식 노드가 아닌 경우
+			// 삭제할 노드의 오른쪽 서브 트리의 최소 값을 가진 노드가 자식을 갖고 있지 않는 경우 - 오른쪽 서브 트리의 최소 값을 가진 노드와 부모 노드 간 연결을 끊고 오른쪽 서브 트리의 최소 값을 가진 노드 메모리 해제
+			// 삭제할 노드의 오른쪽 서브 트리의 최소 값을 가진 노드가 자식을 가지고 있는 경우 - 오른쪽 서브 트리의 최소 값을 가진 노드의 부모 노드와 자식 노드를 연결 후 오른쪽 서브 트리의 최소 값을 가진 노드 메모리 해제
+			else {
+				if (!rightSubTreeMinNode->rightNode) {
+					minParentNode->leftNode = nullptr;
+				}
+				else {
+					minParentNode->leftNode = rightSubTreeMinNode->rightNode;
 				}
 			}
 
-			int subTreeMinData = rightSubTree.SearchMin();
-			checkNode = FindNode(subTreeMinData);
-			// 만약 삭제할 노드(최소 값을 가지고 있는 노드)의 자식이 있는 경우(이 경우에 자식은 오른쪽에만 있을 수 있다. 왜냐하면 왼쪽 노드가 있다는 것은 더 작은 값이 있다는 건데 그건 모순이 되기 때문이다.) 삭제할 노드의 부모 노드와 자식 노드를 연결시켜주어야 한다. 
-			if (checkNode->rightNode) {
-				BSTNode* checkNodeParent = FindParentNode(subTreeMinData);
-				checkNodeParent->leftNode = checkNode->rightNode;
-			}
-			deleteNode->data = subTreeMinData;
-			delete(checkNode);
+			delete(rightSubTreeMinNode);
 		}
+	}
+
+	void OwnBST::DeleteBST(BSTNode* checkNode)
+	{
+		if (!checkNode)
+			return;
+
+		DeleteBST(checkNode->leftNode);
+		DeleteBST(checkNode->rightNode);
+		if (checkNode == root)
+			root = nullptr;
+		delete(checkNode);
 	}
 
 	void OwnBST::PreOrderTree(BSTNode* checkNode)
@@ -343,46 +367,10 @@ namespace DataStruct {
 
 			std::cout << std::endl;
 		}
-
-		delete(deleteNode);
-	}
-
-	void OwnBST::SetHeight()
-	{
-		if (!root) {
-			h = -1;
-			return;
-		}
-
-		OwnQueue<BSTNode*> bstQueue;
-		bstQueue.Enqueue(root);
-
-		BSTNode* deleteNode = nullptr;
-		int height = -1;
-
-		while (1) {
-			int queueLength = bstQueue.GetLength();
-
-			if (queueLength == 0)
-				break;
-
-			for (int i = 0; i < queueLength; i++) {
-				deleteNode = bstQueue.Dequeue().value_or(nullptr);
-				if (deleteNode->leftNode)
-					bstQueue.Enqueue(deleteNode->leftNode);
-				if (deleteNode->rightNode)
-					bstQueue.Enqueue(deleteNode->rightNode);
-			}
-
-			++height;
-		}
-
-		h = height;
-
-		delete(deleteNode);
 	}
 
 	OwnBST::~OwnBST()
 	{
+		DeleteBST(root);
 	}
 }

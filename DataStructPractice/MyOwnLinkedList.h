@@ -153,14 +153,13 @@ namespace DataStruct {
 			}
 
 			Node<T>* prevNode = nullptr;  // 노드 삭제 시 삭제 노드의 앞 노드가 다음 노드의 주소 값을 그 다음 노드로 변경해야 요소를 잃어버리지 않고 연결 리스트가 동작한다.
-			Node<T>* curNode = headerNode->node;  // 헤더 노드는 삭제하지 않을 것이기 때문에 그 다음 노드부터 검사해보도록 한다.(삭제할 노드 값을 저장할 노드이기도 하다)
+			Node<T>* curNode = headerNode; 
 
-			for (int i = 1; i < index; i++) {  // 인덱스까지만 이동하도록 값을 주었고 i가 1부터 시작하는 것은 헤더부터 가져온 것이 아니라 그 다음 값인 인덱스 1번의 값부터 가져왔기 때문이다.
+			for (int i = 0; i < index; i++) {  // 인덱스까지만 이동하도록 값을 주었고 i가 1부터 시작하는 것은 헤더부터 가져온 것이 아니라 그 다음 값인 인덱스 1번의 값부터 가져왔기 때문이다.
 				if (i == index - 1) {
 					prevNode = curNode;
 				}
-
-				curNode = curNode->node;  
+				curNode = curNode->node;
 			}
 
 			T data = curNode->data;
