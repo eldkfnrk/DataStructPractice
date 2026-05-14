@@ -2,11 +2,14 @@
 #include "MyOwnQueue.h"
 
 namespace DataStruct {
+	// 개선점
+	// 노드를 찾고 부모 노드까지 찾는 것을 독립적으로 수행하면 BST의 장점을 잃는 것이니 동시 진행하도록 하는 것이 좋다.
+
 	// 삽입 기능
 	// root가 없는 경우에는 해당 값이 root가 되고 만약 있다면 규칙에 따라 삽입
 	// BST의 삽입은 탐색한 노드보다 작으면 왼쪽으로 크면 오른쪽으로 이동시키는 것을 따르면 된다.
 	// 내가 만드는 BST는 만약 동일한 값이 있다면 삽입 불가를 통보하고 멈추도록 한다.
-	bool OwnBST::InsertNode(const int& data) {
+	bool OwnBST::InsertNode(int data) {
 		if (!root) {
 			root = new BSTNode{ data, nullptr, nullptr };
 			++n;
@@ -51,7 +54,7 @@ namespace DataStruct {
 		return isSuccess;
 	}
 
-	int OwnBST::SearchData(const int& data)
+	int OwnBST::SearchData(int data)
 	{
 		BSTNode* findNode = FindNode(data);
 
@@ -72,7 +75,7 @@ namespace DataStruct {
 
 		BSTNode* checkNode = root;
 
-		while(0) {
+		while(1) {
 			if (!checkNode->leftNode)
 				break;
 			checkNode = checkNode->leftNode;
@@ -99,7 +102,7 @@ namespace DataStruct {
 		return checkNode->data;
 	}
 
-	BSTNode* OwnBST::FindNode(const int& data)
+	BSTNode* OwnBST::FindNode(int data)
 	{
 		// 탐색 방법1) 함수를 재귀 함수로 만들어서 찾는다.
 		// 탐색 방법2) 반복문을 사용하여 찾는다.
@@ -132,7 +135,7 @@ namespace DataStruct {
 		return checkNode;
 	}
 
-	BSTNode* OwnBST::FindParentNode(const int& data)
+	BSTNode* OwnBST::FindParentNode(int data)
 	{
 		// 찾는 노드가 root라면 부모 노드가 없으니 nullptr을 반환
 		if (!root || root->data == data) 
@@ -162,7 +165,7 @@ namespace DataStruct {
 		return checkNode;
 	}
 
-	bool OwnBST::DeleteNode(const int& data)
+	bool OwnBST::DeleteNode(int data)
 	{
 		if (!root) {
 			std::cout << "This BST is empty. Can't delete node." << std::endl;
@@ -197,6 +200,7 @@ namespace DataStruct {
 			if (deleteNode == root) {
 				root = nullptr;
 				delete(deleteNode);
+				--n;
 				return true;
 			}
 			
@@ -208,6 +212,7 @@ namespace DataStruct {
 			}
 
 			delete(deleteNode);
+			--n;
 			return true;
 		}
 		// 2. 자식이 하나만 있는 노드 삭제
@@ -222,6 +227,7 @@ namespace DataStruct {
 					root = deleteNode->leftNode;
 				}
 				delete(deleteNode);
+				--n;
 				return true;
 			}
 
@@ -242,6 +248,7 @@ namespace DataStruct {
 				}
 			}
 			delete(deleteNode);
+			--n;
 			return true;
 		}
 		// 3. 자식이 둘 다 있는 노드 삭제
@@ -295,6 +302,9 @@ namespace DataStruct {
 			}
 
 			delete(rightSubTreeMinNode);
+
+			--n;
+			return true;
 		}
 	}
 

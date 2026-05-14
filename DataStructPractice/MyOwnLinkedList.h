@@ -57,7 +57,7 @@ namespace DataStruct {
 
 		// 중간 요소로 삽입(특정 인덱스 위치에 삽입)
 		void InsertNode(int index, T data) {
-			// 혹시나 연결 리스트가 비어있거나 2개 밖에 없는 경우에는 중간에 삽입하는 것은 불가능하기 때문에(헤더와 테일에 삽입은 이 연산에서는 불가능하게 설정) 불가하다는 메시지를 전달하고 함수 종료(리스트의 길이보다 큰 인덱스도 불가능하도록 막아야 한다. 왜냐하면 그건 범위 초과이기 때문이다.)
+			// 혹시나 연결 리스트가 비어있거나 2개 이하 밖에 없는 경우에는 중간에 삽입하는 것은 불가능하기 때문에(헤더와 테일에 삽입은 이 연산에서는 불가능하게 설정) 불가하다는 메시지를 전달하고 함수 종료(리스트의 길이보다 큰 인덱스도 불가능하도록 막아야 한다. 왜냐하면 그건 범위 초과이기 때문이다.)
 			if (listLength <= 2 || index > listLength) {
 				std::cout << "Can't insert data in the middle of linked list." << std::endl;
 				return;
@@ -256,8 +256,24 @@ namespace DataStruct {
 			return resultNode->data;
 		}
 
+		void DeleteLinkedList(Node<T>* deleteNode) {
+			if (!deleteNode)
+				return;
+
+			DeleteLinkedList(deleteNode->node);
+
+			if (deleteNode == headerNode)
+				headerNode = nullptr;
+
+			if (deleteNode == tailNode)
+				tailNode = nullptr;
+
+			delete(deleteNode);
+		}
+
 		~OwnLinkedList() {
-			
+			DeleteLinkedList(headerNode);
+			listLength = 0;
 		}
 
 	private:

@@ -3,6 +3,7 @@
 #include "MyOwnLinkedList.h"
 #include "MyOwnTree.h"
 #include "MyOwnBST.h"
+#include "MyOwnGraph.h"
 
 int main() {
 	using namespace std;
@@ -63,6 +64,35 @@ int main() {
 	test2.DeleteNode(49);
 	test2.LevelOrderTree();
 	cout << endl;
+
+	cout << "---------------------------------------------------------------------------------" << endl;
+	OwnGraph graphTest1;
+
+	graphTest1.AddEdge(City::Seoul, City::Tokyo, 1150);
+	graphTest1.AddEdge(City::Seoul, City::Beijing, 950);
+	graphTest1.AddEdge(City::Seoul, City::NewYork, 11000);
+	graphTest1.AddEdge(City::London, City::Istanbul, 2500);
+	graphTest1.AddEdge(City::Paris, City::Moscow, 2500);
+	graphTest1.AddEdge(City::Sanfrancisco, City::NewYork, 4200);
+	graphTest1.AddEdge(City::Seoul, City::Sanghai, 880);
+	graphTest1.AddEdge(City::Beijing, City::London, 8100);
+	graphTest1.AddEdge(City::Seoul, City::Barcelona, 9600);
+	graphTest1.AddEdge(City::Tokyo, City::Dubai, 7950);
+	graphTest1.AddEdge(City::Munich, City::Roma, 800);
+	graphTest1.AddEdge(City::Washigton, City::LA, 3600);
+	graphTest1.AddEdge(City::London, City::Boston, 5250);
+	graphTest1.AddEdge(City::Seoul, City::Istanbul, 8000);
+
+	cout << endl;
+	graphTest1.CheckMatrixGraph();
+	cout << endl;
+
+	graphTest1.RemoveEdge(City::Seoul, City::Barcelona);
+	graphTest1.RemoveEdge(City::Tokyo, City::Dubai);
+	graphTest1.RemoveEdge(City::Munich, City::Roma);
+
+	cout << endl;
+	graphTest1.CheckMatrixGraph();
 
 	return 0;
 }
