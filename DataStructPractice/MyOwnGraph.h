@@ -26,6 +26,12 @@ namespace DataStruct {
 		None,  // enum class의 마지막 번호를 가져오기 위해 추가한 값(None은 마지막을 의미)
 	};
 
+	std::string CityToName(int i);
+
+
+	// 어딘가 저장해서 따로 사용할 수 있도록 해야지 이렇게 냅두면 여러 파일의 메모리를 잡아먹는 요소가 될 수 있다. 수정 요망(그렇다고 네임스페이스 안에 선언하면 에러가 나니 고민을 해봐야 한다.
+	static int cityEnumCount = static_cast<int>(City::None);
+
 	// 그래프 
 	// 실생활에서 순환 구조를 사용하여 표현하는 문제 해결을 위해 사용하는 자료구조
 	// 그래프는 정점(Vertex)과 간선(Edge)의 집합으로 구성된 데이터 구조
@@ -35,44 +41,51 @@ namespace DataStruct {
 	// 가중치는 간선에 부여된 숫자로 해당 숫자는 비용, 거리, 시간 등을 의미한다.
 	// 간선에 방향성의 유무에 따라 방향 or 무방향 그래프라고 하고 가중치의 여부에 따라 가중 or 비가중 그래프라고 한다.
 	// 그래프를 표현하는 방법은 인접 행렬이나 인접 리스트를 사용하는 방법이 있다.
-	class OwnGraph
+	class OwnMatrixGraph
 	{
 	public:
 		// 그래프 생성, 간선 추가, 간선 삭제
-		OwnGraph() {
-			cityCount = static_cast<int>(City::None) - 1;  // enum class에 저장된 도시 개수를 가져오는 수식
-
-			for (int i = 0; i <= cityCount; i++) {
-				OwnLinkedList<int> newColumn;
-				if (i == 0) {
-					graphMatrix.InsertHeader(newColumn);
-				}
-				else {
-					graphMatrix.InsertTail(newColumn);
-				}
-
-				for (int j = 0; j <= cityCount; j++) {
-					// 0은 연결되지 않았음을 의미
-					if (j == 0) {
-						graphMatrix[i].InsertHeader(0);
-					}
-					else {
-						graphMatrix[i].InsertTail(0);
-					}
-				}
-			}
+		OwnMatrixGraph() {  
+			graphMatrix = std::vector<std::vector<int>>(cityEnumCount, std::vector<int>(cityEnumCount, 0));
 		}
 
-		void AddEdge(const City c1, const City c2, int distance);  // 간선에 줄 가중치까지 인자로 받도록 설정
-		void RemoveEdge(const City c1, const City c2);
+		// C++(혹은 더 넓게 선언 정의가 분리가 가능한 모든 언어)에서 함수가 선언되면 반드시 정의 부분이 존재하여야 한다. 만약 없으면 링커 에러가 발생한다.(함수의 선언과 정의가 모두 존재하지 않을 시 발생하는 에러로 컴파일 에러와는 다른 에러이다.)
+
+		~OwnMatrixGraph();
+
+		void AddMatrixEdge(const City c1, const City c2, int distance);  // 간선에 줄 가중치까지 인자로 받도록 설정
+		void RemoveMatrixEdge(const City c1, const City c2);
 		void CheckMatrixGraph();  // 그래프(인접 행렬 사용 그래프) 상황 체크 함수
 
 	private:
-		std::string CityToName(int i);
+		std::vector<std::vector<int>> graphMatrix;  // 2차원 배열(거리라는 가중치 부여 예정) - 인접 행렬
+	};
+
+	class OwnListGraph {
+	public:
+		OwnListGraph() {
+			graphList = std::vector<OwnLinkedList<City>>(cityEnumCount, OwnLinkedList<City>());
+		}
+
+		void AddListEdge(const City c1, const City c2);
+		void RemoveListEdge(const City c1, const City c2);
+		void CheckListGraph();  // 그래프(인접 리스트 사용 그래프) 상황 체크 함수
 
 	private:
-		// 연결 리스트의 사용은 그래프의 성능 장점을 무효화시키는 방법이기 때문에 동적 배열을 사용하는 것이 그래프에서는 나은 선택이다.
-		OwnLinkedList<OwnLinkedList<int>> graphMatrix;  // 2차원 배열 형태의 연결 리스트(거리라는 가중치 부여 예정) - 인접 행렬
-		int cityCount;
+		std::vector<OwnLinkedList<City>> graphList;  // 인접 리스트(무가중치)
+	};
+
+	class OwnListWeightGraph {
+	public:
+		OwnListWeightGraph() {
+			graphWeightList = std::vector<std::vector<std::pair<City, int>>>(cityEnumCount, std::vector<std::pair<City, int>>());
+		}
+
+		void AddWeightListEdge(const City c1, const City c2, int distance);
+		void RemoveWeightListEdge(const City c1, const City c2);
+		void CheckWeightListGraph();  // 가중치 그래프(인접 리스트 사용 그래프) 상황 체크 함수
+
+	private:
+		std::vector<std::vector<std::pair<City, int>>> graphWeightList;  // 인접 리스트(가중치)
 	};
 }

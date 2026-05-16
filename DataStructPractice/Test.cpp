@@ -66,33 +66,51 @@ int main() {
 	cout << endl;
 
 	cout << "---------------------------------------------------------------------------------" << endl;
-	OwnGraph graphTest1;
+	OwnMatrixGraph graphTest1;
 
-	graphTest1.AddEdge(City::Seoul, City::Tokyo, 1150);
-	graphTest1.AddEdge(City::Seoul, City::Beijing, 950);
-	graphTest1.AddEdge(City::Seoul, City::NewYork, 11000);
-	graphTest1.AddEdge(City::London, City::Istanbul, 2500);
-	graphTest1.AddEdge(City::Paris, City::Moscow, 2500);
-	graphTest1.AddEdge(City::Sanfrancisco, City::NewYork, 4200);
-	graphTest1.AddEdge(City::Seoul, City::Sanghai, 880);
-	graphTest1.AddEdge(City::Beijing, City::London, 8100);
-	graphTest1.AddEdge(City::Seoul, City::Barcelona, 9600);
-	graphTest1.AddEdge(City::Tokyo, City::Dubai, 7950);
-	graphTest1.AddEdge(City::Munich, City::Roma, 800);
-	graphTest1.AddEdge(City::Washigton, City::LA, 3600);
-	graphTest1.AddEdge(City::London, City::Boston, 5250);
-	graphTest1.AddEdge(City::Seoul, City::Istanbul, 8000);
-
-	cout << endl;
-	graphTest1.CheckMatrixGraph();
-	cout << endl;
-
-	graphTest1.RemoveEdge(City::Seoul, City::Barcelona);
-	graphTest1.RemoveEdge(City::Tokyo, City::Dubai);
-	graphTest1.RemoveEdge(City::Munich, City::Roma);
+	graphTest1.AddMatrixEdge(City::Seoul, City::Tokyo, 1150);
+	graphTest1.AddMatrixEdge(City::Seoul, City::Beijing, 950);
+	graphTest1.AddMatrixEdge(City::Seoul, City::NewYork, 11000);
+	graphTest1.AddMatrixEdge(City::London, City::Istanbul, 2500);
+	graphTest1.AddMatrixEdge(City::Paris, City::Moscow, 2500);
+	graphTest1.AddMatrixEdge(City::Sanfrancisco, City::NewYork, 4200);
+	graphTest1.AddMatrixEdge(City::Seoul, City::Shanghai, 880);
+	graphTest1.AddMatrixEdge(City::Beijing, City::London, 8100);
+	graphTest1.AddMatrixEdge(City::Seoul, City::Barcelona, 9600);
+	graphTest1.AddMatrixEdge(City::Tokyo, City::Dubai, 7950);
+	graphTest1.AddMatrixEdge(City::Munich, City::Roma, 800);
+	graphTest1.AddMatrixEdge(City::Washington, City::LA, 3600);
+	graphTest1.AddMatrixEdge(City::London, City::Boston, 5250);
+	graphTest1.AddMatrixEdge(City::Seoul, City::Istanbul, 8000);
 
 	cout << endl;
 	graphTest1.CheckMatrixGraph();
+	cout << endl;
+
+	graphTest1.RemoveMatrixEdge(City::Seoul, City::Barcelona);
+	graphTest1.RemoveMatrixEdge(City::Tokyo, City::Dubai);
+	graphTest1.RemoveMatrixEdge(City::Munich, City::Roma);
+
+	cout << endl;
+	graphTest1.CheckMatrixGraph();
+
+	cout << "---------------------------------------------------------------------------------" << endl;
+	OwnListGraph graphTest2;
+
+	graphTest2.AddListEdge(City::Seoul, City::Tokyo);
+	graphTest2.AddListEdge(City::Seoul, City::Beijing);
+	graphTest2.AddListEdge(City::Seoul, City::NewYork);
+	graphTest2.AddListEdge(City::London, City::Istanbul);
+	graphTest2.AddListEdge(City::Paris, City::Moscow);
+	graphTest2.AddListEdge(City::Sanfrancisco, City::NewYork);
+	graphTest2.AddListEdge(City::Seoul, City::Shanghai);
+	graphTest2.AddListEdge(City::Beijing, City::London);
+	graphTest2.AddListEdge(City::Seoul, City::Barcelona);
+	graphTest2.AddListEdge(City::Tokyo, City::Dubai);
+	graphTest2.AddListEdge(City::Munich, City::Roma);
+	graphTest2.AddListEdge(City::Washington, City::LA);
+	graphTest2.AddListEdge(City::London, City::Boston);
+	graphTest2.AddListEdge(City::Seoul, City::Istanbul);
 
 	return 0;
 }
