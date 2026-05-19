@@ -26,12 +26,9 @@ namespace DataStruct {
 		None,  // enum class의 마지막 번호를 가져오기 위해 추가한 값(None은 마지막을 의미)
 	};
 
+	const int cityCount = static_cast<int>(DataStruct::City::None);
+
 	std::string CityToName(int i);
-
-
-	// 어딘가 저장해서 따로 사용할 수 있도록 해야지 이렇게 냅두면 여러 파일의 메모리를 잡아먹는 요소가 될 수 있다. 수정 요망(그렇다고 네임스페이스 안에 선언하면 에러가 나니 고민을 해봐야 한다.
-	static int cityEnumCount = static_cast<int>(City::None);
-
 	// 그래프 
 	// 실생활에서 순환 구조를 사용하여 표현하는 문제 해결을 위해 사용하는 자료구조
 	// 그래프는 정점(Vertex)과 간선(Edge)의 집합으로 구성된 데이터 구조
@@ -46,7 +43,7 @@ namespace DataStruct {
 	public:
 		// 그래프 생성, 간선 추가, 간선 삭제
 		OwnMatrixGraph() {  
-			graphMatrix = std::vector<std::vector<int>>(cityEnumCount, std::vector<int>(cityEnumCount, 0));
+			graphMatrix = std::vector<std::vector<int>>(cityCount, std::vector<int>(cityCount, 0));
 		}
 
 		// C++(혹은 더 넓게 선언 정의가 분리가 가능한 모든 언어)에서 함수가 선언되면 반드시 정의 부분이 존재하여야 한다. 만약 없으면 링커 에러가 발생한다.(함수의 선언과 정의가 모두 존재하지 않을 시 발생하는 에러로 컴파일 에러와는 다른 에러이다.)
@@ -64,7 +61,7 @@ namespace DataStruct {
 	class OwnListGraph {
 	public:
 		OwnListGraph() {
-			graphList = std::vector<OwnLinkedList<City>>(cityEnumCount, OwnLinkedList<City>());
+			graphList = std::vector<OwnLinkedList<City>>(cityCount, OwnLinkedList<City>());
 		}
 
 		void AddListEdge(const City c1, const City c2);
@@ -78,7 +75,7 @@ namespace DataStruct {
 	class OwnListWeightGraph {
 	public:
 		OwnListWeightGraph() {
-			graphWeightList = std::vector<std::vector<std::pair<City, int>>>(cityEnumCount, std::vector<std::pair<City, int>>());
+			graphWeightList = std::vector<std::vector<std::pair<City, int>>>(cityCount, std::vector<std::pair<City, int>>());
 		}
 
 		void AddWeightListEdge(const City c1, const City c2, int distance);

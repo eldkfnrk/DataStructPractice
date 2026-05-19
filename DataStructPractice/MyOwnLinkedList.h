@@ -127,6 +127,9 @@ namespace DataStruct {
 				T data = headerNode->data;
 				// 테일 노드를 굳이 삭제하지 않는 이유는 헤더 노드와 테일 노드가 가리키는 메모리 주소가 같기 때문에 헤더 노드가 가리키는 데이터의 메모리를 해제했을 때 이미 테일 노드가 가리키는 메모리는 해제된 상태가 되기 때문이다.
 				delete(headerNode);
+				// 삭제한 거까지는 좋았으나 headerNode, tailNode가 가리키고 있던 값이 메모리 해제가 되었는데 계속 그곳을 가리키고 있었기 때문에 생겼던 문제가 발생. 그래서 headerNode, tailNode의 값을 nullptr로 아무것도 가리키고 있지 않도록 해주어야 한다.
+				headerNode = nullptr;
+				tailNode = nullptr;
 				listLength = 0;
 				return data;
 			}
@@ -143,31 +146,42 @@ namespace DataStruct {
 
 		// 특정 요소 삭제
 		std::optional<T> DeleteNode(int index) {
-			// 특정 요소 삭제는 특수하게 인덱스를 1 ~ (마지막 인덱스-1) 범위 내에서만 가능하도록 할 것이다.
-			// 왜냐하면 0과 마지막 인덱스 삭제는 각각 따로 삭제 연산을 만들었는데 굳이 또 여기서까지 실행하게 할 의미가 없기 때문이다.
-			// 만약 리스트가 비어있거나 길이가 2 이하이면 삭제 불가능을 통보하고 값이 없음을 반환(길이가 3이상이어야 중간 노드가 생기기 때문이다.)
-			// 그리고 인덱스 값이 1 미만이거나 마지막 인덱스 값보다 크면 안 되도록 한다.
-			if (listLength <= 2 || index < 1 || index >= listLength - 1) {
+			// 기본 동작 수정 - 기존에는 헤더와 테일 노드 삭제는 불가능하게 막았지만 이제는 가능하도록 수정
+			if (listLength <= 0 || index >= listLength) {
 				std::cout << "Can't delete data." << std::endl;
 				return std::nullopt;
 			}
 
-			Node<T>* prevNode = nullptr;  // 노드 삭제 시 삭제 노드의 앞 노드가 다음 노드의 주소 값을 그 다음 노드로 변경해야 요소를 잃어버리지 않고 연결 리스트가 동작한다.
-			Node<T>* curNode = headerNode; 
-
-			for (int i = 0; i < index; i++) {  // 인덱스까지만 이동하도록 값을 주었고 i가 1부터 시작하는 것은 헤더부터 가져온 것이 아니라 그 다음 값인 인덱스 1번의 값부터 가져왔기 때문이다.
-				if (i == index - 1) {
-					prevNode = curNode;
-				}
-				curNode = curNode->node;
+			if (index == 0) {
+				return DeleteHeader();
+			}
+			else if (index == listLength - 1) {
+				return DeleteTail();
 			}
 
-			T data = curNode->data;
-			prevNode->node = curNode->node;
-			delete(curNode);
-			listLength--;
+			Node<T>* prevNode = headerNode;
+			Node<T>* deleteNode = nullptr; 
 
-			return data;
+			for (int i = 1; i <= index; i++) {  // 0번은 앞에서 걸릴 것이기 때문에 넘어가고 1번부터 검사. 만약 i와 인덱스가 동일하다면 삭제할 노드를 저장하고 반복문 종료
+				if (i == index) {
+					deleteNode = prevNode->node;
+					break;
+				}
+				prevNode = prevNode->node;
+			}
+
+			if (deleteNode) {
+				T data = deleteNode->data;
+				prevNode->node = deleteNode->node;
+				delete(deleteNode);
+				--listLength;
+
+				return data;
+			}
+			else {
+				std::cout << "Error! Can't find delete data. Delete Fail." << std::endl;
+				return std::nullopt;
+			}
 		}
 
 		// 맨 마지막 요소 삭제

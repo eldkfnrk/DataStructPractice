@@ -112,5 +112,44 @@ int main() {
 	graphTest2.AddListEdge(City::London, City::Boston);
 	graphTest2.AddListEdge(City::Seoul, City::Istanbul);
 
+	graphTest2.CheckListGraph();
+	cout << endl;
+
+	graphTest2.RemoveListEdge(City::Munich, City::Roma);
+	graphTest2.RemoveListEdge(City::Washington, City::LA);
+	cout << endl;
+	graphTest2.CheckListGraph();
+
+	cout << "---------------------------------------------------------------------------------" << endl;
+	OwnListWeightGraph graphTest3;
+
+	graphTest3.AddWeightListEdge(City::Seoul, City::Tokyo, 1150);
+	graphTest3.AddWeightListEdge(City::Seoul, City::Beijing, 950);
+	graphTest3.AddWeightListEdge(City::Seoul, City::NewYork, 11000);
+	graphTest3.AddWeightListEdge(City::London, City::Istanbul, 2500);
+	graphTest3.AddWeightListEdge(City::Paris, City::Moscow, 2500);
+	graphTest3.AddWeightListEdge(City::Sanfrancisco, City::NewYork, 4200);
+	graphTest3.AddWeightListEdge(City::Seoul, City::Shanghai, 880);
+	graphTest3.AddWeightListEdge(City::Beijing, City::London, 8100);
+	graphTest3.AddWeightListEdge(City::Seoul, City::Barcelona, 9600);
+	graphTest3.AddWeightListEdge(City::Tokyo, City::Dubai, 7950);
+	graphTest3.AddWeightListEdge(City::Munich, City::Roma, 800);
+	graphTest3.AddWeightListEdge(City::Washington, City::LA, 3600);
+	graphTest3.AddWeightListEdge(City::London, City::Boston, 5250);
+	graphTest3.AddWeightListEdge(City::Seoul, City::Istanbul, 8000);
+	cout << endl;
+
+	graphTest3.CheckWeightListGraph();
+	cout << endl;
+
+	graphTest3.RemoveWeightListEdge(City::Sanfrancisco, City::NewYork);
+	graphTest3.RemoveWeightListEdge(City::Seoul, City::Shanghai);
+	graphTest3.RemoveWeightListEdge(City::Beijing, City::London);
+	graphTest3.RemoveWeightListEdge(City::Seoul, City::Barcelona);
+	cout << endl;
+
+	graphTest3.CheckWeightListGraph();
+	cout << endl;
+
 	return 0;
 }
