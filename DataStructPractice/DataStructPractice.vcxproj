@@ -125,6 +125,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CommonInclude.h" />
+    <ClInclude Include="MyOwnBFSDFS.h" />
     <ClInclude Include="MyOwnBST.h" />
     <ClInclude Include="MyOwnGraph.h" />
     <ClInclude Include="MyOwnLinkedList.h" />
@@ -133,6 +134,7 @@
     <ClInclude Include="MyOwnTree.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MyOwnBFSDFS.cpp" />
     <ClCompile Include="MyOwnBST.cpp" />
     <ClCompile Include="MyOwnGraph.cpp" />
     <ClCompile Include="MyOwnLinkedList.cpp" />
