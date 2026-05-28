@@ -4,10 +4,12 @@
 #include "MyOwnTree.h"
 #include "MyOwnBST.h"
 #include "MyOwnGraph.h"
+#include "MyOwnBFSDFS.h"
 
 int main() {
 	using namespace std;
 	using namespace DataStruct;
+	using namespace Algorithm;
 
 	// 자료구조의 종류
 	// 배열, 연결 리스트, 스택, 큐, 트리, 그래프, 헤시 테이블, 힙(완전 이진 트리 형태의 자료구조)
@@ -150,6 +152,12 @@ int main() {
 
 	graphTest3.CheckWeightListGraph();
 	cout << endl;
+
+	cout << "---------------------------------------------------------------------------------" << endl;
+
+	BFSDFSGraph graph;  // 문제 해결을 위해 생성한 하나의 그래프(인접 행렬과 인접 리스트가 모두 포함되어 있다.)
+
+	BFS(3, graph.graphList);
 
 	return 0;
 }

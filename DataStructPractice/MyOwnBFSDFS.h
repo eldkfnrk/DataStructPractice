@@ -112,6 +112,6 @@ namespace Algorithm {
 	// DFS - 경로 찾기(단순한 두 정점 사이 경로 존재 여부), 깊이 우선 탐색이 필요한 경우, 해결 책의 수가 많은 경우
 
 	// 순회 문제용
-	void BFS(int start, vector<vector<int>> searchGraph);
+	void BFS(int start, const vector<vector<int>>& searchGraph);
 	void DFS(int start, vector<vector<int>> searchGraph);
 }
