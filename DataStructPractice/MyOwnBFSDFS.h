@@ -113,5 +113,5 @@ namespace Algorithm {
 
 	// 순회 문제용
 	void BFS(int start, const vector<vector<int>>& searchGraph);
-	void DFS(int start, vector<vector<int>> searchGraph);
+	void DFS(int start, const vector<vector<int>>& searchGraph);
 }

@@ -51,10 +51,55 @@ namespace Algorithm {
 		}
 	}
 
-	// 깃허브 제대로 연결되었는지 체크
-
-	void DFS(int start, vector<vector<int>> searchGraph)
+	void DFS(int start, const vector<vector<int>>& searchGraph)
 	{
+		// DFS는 깊게 파고드는 개념으로 연결된 끝까지 검사한다. 그렇기에 정점과 연결된 정점 그리고 그 정점에 연결된 정점으로 가는 것을 반복하여 끝을 보니 스택 혹은 재귀 방식으로 진행된다.(이는 트리의 전위 순회와 유사하다.)
+		// DFS는 2가지 방법으로 만들 수 있는데 하나는 스택에 저장하면서 출력해 나가는 것이고 하나는 함수 자체를 재귀하여 나가는 것이다. 두 가지를 모두 한 번 만들어 볼 것이다.
+		// 재귀를 사용하는 방법
+		static vector<bool> visited = vector<bool>(10, false);  // 재귀를 사용하면 해당 배열이 계속 생성되기 때문에 원할한 방문 기록을 남길 수 없으니 정적 선언을 하여 메모리에 올려놓아서 초기화가 1번만 되도록 설정
 
+		if (visited[start]) {
+			cout << endl;
+			return;
+		}
+
+		visited[start] = true;
+		cout << "정점" << start << " - ";
+
+		for (size_t i = 0; i < searchGraph[start].size(); i++) {
+			DFS(searchGraph[start][i], searchGraph);
+		}
+
+		// 스택을 사용하는 방법
+		stack<int> dfsStack;
+		dfsStack.push(start);
+
+		vector<bool> visited = vector<bool>(10, false);
+		visited[start] = true;
+
+		int nextVertex = 0;
+		int index = 0;
+		int curVertex = 0;
+
+		cout << "시작 정점 : 정점" << start << endl;
+
+		while (!dfsStack.empty()) {
+			curVertex = dfsStack.top();
+			if ((size_t)index >= searchGraph[curVertex].size()) {
+				index = 0;
+				dfsStack.pop();
+				cout << endl;
+				continue;
+			}
+
+			nextVertex = searchGraph[curVertex][index];
+			if (visited[nextVertex]) {
+				++index;
+				continue;
+			}
+			dfsStack.push(nextVertex);
+			visited[nextVertex] = true;
+			cout << "정점" << nextVertex << " - ";
+		}
 	}
 }
