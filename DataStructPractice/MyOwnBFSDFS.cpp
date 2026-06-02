@@ -51,12 +51,19 @@ namespace Algorithm {
 		}
 	}
 
+	// 문제 1을 구현하고 AI에게 얻은 개선 사항
+	// 재귀 DFS에 관한 문제점
+	// 1. 방문 여부를 저장하는 visited 배열이 static 선언되어 있어서 재활용이 안 됨
+	// 스택 DFS에 관한 문제점
+	// 1. index 변수를 전역처럼 모든 정점이 공유해서 사용하고 있음 
+	// 2. 스택 DFS에 어떤 정보가 저장되어서 넘어가야 하는지 파악하지 못하고 있음
+	// 공통적인 문제점 - 출력 형태가 BFS와 다르다. 두 함수의 출력 형태가 일관성이 있어야 한다.
 	void DFS(int start, const vector<vector<int>>& searchGraph)
 	{
 		// DFS는 깊게 파고드는 개념으로 연결된 끝까지 검사한다. 그렇기에 정점과 연결된 정점 그리고 그 정점에 연결된 정점으로 가는 것을 반복하여 끝을 보니 스택 혹은 재귀 방식으로 진행된다.(이는 트리의 전위 순회와 유사하다.)
 		// DFS는 2가지 방법으로 만들 수 있는데 하나는 스택에 저장하면서 출력해 나가는 것이고 하나는 함수 자체를 재귀하여 나가는 것이다. 두 가지를 모두 한 번 만들어 볼 것이다.
 		// 재귀를 사용하는 방법
-		static vector<bool> visited = vector<bool>(10, false);  // 재귀를 사용하면 해당 배열이 계속 생성되기 때문에 원할한 방문 기록을 남길 수 없으니 정적 선언을 하여 메모리에 올려놓아서 초기화가 1번만 되도록 설정
+		static vector<bool> visited = vector<bool>(searchGraph.size(), false);  // 재귀를 사용하면 해당 배열이 계속 생성되기 때문에 원할한 방문 기록을 남길 수 없으니 정적 선언을 하여 메모리에 올려놓아서 초기화가 1번만 되도록 설정
 
 		if (visited[start]) {
 			cout << endl;
@@ -74,7 +81,7 @@ namespace Algorithm {
 		stack<int> dfsStack;
 		dfsStack.push(start);
 
-		vector<bool> visited = vector<bool>(10, false);
+		vector<bool> visited = vector<bool>(searchGraph.size(), false);
 		visited[start] = true;
 
 		int nextVertex = 0;
