@@ -157,7 +157,7 @@ int main() {
 
 	BFSDFSGraph graph;  // 문제 해결을 위해 생성한 하나의 그래프(인접 행렬과 인접 리스트가 모두 포함되어 있다.)
 
-	BFS(3, graph.graphList);
+	BFS(3, graph.graphMatrix);
 
 	return 0;
 }
