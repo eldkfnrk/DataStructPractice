@@ -143,5 +143,26 @@ namespace Algorithm {
 		//	visited[nextVertex] = true;
 		//	cout << "정점" << nextVertex << " - ";
 		//}
+
+		// 인접 행렬을 이용한 DFS
+		// 스택을 이용하는 방법
+		stack<int> dfsStack;
+		dfsStack.push(start);
+		vector<bool> visited = vector<bool>(searchGraph.size(), false);
+		visited[start] = true;
+
+		cout << "시작 정점 : 정점" << start << endl;
+
+		while (!dfsStack.empty()) {
+			int currentVertex = dfsStack.top();
+			
+			for (size_t i = 0; i < searchGraph[currentVertex].size(); i++) {
+				if (searchGraph[currentVertex][i] == 1) {
+					if (visited[i])
+						continue;
+				}
+			}
+			
+		}
 	}
 }

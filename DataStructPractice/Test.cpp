@@ -159,5 +159,9 @@ int main() {
 
 	BFS(3, graph.graphMatrix);
 
+	cout << "---------------------------------------------------------------------------------" << endl;
+
+	DFS(3, graph.graphMatrix);
+
 	return 0;
 }
