@@ -151,18 +151,39 @@ namespace Algorithm {
 		vector<bool> visited = vector<bool>(searchGraph.size(), false);
 		visited[start] = true;
 
-		cout << "시작 정점 : 정점" << start << endl;
+		size_t vectorLength = searchGraph[start].size();  // 모든 배열 길이가 같기 때문에 이렇게 하여도 된다.
 
+		cout << "정점" << start << " ";
+
+		// 방문 순서
 		while (!dfsStack.empty()) {
 			int currentVertex = dfsStack.top();
-			
-			for (size_t i = 0; i < searchGraph[currentVertex].size(); i++) {
-				if (searchGraph[currentVertex][i] == 1) {
-					if (visited[i])
-						continue;
+			for (size_t i = 0; i < vectorLength; i++) {
+				if (searchGraph[currentVertex][i] == 1 && !visited[i]) {
+					visited[i] = true;
+					dfsStack.push(i);
+					cout << "정점" << i << " ";
+					break;
+				}
+
+				if (i == vectorLength - 1 && (searchGraph[currentVertex][i] == 0 || visited[i])) {
+					dfsStack.pop();
 				}
 			}
-			
 		}
+
+		// 재귀를 이용하는 방법
+		// 도저히 방문을 처리할 방법이 떠오르지 않아서 오늘은 넘어감(06-06)
+
+		cout << "정점" << start << " ";
+
+		for (size_t i = 0; i < searchGraph[start].size(); i++) {
+			if (searchGraph[start][i] == 1) {
+				//visited[i] = true;
+				DFS(i, searchGraph);
+			}
+		}
+
+		return;
 	}
 }
