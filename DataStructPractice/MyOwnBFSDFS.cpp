@@ -86,6 +86,9 @@ namespace Algorithm {
 		}
 	}
 
+	vector<bool> dfsVisited;
+	int startVertex;
+
 	// 문제 1을 구현하고 AI에게 얻은 개선 사항
 	// 재귀 DFS에 관한 문제점
 	// 1. 방문 여부를 저장하는 visited 배열이 static 선언되어 있어서 재활용이 안 됨
@@ -146,44 +149,54 @@ namespace Algorithm {
 
 		// 인접 행렬을 이용한 DFS
 		// 스택을 이용하는 방법
-		stack<int> dfsStack;
-		dfsStack.push(start);
-		vector<bool> visited = vector<bool>(searchGraph.size(), false);
-		visited[start] = true;
+		//stack<int> dfsStack;
+		//dfsStack.push(start);
+		//vector<bool> visited = vector<bool>(searchGraph.size(), false);
+		//visited[start] = true;
 
-		size_t vectorLength = searchGraph[start].size();  // 모든 배열 길이가 같기 때문에 이렇게 하여도 된다.
+		//size_t vectorLength = searchGraph.size();  // 모든 배열 길이가 같기 때문에 이렇게 하여도 된다.
 
-		cout << "정점" << start << " ";
+		//cout << "정점" << start << " ";
 
-		// 방문 순서
-		while (!dfsStack.empty()) {
-			int currentVertex = dfsStack.top();
-			for (size_t i = 0; i < vectorLength; i++) {
-				if (searchGraph[currentVertex][i] == 1 && !visited[i]) {
-					visited[i] = true;
-					dfsStack.push(i);
-					cout << "정점" << i << " ";
-					break;
-				}
+		//// 방문 순서
+		//while (!dfsStack.empty()) {
+		//	int currentVertex = dfsStack.top();
+		//	for (size_t i = 0; i < vectorLength; i++) {
+		//		if (searchGraph[currentVertex][i] == 1 && !visited[i]) {
+		//			visited[i] = true;
+		//			dfsStack.push(i);
+		//			cout << "정점" << i << " ";
+		//			break;
+		//		}
 
-				if (i == vectorLength - 1 && (searchGraph[currentVertex][i] == 0 || visited[i])) {
-					dfsStack.pop();
-				}
-			}
-		}
+		//		// 위의 모든 과정을 거쳤음에도 이 if문의 조건에 걸린 것은 더 이상 이 정점과 연결되어 있으면서 방문한 적이 없는 정점이 없다는 것이다.
+		//		if (i == vectorLength - 1) {
+		//			dfsStack.pop();
+		//		}
+		//	}
+		//}
 
 		// 재귀를 이용하는 방법
-		// 도저히 방문을 처리할 방법이 떠오르지 않아서 오늘은 넘어감(06-06)
+		size_t vectorLength = searchGraph.size();
+		
+		// dfsVisited는 비어있는 전역 배열
+		// startVertex는 재귀가 모두 끝나고 시작 정점의 함수까지 끝나기 전에 dfsVisited를 다시 비어 있는 배열로 만들기 위해 시작 정점이 무엇인지 기억하는 전역 변수
+		if (dfsVisited.empty()) {
+			dfsVisited = vector<bool>(searchGraph.size(), false);
+			dfsVisited[start] = true;
+			startVertex = start;
+		}
 
 		cout << "정점" << start << " ";
 
-		for (size_t i = 0; i < searchGraph[start].size(); i++) {
-			if (searchGraph[start][i] == 1) {
-				//visited[i] = true;
+		for (size_t i = 0; i < vectorLength; i++) {
+			if (searchGraph[start][i] == 1 && !dfsVisited[i]) {
+				dfsVisited[i] = true;
 				DFS(i, searchGraph);
 			}
 		}
 
-		return;
+		if (startVertex == start)
+			dfsVisited.clear();
 	}
 }
