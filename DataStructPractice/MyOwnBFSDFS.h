@@ -111,7 +111,16 @@ namespace Algorithm {
 	// BFS - 최단 경로 찾기, 최단 경로가 유일한 경우, 상태 공간 탐색(상태 공간에서 최소 이동/변경 횟수 찾는 문제 - 예시:퍼즐, 스도쿠 등)
 	// DFS - 경로 찾기(단순한 두 정점 사이 경로 존재 여부), 깊이 우선 탐색이 필요한 경우, 해결 책의 수가 많은 경우
 
-	// 순회 문제용
-	void BFS(int start, const vector<vector<int>>& searchGraph);
-	void DFS(int start, const vector<vector<int>>& searchGraph);
+	// 단순 순회 문제를 해결하는 BFS/DFS
+	namespace Traversal {
+		void BFS(int start, const vector<vector<int>>& searchGraph);
+		void DFS(int start, const vector<vector<int>>& searchGraph);
+	}
+
+	// 그래프 연결성 문제를 해결하는 BFS/DFS
+	// 문제 - 연결 요소 개수 세기
+	namespace ConnectVertexCount {
+		void BFS(const vector<vector<int>>& searchGraph);
+		void DFS(const vector<vector<int>>& searchGraph);
+	}
 }
