@@ -121,6 +121,6 @@ namespace Algorithm {
 	// 문제 - 연결 요소 개수 세기
 	namespace ConnectVertexCount {
 		void BFS(const vector<vector<int>>& searchGraph);
-		void DFS(const vector<vector<int>>& searchGraph);
+		void DFS(const vector<vector<int>>& searchGraph, int start = 0);
 	}
 }
