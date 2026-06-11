@@ -121,6 +121,8 @@ namespace Algorithm {
 	// 문제 - 연결 요소 개수 세기
 	namespace ConnectVertexCount {
 		void BFS(const vector<vector<int>>& searchGraph);
-		void DFS(const vector<vector<int>>& searchGraph, int start = 0);
+		void DFS(const vector<vector<int>>& searchGraph);
+		void DFS(const vector<vector<int>>& searchGraph, int start);
+		void CountConnectComponent(const vector<vector<int>>& searchGraph);  // DFS로 순회 후 연결 요소 개수를 세는 함수(Component가 요소라는 의미)
 	}
 }

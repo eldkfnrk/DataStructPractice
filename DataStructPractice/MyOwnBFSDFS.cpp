@@ -256,34 +256,74 @@ namespace Algorithm {
 			}
 		}
 
-		// 오늘 연결 요소 개수 세기 문제 해결을 위한 DFS를 구현하다가 완전히 막혀 AI를 활용하였다.
-		// 그렇게 알게 된 것은 DFS가 모든 것을 가지고 있지 않는다였고 그러면서 여러 문제들이 동시에 해결되었다.
-		// 그 동안은 DFS 알고리즘이 모든 것을 가지고 모든 것을 수행할 수 있어야 한다는 고정 관념에 틀어박혀 있었다. 
-		// 그러나 DFS는 연결 요소가 무엇이 있는지 탐색하는 도구일 뿐 여기 안에서 연결 요소 개수 세기 문제의 모든 것을 조작할 수 있다는 것이 아니었다.(스택은 가능할 수도 있다.)
-		// 그러니 계속 이렇게 재귀 함수 내에서 모든 것을 끝내려 하니 안 된다였지만 AI를 통해 얻은 답은 세는 것은 따로 세는 것이다라는 것으로 이를 통해 조금 더 친숙하게 DFS에 접근할 수 있게 되었다.
-		// 오늘 완성까지 하려면 너무 많은 시간이 소요되고 그러면 다음 날 하기가 싫어질테니 오늘은 넘어가고 내일 DFS를 완성할 것이다.
+		void DFS(const vector<vector<int>>& searchGraph)
+		{
+			// 인접 리스트 방식
+			// 스택 사용 DFS
+			stack<int> dfsStack;
+			int count = 0;
+			dfsVisited.assign(searchGraph.size(), false);
+
+			for (size_t i = 0; i < dfsVisited.size(); i++) {
+				if (!dfsVisited[i]) {
+					cout << "연결" << ++count << endl;
+					dfsStack.push(i);
+					dfsVisited[i] = true;
+					cout << "정점" << i << " ";
+					while (dfsStack.size() != 0) {
+						int currentVertex = dfsStack.top();
+						int connectVertexCount = searchGraph[currentVertex].size();
+						for (size_t j = 0; j < connectVertexCount; j++) {
+							int connectVertex = searchGraph[currentVertex][j];
+							if (!dfsVisited[connectVertex]) {
+								dfsVisited[connectVertex] = true;
+								dfsStack.push(connectVertex);
+								cout << "정점" << connectVertex << " ";
+								break;
+							}
+						}
+
+						// 위의 반복문을 통해서 스택으로 값이 들어가지 않았다면 더 이상 찾을 요소가 없는 것으로 판단
+						if (currentVertex == dfsStack.top()) {
+							dfsStack.pop();
+						}
+					}
+					cout << endl;
+				}
+			}
+
+			cout << "총 연결 요소 개수 : " << count << endl;
+		}
 
 		void DFS(const vector<vector<int>>& searchGraph, int start) {
 			// 인접 리스트 방식
 			// 재귀 사용 DFS
-			if (dfsVisited.empty()) {
-				dfsVisited = vector<bool>(searchGraph.size(), false);
-			}
-
-			if (start == 0) {
-				cout << "정점" << start << " ";
-			}
-
 			dfsVisited[start] = true;
+			cout << "정점" << start << " ";
 			int connectVertexCount = searchGraph[start].size();
 
 			for (size_t i = 0; i < connectVertexCount; i++) {
 				int currentVertex = searchGraph[start][i];
 				if (!dfsVisited[currentVertex]) {
-					cout << "정점" << currentVertex << " ";
 					DFS(searchGraph, currentVertex);
 				}
 			}
+		}
+
+		void CountConnectComponent(const vector<vector<int>>& searchGraph)
+		{
+			dfsVisited.assign(searchGraph.size(), false);
+			int count = 0;
+
+			for (size_t i = 0; i < dfsVisited.size(); i++) {
+				if (!dfsVisited[i]) {
+					cout << "연결" << ++count << endl;
+					DFS(searchGraph, i);
+					cout << endl;
+				}
+			}
+
+			cout << "총 연결 요소 개수 : " << count << endl;
 		}
 	}
 }

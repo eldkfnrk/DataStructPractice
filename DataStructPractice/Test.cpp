@@ -169,6 +169,7 @@ int main() {
 
 	cout << endl << "---------------------------------------------------------------------------------" << endl;
 
+	ConnectVertexCount::CountConnectComponent(graph.graphList);
 	ConnectVertexCount::DFS(graph.graphList);
 
 	return 0;
