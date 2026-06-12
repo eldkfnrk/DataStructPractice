@@ -165,12 +165,13 @@ int main() {
 
 	cout << endl << "---------------------------------------------------------------------------------" << endl;
 
-	ConnectVertexCount::BFS(graph.graphList);
+	//ConnectVertexCount::BFS(graph.graphList);
+	ConnectVertexCount::BFS(graph.graphMatrix);
 
 	cout << endl << "---------------------------------------------------------------------------------" << endl;
 
-	ConnectVertexCount::CountConnectComponent(graph.graphList);
-	ConnectVertexCount::DFS(graph.graphList);
+	ConnectVertexCount::CountConnectComponent(graph.graphMatrix);
+	ConnectVertexCount::DFS(graph.graphMatrix);
 
 	return 0;
 }

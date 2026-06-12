@@ -30,14 +30,14 @@ namespace Algorithm {
 			//	queueLength = bfsQueue.size();
 			//	
 			//	if (floor == 0)
-			//		cout << "시작 정점 : ";
+			//		std::cout << "시작 정점 : ";
 			//	else
-			//		cout << "거리 " << floor << " : ";
+			//		std::cout << "거리 " << floor << " : ";
 
 			//	for (size_t i = 0; i < queueLength; i++) {
 			//		int vertexIndex = bfsQueue.front();
 			//		bfsQueue.pop();
-			//		cout << "Vertex " << vertexIndex << "  ";
+			//		std::cout << "Vertex " << vertexIndex << "  ";
 			//		// 삭제한 인덱스 정점과 연결된 정점의 인덱스 번호 모두를 큐에 저장
 			//		for (size_t j = 0; j < searchGraph[vertexIndex].size(); j++) {
 			//			int insertVertexIndex = searchGraph[vertexIndex][j];
@@ -48,7 +48,7 @@ namespace Algorithm {
 			//		}
 			//	}
 			//	
-			//	cout << endl;
+			//	std::cout << std::endl;
 			//	++floor;
 			//}
 
@@ -63,10 +63,10 @@ namespace Algorithm {
 				queueLength = bfsQueue.size();
 
 				if (floor == 0) {
-					cout << "시작 정점 : ";
+					std::cout << "시작 정점 : ";
 				}
 				else {
-					cout << "거리" << floor << " : ";
+					std::cout << "거리" << floor << " : ";
 				}
 
 				for (size_t i = 0; i < queueLength; i++) {
@@ -80,10 +80,10 @@ namespace Algorithm {
 							bfsQueue.push(j);
 						}
 					}
-					cout << "정점" << vertexIndex << " ";
+					std::cout << "정점" << vertexIndex << " ";
 				}
 
-				cout << endl;
+				std::cout << std::endl;
 				++floor;
 			}
 		}
@@ -106,12 +106,12 @@ namespace Algorithm {
 			//static vector<bool> visited = vector<bool>(searchGraph.size(), false);  // 재귀를 사용하면 해당 배열이 계속 생성되기 때문에 원할한 방문 기록을 남길 수 없으니 정적 선언을 하여 메모리에 올려놓아서 초기화가 1번만 되도록 설정
 
 			//if (visited[start]) {
-			//	cout << endl;
+			//	std::cout << std::endl;
 			//	return;
 			//}
 
 			//visited[start] = true;
-			//cout << "정점" << start << " - ";
+			//std::cout << "정점" << start << " - ";
 
 			//for (size_t i = 0; i < searchGraph[start].size(); i++) {
 			//	DFS(searchGraph[start][i], searchGraph);
@@ -128,14 +128,14 @@ namespace Algorithm {
 			//int index = 0;
 			//int curVertex = 0;
 
-			//cout << "시작 정점 : 정점" << start << endl;
+			//std::cout << "시작 정점 : 정점" << start << std::endl;
 
 			//while (!dfsStack.empty()) {
 			//	curVertex = dfsStack.top();
 			//	if ((size_t)index >= searchGraph[curVertex].size()) {
 			//		index = 0;
 			//		dfsStack.pop();
-			//		cout << endl;
+			//		std::cout << std::endl;
 			//		continue;
 			//	}
 
@@ -146,7 +146,7 @@ namespace Algorithm {
 			//	}
 			//	dfsStack.push(nextVertex);
 			//	visited[nextVertex] = true;
-			//	cout << "정점" << nextVertex << " - ";
+			//	std::cout << "정점" << nextVertex << " - ";
 			//}
 
 			// 인접 행렬을 이용한 DFS
@@ -158,7 +158,7 @@ namespace Algorithm {
 
 			//size_t vectorLength = searchGraph.size();  // 모든 배열 길이가 같기 때문에 이렇게 하여도 된다.
 
-			//cout << "정점" << start << " ";
+			//std::cout << "정점" << start << " ";
 
 			//// 방문 순서
 			//while (!dfsStack.empty()) {
@@ -167,7 +167,7 @@ namespace Algorithm {
 			//		if (searchGraph[currentVertex][i] == 1 && !visited[i]) {
 			//			visited[i] = true;
 			//			dfsStack.push(i);
-			//			cout << "정점" << i << " ";
+			//			std::cout << "정점" << i << " ";
 			//			break;
 			//		}
 
@@ -189,7 +189,7 @@ namespace Algorithm {
 				startVertex = start;
 			}
 
-			cout << "정점" << start << " ";
+			std::cout << "정점" << start << " ";
 
 			for (size_t i = 0; i < vectorLength; i++) {
 				if (searchGraph[start][i] == 1 && !dfsVisited[i]) {
@@ -213,99 +213,191 @@ namespace Algorithm {
 			// 인접 리스트 방식
 			queue<int> bfsQueue;
 			int count = 0;
-			int startVertex = 0;
 			bfsVisited = vector<bool>(searchGraph.size(), false);
 			size_t visitedListLength = bfsVisited.size();
 
-			while (startVertex < (int)visitedListLength) {
-				if (!bfsVisited[startVertex]) {
-					bfsQueue.push(startVertex);
-					bfsVisited[startVertex] = true;
-					++count;
-					cout << "연결" << count << endl;
-					cout << "정점" << startVertex << " ";
+			//while (startVertex < (int)visitedListLength) {
+			//	if (!bfsVisited[startVertex]) {
+			//		bfsQueue.push(startVertex);
+			//		bfsVisited[startVertex] = true;
+			//		++count;
+			//		std::cout << "연결" << count << std::endl;
+			//		std::cout << "정점" << startVertex << " ";
+			//	}
+
+			//	size_t queueLength = bfsQueue.size();
+
+			//	for (size_t i = 0; i < queueLength; i++) {
+			//		int frontQueue = bfsQueue.front();
+			//		bfsQueue.pop();
+			//		for (size_t j = 0; j < searchGraph[frontQueue].size(); j++) {
+			//			int visitVertex = searchGraph[frontQueue][j];
+			//			if (!bfsVisited[visitVertex]) {
+			//				bfsVisited[visitVertex] = true;
+			//				bfsQueue.push(visitVertex);
+			//				std::cout << "정점" << visitVertex << " ";
+			//			}
+			//		}
+			//	}
+
+			//	if (bfsQueue.empty()) {
+			//		for (size_t i = 0; i < visitedListLength; i++) {
+			//			if (!bfsVisited[i]) {
+			//				startVertex = (int)i;
+			//				break;
+			//			}
+
+			//			if (i == (int)visitedListLength - 1) {
+			//				startVertex = (int)visitedListLength;
+			//			}
+			//		}
+			//	}
+			//}
+
+			// 인접 행렬 방식
+			size_t matrixSize = searchGraph.size();
+
+			for (size_t i = 0; i < visitedListLength; i++) {
+				if (!bfsVisited[i]) {
+					bfsVisited[i] = true;
+					bfsQueue.push(i);
+					std::cout << "연결" << ++count << std::endl;
 				}
 
-				size_t queueLength = bfsQueue.size();
+				while (!bfsQueue.empty()) {
+					// 레벨 순서 순회를 포함한 동작
+					/*size_t queueLength = bfsQueue.size();
+					for (size_t j = 0; j < queueLength; j++) {
+						int currentVertex = bfsQueue.front();
+						bfsQueue.pop();
+						std::cout << "정점" << currentVertex << " ";
+						for (size_t k = 0; k < matrixSize; k++) {
+							if (searchGraph[currentVertex][k] == 1) {
+								if (!bfsVisited[k]) {
+									bfsVisited[k] = true;
+									bfsQueue.push(k);
+								}
+							}
+						}
+					}*/
 
-				for (size_t i = 0; i < queueLength; i++) {
-					int frontQueue = bfsQueue.front();
+					// 레벨 순서 순회를 포함하지 않는 동작
+					int currentVertex = bfsQueue.front();
 					bfsQueue.pop();
-					for (size_t j = 0; j < searchGraph[frontQueue].size(); j++) {
-						int visitVertex = searchGraph[frontQueue][j];
-						if (!bfsVisited[visitVertex]) {
-							bfsVisited[visitVertex] = true;
-							bfsQueue.push(visitVertex);
-							cout << "정점" << visitVertex << " ";
-						}
-					}
-				}
-
-				if (bfsQueue.empty()) {
-					for (size_t i = 0; i < visitedListLength; i++) {
-						if (!bfsVisited[i]) {
-							startVertex = (int)i;
-							break;
-						}
-
-						if (i == (int)visitedListLength - 1) {
-							startVertex = (int)visitedListLength;
+					std::cout << "정점" << currentVertex << " ";
+					for (size_t k = 0; k < matrixSize; k++) {
+						if (searchGraph[currentVertex][k] == 1) {
+							if (!bfsVisited[k]) {
+								bfsVisited[k] = true;
+								bfsQueue.push(k);
+							}
 						}
 					}
 				}
 			}
+
+			cout << endl << "총 연결 요소 개수 : " << count << endl;
 		}
 
 		void DFS(const vector<vector<int>>& searchGraph)
 		{
-			// 인접 리스트 방식
 			// 스택 사용 DFS
-			stack<int> dfsStack;
 			int count = 0;
 			dfsVisited.assign(searchGraph.size(), false);
 
+			// 인접 리스트 방식
+			//stack<int> dfsStack;
+			//for (size_t i = 0; i < dfsVisited.size(); i++) {
+			//	if (!dfsVisited[i]) {
+			//		std::cout << "연결" << ++count << std::endl;
+			//		dfsStack.push(i);
+			//		dfsVisited[i] = true;
+			//		std::cout << "정점" << i << " ";
+			//		while (dfsStack.size() != 0) {
+			//			int currentVertex = dfsStack.top();
+			//			int connectVertexCount = searchGraph[currentVertex].size();
+			//			for (size_t j = 0; j < connectVertexCount; j++) {
+			//				int connectVertex = searchGraph[currentVertex][j];
+			//				if (!dfsVisited[connectVertex]) {
+			//					dfsVisited[connectVertex] = true;
+			//					dfsStack.push(connectVertex);
+			//					std::cout << "정점" << connectVertex << " ";
+			//					break;
+			//				}
+			//			}
+
+			//			// 위의 반복문을 통해서 스택으로 값이 들어가지 않았다면 더 이상 찾을 요소가 없는 것으로 판단
+			//			if (currentVertex == dfsStack.top()) {
+			//				dfsStack.pop();
+			//			}
+			//		}
+			//		std::cout << std::endl;
+			//	}
+			//}
+
+			// 인접 행렬 방식
+			stack<pair<int, int>> dfsStack;
+
+			size_t matirxSize = searchGraph.size();
 			for (size_t i = 0; i < dfsVisited.size(); i++) {
 				if (!dfsVisited[i]) {
-					cout << "연결" << ++count << endl;
-					dfsStack.push(i);
 					dfsVisited[i] = true;
+					dfsStack.push(make_pair(i, 0));
+					cout << "연결" << ++count << endl;
 					cout << "정점" << i << " ";
-					while (dfsStack.size() != 0) {
-						int currentVertex = dfsStack.top();
-						int connectVertexCount = searchGraph[currentVertex].size();
-						for (size_t j = 0; j < connectVertexCount; j++) {
-							int connectVertex = searchGraph[currentVertex][j];
-							if (!dfsVisited[connectVertex]) {
-								dfsVisited[connectVertex] = true;
-								dfsStack.push(connectVertex);
-								cout << "정점" << connectVertex << " ";
+				}
+
+				if (dfsStack.empty())
+					continue;
+
+				while (!dfsStack.empty()) {
+					pair<int, int>* currentVertex = &dfsStack.top();
+					for (size_t j = currentVertex->second; j < matirxSize; j++) {
+						++currentVertex->second;
+						if (searchGraph[currentVertex->first][j] == 1) {
+							if (!dfsVisited[j]) {
+								dfsVisited[j] = true;
+								dfsStack.push(make_pair(j, 0));
+								cout << "정점" << j << " ";
 								break;
 							}
 						}
-
-						// 위의 반복문을 통해서 스택으로 값이 들어가지 않았다면 더 이상 찾을 요소가 없는 것으로 판단
-						if (currentVertex == dfsStack.top()) {
-							dfsStack.pop();
-						}
 					}
-					cout << endl;
+
+					if (currentVertex->second == matirxSize)
+						dfsStack.pop();
 				}
+
+				cout << endl;
 			}
 
-			cout << "총 연결 요소 개수 : " << count << endl;
+			std::cout << "총 연결 요소 개수 : " << count << std::endl;
 		}
 
 		void DFS(const vector<vector<int>>& searchGraph, int start) {
-			// 인접 리스트 방식
 			// 재귀 사용 DFS
+			
+			// 인접 리스트 방식
+			//dfsVisited[start] = true;
+			//std::cout << "정점" << start << " ";
+			//int connectVertexCount = searchGraph[start].size();
+
+			//for (size_t i = 0; i < connectVertexCount; i++) {
+			//	int currentVertex = searchGraph[start][i];
+			//	if (!dfsVisited[currentVertex]) {
+			//		DFS(searchGraph, currentVertex);
+			//	}
+			//}
+
+			// 인접 행렬 방식
+			size_t matrixSize = searchGraph.size();
 			dfsVisited[start] = true;
 			cout << "정점" << start << " ";
-			int connectVertexCount = searchGraph[start].size();
-
-			for (size_t i = 0; i < connectVertexCount; i++) {
-				int currentVertex = searchGraph[start][i];
-				if (!dfsVisited[currentVertex]) {
-					DFS(searchGraph, currentVertex);
+			
+			for (size_t i = 0; i < matrixSize; i++) {
+				if (searchGraph[start][i] == 1) {
+					if (!dfsVisited[i])
+						DFS(searchGraph, i);
 				}
 			}
 		}
@@ -317,13 +409,13 @@ namespace Algorithm {
 
 			for (size_t i = 0; i < dfsVisited.size(); i++) {
 				if (!dfsVisited[i]) {
-					cout << "연결" << ++count << endl;
+					std::cout << "연결" << ++count << std::endl;
 					DFS(searchGraph, i);
-					cout << endl;
+					std::cout << std::endl;
 				}
 			}
 
-			cout << "총 연결 요소 개수 : " << count << endl;
+			std::cout << "총 연결 요소 개수 : " << count << std::endl;
 		}
 	}
 }
