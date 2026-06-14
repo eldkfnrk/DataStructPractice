@@ -128,6 +128,7 @@
     <ClInclude Include="MyOwnBFSDFS.h" />
     <ClInclude Include="MyOwnBST.h" />
     <ClInclude Include="MyOwnGraph.h" />
+    <ClInclude Include="MyOwnHashTable.h" />
     <ClInclude Include="MyOwnLinkedList.h" />
     <ClInclude Include="MyOwnQueue.h" />
     <ClInclude Include="MyOwnStack.h" />
@@ -137,6 +138,7 @@
     <ClCompile Include="MyOwnBFSDFS.cpp" />
     <ClCompile Include="MyOwnBST.cpp" />
     <ClCompile Include="MyOwnGraph.cpp" />
+    <ClCompile Include="MyOwnHashTable.cpp" />
     <ClCompile Include="MyOwnLinkedList.cpp" />
     <ClCompile Include="MyOwnQueue.cpp" />
     <ClCompile Include="MyOwnTree.cpp" />
