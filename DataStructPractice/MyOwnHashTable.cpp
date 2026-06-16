@@ -33,4 +33,56 @@ namespace DataStruct {
 		{
 		}
 	}
+
+	namespace UseChaining {
+		OwnChainingHashTable::OwnChainingHashTable(int size) : size(size)
+		{
+			hashTable = std::vector<std::list<int>>(size, std::list<int>());
+		}
+
+		void OwnChainingHashTable::ChainingInsert(int value)
+		{
+			int key = value % size;
+
+			if (ChainingFind(value)) 
+				std::cout << "값이 이미 존재 삽입 종료" << std::endl;
+			else {
+				hashTable[key].push_back(value);
+				std::cout << key << "위치에 " << value << " 삽입" << std::endl;
+			}
+		}
+
+		bool OwnChainingHashTable::ChainingFind(int value)
+		{
+			// list를 순회하는 반복문
+			// list는 []를 통한 인덱스 접근이 불가능하여서 반복자를 통한 접근만이 가능하다.
+			// 반복자를 사용하는 모든 자료구조는 아래와 같은 방식의 순회를 사용한다.
+			// auto는 자동으로 자료형을 결정하는 C++문법인데 auto를 사용한 이유는 begin()이나 end()같이 반복자를 뱉는 함수의 반환형이 반복자라 굉장히 길고 실수가 생길 수 있기 때문이다.
+			// 그러나 auto는 자동으로 다 자료형을 정해주기 때문에 어떤 자료형을 사용하고 있는지 모르는 상황이 발생할 수 있어서 사용에 주의가 필요하다.
+			for (auto iter = hashTable[value % size].begin(); iter != hashTable[value % size].end(); iter++) {
+				if (*iter == value)  // 반복자는 포인터형이기 때문에 다음과 같이 사용하여야 한다.
+					return true;
+			}
+			return false;
+		}
+
+		void OwnChainingHashTable::ChainingDelete(int value)
+		{
+			int key = value % size;
+
+			// 굳이 순회를 통해서 삭제를 하고 있는데 그럴 필요 없이 이 함수 내에서 한 번에 삭제가 가능하도록 하는 것이 좋다.
+			// 힌트 - 반복문을 통해 값이 있는지 확인하고 있으면 찾음과 동시에 삭제
+
+			if (ChainingFind(value)) {
+				hashTable[key].remove(value);
+				std::cout << key << "위치에 " << value << " 삭제" << std::endl;
+			}
+			else
+				std::cout << "삭제하고자 하는 값이 존재하지 않음. 삭제 종료" << std::endl;
+		}
+
+		OwnChainingHashTable::~OwnChainingHashTable()
+		{
+		}
+	}
 }

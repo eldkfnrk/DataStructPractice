@@ -37,4 +37,26 @@ namespace DataStruct {
 			int size;
 		};
 	}
+
+	// 문제 2. 체이닝을 사용하는 해시 테이블
+	namespace UseChaining{
+		// 이 문제는 충돌 문제를 해결하기 위한 여러 방법 중 하나인 체이닝을 이용하여 해시 테이블을 만들어 보는 문제이다.
+		// 여기서 체이닝이란 충돌이 일어난 값을 모두 저장할 수 있는 여러 방법 중 하나이다.
+		// 체이닝은 연결 리스트를 저장하여 충돌이 일어난 키 안에 충돌이 발생한 값들을 저장한 순서대로 저장하는 기법이다.
+		// 해시 함수는 문제 1과 동일하게 모듈러 함수를 사용
+		class OwnChainingHashTable {
+		public:
+			OwnChainingHashTable(int size);
+
+			void ChainingInsert(int value);
+			bool ChainingFind(int value);
+			void ChainingDelete(int value);
+
+			~OwnChainingHashTable();
+
+		private:
+			std::vector<std::list<int>> hashTable;
+			int size;
+		};
+	}
 }

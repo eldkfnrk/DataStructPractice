@@ -48,5 +48,46 @@ int main() {
 
 	printData(100);
 
+	cout << "-----------------------------------------------------" << endl << endl;
+	UseChaining::OwnChainingHashTable secondTest(10);
+
+	auto printChainingData = [&](int value) {
+		if (secondTest.ChainingFind(value))
+			cout << "해시 테이블에서 " << value << "값을 찾기 성공" << endl;
+		else
+			cout << "해시 테이블에서 " << value << "값을 찾기 실패" << endl;
+		};
+
+	secondTest.ChainingInsert(55);
+	secondTest.ChainingInsert(845);
+	secondTest.ChainingInsert(91);
+	secondTest.ChainingInsert(23);
+	secondTest.ChainingInsert(61);
+	secondTest.ChainingInsert(177);
+	secondTest.ChainingInsert(882);
+	secondTest.ChainingInsert(26);
+	secondTest.ChainingInsert(845);
+	secondTest.ChainingInsert(300);
+	secondTest.ChainingInsert(234);
+	secondTest.ChainingInsert(64);
+	secondTest.ChainingInsert(108);
+	secondTest.ChainingInsert(109);
+	secondTest.ChainingInsert(88);
+
+	printChainingData(845);
+	printChainingData(55);
+	printChainingData(300);
+	printChainingData(301);
+
+	secondTest.ChainingDelete(23);
+	secondTest.ChainingDelete(61);
+	secondTest.ChainingDelete(178);
+	secondTest.ChainingDelete(845);
+	secondTest.ChainingDelete(26);
+
+	printChainingData(845);
+	printChainingData(26);
+	printChainingData(61);
+
 	return 0;
 }
