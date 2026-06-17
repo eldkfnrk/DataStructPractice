@@ -89,5 +89,52 @@ int main() {
 	printChainingData(26);
 	printChainingData(61);
 
+	cout << "-----------------------------------------------------" << endl << endl;
+	LinearProbing::OwnLinearProbingHashTable thirdTest(10);
+
+	auto printLinearProbingData = [&](int value) {
+		if (thirdTest.LinearProbingFind(value))
+			cout << "해시 테이블에서 " << value << "값을 찾기 성공" << endl;
+		else
+			cout << "해시 테이블에서 " << value << "값을 찾기 실패" << endl;
+		};
+
+	thirdTest.LinearProbingInsert(5);
+	thirdTest.LinearProbingInsert(25);
+	thirdTest.LinearProbingInsert(15);
+	thirdTest.LinearProbingInsert(95);
+	thirdTest.LinearProbingInsert(76);
+	thirdTest.LinearProbingInsert(5);
+	thirdTest.LinearProbingInsert(159);
+	thirdTest.LinearProbingInsert(63);
+	thirdTest.LinearProbingInsert(20);
+	thirdTest.LinearProbingInsert(14);
+
+	printLinearProbingData(5);
+	printLinearProbingData(86);
+	printLinearProbingData(95);
+	printLinearProbingData(14);
+
+	thirdTest.LinearProbingInsert(158);
+	thirdTest.LinearProbingInsert(98);
+	thirdTest.LinearProbingInsert(55);
+	thirdTest.LinearProbingInsert(12);
+
+	thirdTest.HashTableCheck();
+
+	printLinearProbingData(55);
+	printLinearProbingData(86);
+	printLinearProbingData(12);
+
+	thirdTest.LinearProbingDelete(159);
+	thirdTest.LinearProbingDelete(63);
+	thirdTest.LinearProbingDelete(20);
+	thirdTest.LinearProbingDelete(14);
+	thirdTest.LinearProbingDelete(159);
+
+	printLinearProbingData(159);
+	printLinearProbingData(63);
+	printLinearProbingData(20);
+
 	return 0;
 }

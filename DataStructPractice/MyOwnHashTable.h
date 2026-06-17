@@ -59,4 +59,27 @@ namespace DataStruct {
 			int size;
 		};
 	}
+
+	// 문제 3. 선형 탐사를 사용하는 해시 테이블
+	namespace LinearProbing {
+		// 이 문제는 충돌을 처리하는 방법 중 하나인 열린 주소 지정 방법 그 중에서 선형 탐색을 사용하여 해시 테이블을 만드는 문제이다.
+		// 선형 탐색이란 충돌 발생 시 해당 키 다음 위치로 가서 비어있는지 확인하고 비어있으면 그 위치에 삽입하고 아니라면 그 다음 위치로 이동하여 확인하는 방식을 의미한다.
+		// 이는 열린 주소 방식 중 가장 간단한 탐색 방법으로 가득 차면 재해싱 없이는 삽입이 불가능하다는 특징이 있다.
+		// 그래서 실제로 사용할 때는 저장할 데이터 개수보다 큰 크기를 가져야 한다.(충돌 처리 발생 시 다른 위치로 이동하여야 하기 때문에)
+		// 해시 함수는 문제 1, 2와 동일하게 모듈러 함수를 사용(아마 4, 5번 문제 쯤부터 다른 해시 함수를 사용할 것으로 예상된다.)
+		class OwnLinearProbingHashTable {
+		public:
+			OwnLinearProbingHashTable(int size);
+
+			void LinearProbingInsert(int value);
+			bool LinearProbingFind(int value);
+			void LinearProbingDelete(int value);
+
+			~OwnLinearProbingHashTable();
+
+		private:
+			std::vector<int> hashTable;
+			int size;
+		};
+	}
 }

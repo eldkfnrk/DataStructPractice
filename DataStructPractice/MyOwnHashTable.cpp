@@ -85,4 +85,99 @@ namespace DataStruct {
 		{
 		}
 	}
+
+	namespace LinearProbing {
+		OwnLinearProbingHashTable::OwnLinearProbingHashTable(int size) : size(size)
+		{
+			// 아직까지는 부호 없는 정수를 저장하는 해시 테이블을 이용한 문제이기 때문에 -1을 사용하여 비었음을 표현
+			hashTable = std::vector<int>(size, -1);
+		}
+
+		void OwnLinearProbingHashTable::LinearProbingInsert(int value)
+		{
+			int key = value % size;
+			
+			for (int i = key; i < size; i++) {
+				if (hashTable[i] == value) {
+					std::cout << "이미 있는 값이므로 삽입 불가." << std::endl;
+					return;
+				}
+
+				if (hashTable[i] == -1) {
+					hashTable[i] = value;
+					std::cout << i << "위치에 " << value << " 삽입" << std::endl;
+					return;
+				}
+			}
+
+			for (int j = 0; j < key; j++) {
+				if (hashTable[j] == value) {
+					std::cout << "이미 있는 값이므로 삽입 불가." << std::endl;
+					return;
+				}
+
+				if (hashTable[j] == -1) {
+					hashTable[j] = value;
+					std::cout << j << "위치에 " << value << " 삽입" << std::endl;
+					return;
+				}
+			}
+
+			// 재해싱 후 삽입 진행
+			// 재해싱 후 값이 재해싱 한 값에 맞게 이동하여야 재해싱의 완성이므로 지금 현 상태는 반쪽짜리 재해싱이다.
+			size *= 2;  // 크기를 2배로 확대
+			hashTable.resize(size, -1);
+			LinearProbingInsert(value);
+		}
+
+		bool OwnLinearProbingHashTable::LinearProbingFind(int value)
+		{
+			int key = value % size;
+			for (int i = key; i < size; i++) {
+				if (hashTable[i] == value)
+					return true;
+			}
+
+			// 혹시나 맨 끝까지 탐사하고 키 값보다 작은 인덱스에 들어갔을 경우를 대비하여 키 값보다 작은 인덱스도 순회해본다.
+			for (int j = 0; j < key; j++) {
+				if (hashTable[j] == value)
+					return true;
+			}
+
+			return false;
+		}
+
+		void OwnLinearProbingHashTable::LinearProbingDelete(int value)
+		{
+			// 삭제 후 값을 찾을 수 없는 경우가 발생하고 있다.
+			// 예를 들어 동일한 키를 가지는 5가 먼저 삽입되었고 25가 나중에 삽입되었다고 가정하자.
+			// 그러면 5를 삭제하고 나서 25를 탐색하려 하면 찾을 수 있어야 하는데 동일한 키를 가지고 먼저 삽입되었던 5가 삭제되면서 비었음이 되는데 그러면 탐사가 종료된다.
+			// 그렇게 되면 25를 찾으려 하는 원하는 결과 값을 획득하지 못하고 탐사가 종료되는 것이다.
+			// 현재 이 구현은 이런 문제를 가지고 있다.
+			int key = value % size;
+
+			for (int i = key; i < size; i++) {
+				if (hashTable[i] == value) {
+					hashTable[i] = -1;
+					std::cout << i << "위치에 " << value << " 삭제" << std::endl;
+					return;
+				}
+			}
+
+			for (int j = 0; j < key; j++) {
+				if (hashTable[j] == value) {
+					hashTable[j] = -1;
+					std::cout << j << "위치에 " << value << " 삭제" << std::endl;
+					return;
+				}
+			}
+
+			// 여기까지 온 거면 값이 없는 것으로 판단하고 없음과 삭제 실패를 통보
+			std::cout << "삭제하고자 하는 값이 존재하지 않음. 삭제 실패" << std::endl;
+		}
+
+		OwnLinearProbingHashTable::~OwnLinearProbingHashTable()
+		{
+		}
+	}
 }
