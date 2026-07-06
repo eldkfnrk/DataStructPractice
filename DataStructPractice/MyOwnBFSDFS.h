@@ -125,4 +125,12 @@ namespace Algorithm {
 		void DFS(const vector<vector<int>>& searchGraph, int start);
 		void CountConnectComponent(const vector<vector<int>>& searchGraph);  // DFS로 순회 후 연결 요소 개수를 세는 함수(Component가 요소라는 의미)
 	}
+
+	// Flood Fill 문제를 해결하는 BFS/DFS
+	// Flood Fill이란 시작 위치와 같은 조건을 만족하는 칸들을 상하좌우로 계속해서 탐색하여 하나의 영역을 모두 방문하는 알고리즘이다.
+	// 시작 위치 값이 2였다면 똑같이 값이 2인 연결된 영역을 탐색하는 것으로 이해하면 된다.
+	namespace FloodFill {
+		void FloodFillBFS(const vector<vector<int>>& searchGraph, int startX, int startY);
+		void FloodFillDFS(const vector<vector<int>>& searchGraph, int startX, int startY);
+	}
 }

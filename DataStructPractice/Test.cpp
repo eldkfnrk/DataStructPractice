@@ -120,8 +120,6 @@ int main() {
 	thirdTest.LinearProbingInsert(55);
 	thirdTest.LinearProbingInsert(12);
 
-	thirdTest.HashTableCheck();
-
 	printLinearProbingData(55);
 	printLinearProbingData(86);
 	printLinearProbingData(12);
@@ -135,6 +133,17 @@ int main() {
 	printLinearProbingData(159);
 	printLinearProbingData(63);
 	printLinearProbingData(20);
+
+	cout << "-----------------------------------------------------" << endl << endl;
+
+	// Flood Fill용 인접 행렬 그래프
+	vector<vector<int>> floodFillMatrix;
+	floodFillMatrix[0] = { 1, 1, 0, 0, 0, 1 };
+	floodFillMatrix[1] = { 0, 1, 0, 0, 1, 0 };
+	floodFillMatrix[2] = { 0, 1, 1, 0, 1, 0 };
+	floodFillMatrix[3] = { 0, 0, 0, 0, 1, 0 };
+	floodFillMatrix[4] = { 0, 1, 1, 1, 0, 0 };
+	floodFillMatrix[5] = { 0, 0, 1, 1, 0, 0 };
 
 	return 0;
 }

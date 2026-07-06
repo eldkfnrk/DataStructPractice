@@ -418,4 +418,28 @@ namespace Algorithm {
 			std::cout << "총 연결 요소 개수 : " << count << std::endl;
 		}
 	}
+
+	// Flood Fill 문제를 해결하는 BFS/DFS
+	namespace FloodFill {
+		// 모든 문제는 대각선은 체크하지 않고 상하좌우만 체크
+		// 문제1 : 시작 지점과 동일한 값을 가진 영역을 확인하는 Flood Fill
+		// 문제2 : 몇 개의 영역이 있는지 검사하는 Flood Fill
+
+		// BFS - 시작 위치에 인접한 모든 이웃 검사, 그 다음 단계로 넓혀가는 방식
+		void FloodFillBFS(const vector<vector<int>>& searchGraph, int startX, int startY)
+		{
+			// 문제1
+			queue<int> bfsQueue;
+
+			vector<vector<bool>> visited = vector<vector<bool>>(searchGraph.size(), vector<bool>(searchGraph[0].size(), false));
+
+			bfsQueue.push(searchGraph[startX][startY]);
+			visited[startX][startY] = true;
+		}
+		// DFS - 시작 위치와 동일한 이웃 발견 시 그 방향으로 끝까지 파고드는 방식
+		void FloodFillDFS(const vector<vector<int>>& searchGraph, int startX, int startY)
+		{
+
+		}
+	}
 }
