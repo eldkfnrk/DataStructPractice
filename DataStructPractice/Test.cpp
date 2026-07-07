@@ -137,13 +137,15 @@ int main() {
 	cout << "-----------------------------------------------------" << endl << endl;
 
 	// Flood Fill용 인접 행렬 그래프
-	vector<vector<int>> floodFillMatrix;
+	vector<vector<int>> floodFillMatrix = vector<vector<int>>(6, vector<int>(6, 0));
 	floodFillMatrix[0] = { 1, 1, 0, 0, 0, 1 };
 	floodFillMatrix[1] = { 0, 1, 0, 0, 1, 0 };
 	floodFillMatrix[2] = { 0, 1, 1, 0, 1, 0 };
 	floodFillMatrix[3] = { 0, 0, 0, 0, 1, 0 };
 	floodFillMatrix[4] = { 0, 1, 1, 1, 0, 0 };
 	floodFillMatrix[5] = { 0, 0, 1, 1, 0, 0 };
+
+	FloodFill::FloodFillBFS(floodFillMatrix, 1, 4);
 
 	return 0;
 }

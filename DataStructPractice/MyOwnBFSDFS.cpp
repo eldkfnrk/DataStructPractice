@@ -429,13 +429,70 @@ namespace Algorithm {
 		void FloodFillBFS(const vector<vector<int>>& searchGraph, int startX, int startY)
 		{
 			// 문제1
-			queue<int> bfsQueue;
+			queue<pair<int,int>> bfsQueue;
+
+			int count = 0;  // 영역 안에 몇 개의 값이 있는지 개수를 세는 변수
 
 			vector<vector<bool>> visited = vector<vector<bool>>(searchGraph.size(), vector<bool>(searchGraph[0].size(), false));
 
-			bfsQueue.push(searchGraph[startX][startY]);
+			bfsQueue.push(make_pair(startX, startY));
 			visited[startX][startY] = true;
+			++count;
+
+			while (!bfsQueue.empty()) {
+				pair<int, int> frontValue = bfsQueue.front();
+				int x = frontValue.first;
+				int y = frontValue.second;
+
+				if (y - 1 >= 0) {
+					if (searchGraph[x][y - 1] == searchGraph[x][y] && !visited[x][y - 1]) {
+						visited[x][y - 1] = true;
+						bfsQueue.push(make_pair(x, y - 1));
+						++count;
+					}
+				}
+
+				if (y + 1 < searchGraph.size()) {
+					if (searchGraph[x][y + 1] == searchGraph[x][y] && !visited[x][y + 1]) {
+						visited[x][y + 1] = true;
+						bfsQueue.push(make_pair(x, y + 1));
+						++count;
+					}
+				}
+
+				if (x - 1 >= 0) {
+					if (searchGraph[x - 1][y] == searchGraph[x][y] && !visited[x - 1][y]) {
+						visited[x - 1][y] = true;
+						bfsQueue.push(make_pair(x - 1, y));
+						++count;
+					}
+				}
+
+				if (x + 1 < searchGraph[x].size()) {
+					if (searchGraph[x + 1][y] == searchGraph[x][y] && !visited[x + 1][y]) {
+						visited[x + 1][y] = true;
+						bfsQueue.push(make_pair(x + 1, y));
+						++count;
+					}
+				}
+
+				bfsQueue.pop();
+			}
+
+			// Flood Fill로 찾은 영역은 X 표시, 찾지 못하거나 아닌 영역은 자기 값 그대로 출력
+			for (size_t i = 0; i < searchGraph.size(); i++) {
+				for (size_t j = 0; j < searchGraph[i].size(); j++) {
+					if (visited[i][j])
+						cout << "X" << " ";
+					else
+						cout << searchGraph[i][j] << " ";
+				}
+				cout << endl;
+			}
+
+			cout << "영역 안의 요소 개수 : " << count << endl;
 		}
+
 		// DFS - 시작 위치와 동일한 이웃 발견 시 그 방향으로 끝까지 파고드는 방식
 		void FloodFillDFS(const vector<vector<int>>& searchGraph, int startX, int startY)
 		{
