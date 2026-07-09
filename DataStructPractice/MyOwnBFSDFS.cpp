@@ -435,7 +435,13 @@ namespace Algorithm {
 
 			vector<vector<bool>> visited = vector<vector<bool>>(searchGraph.size(), vector<bool>(searchGraph[0].size(), false));
 
+			// 상하좌우에 해당하는 값을 저장한 배열(여기에 대각선을 추가하는 것도 가능하다.)
+			// dx는 x를 dy는 y를 상하좌우에 맞게 값을 맞추도록 하기 위해 추가한 배열
+			int dx[] = { 0,0,-1,1 };
+			int dy[] = { -1,1,0,0 };
+
 			bfsQueue.push(make_pair(startX, startY));
+			int target = searchGraph[startX][startY];
 			visited[startX][startY] = true;
 			++count;
 
@@ -444,35 +450,17 @@ namespace Algorithm {
 				int x = frontValue.first;
 				int y = frontValue.second;
 
-				if (y - 1 >= 0) {
-					if (searchGraph[x][y - 1] == searchGraph[x][y] && !visited[x][y - 1]) {
-						visited[x][y - 1] = true;
-						bfsQueue.push(make_pair(x, y - 1));
-						++count;
-					}
-				}
+				for (int i = 0; i < 4; i++) {
+					int nx = x + dx[i];
+					int ny = y + dy[i];
+					if (nx < 0 || nx >= searchGraph.size())
+						continue;
+					if (ny < 0 || ny >= searchGraph[nx].size())
+						continue;
 
-				if (y + 1 < searchGraph.size()) {
-					if (searchGraph[x][y + 1] == searchGraph[x][y] && !visited[x][y + 1]) {
-						visited[x][y + 1] = true;
-						bfsQueue.push(make_pair(x, y + 1));
-						++count;
-					}
-				}
-
-				if (x - 1 >= 0) {
-					if (searchGraph[x - 1][y] == searchGraph[x][y] && !visited[x - 1][y]) {
-						visited[x - 1][y] = true;
-						bfsQueue.push(make_pair(x - 1, y));
-						++count;
-					}
-				}
-
-				if (x + 1 < searchGraph[x].size()) {
-					if (searchGraph[x + 1][y] == searchGraph[x][y] && !visited[x + 1][y]) {
-						visited[x + 1][y] = true;
-						bfsQueue.push(make_pair(x + 1, y));
-						++count;
+					if (searchGraph[nx][ny] == target && !visited[nx][ny]) {
+						bfsQueue.push(make_pair(nx, ny));
+						visited[nx][ny] = true;
 					}
 				}
 
@@ -491,6 +479,13 @@ namespace Algorithm {
 			}
 
 			cout << "영역 안의 요소 개수 : " << count << endl;
+
+			// 이 코드의 반드시 고쳐야 할 점
+			// 1. 범위 계산이 잘못 되고 있다.(y는 열을 나타내는데 행의 개수와 비교하고 있고 x는 반대로 행인데 열의 개수와 비교하고 있다.(y+1 비교와 x+1 비교 부분을 의미) -> 버그 발생 - 수정 완료
+			
+			// 아쉬운 부분
+			// 1. if문을 따로따로 4회 실시하고 있으며 이로 인해 확장성이 막히고 있다.(보통 이런 경우 배열로 상하좌우를 가질 수 있도록 하는데 이렇게 하면 여기에 대각선도 추가할 수 있는 좋은 확장성을 가진다.) - 수정 완료
+			// 2. target 즉, 찾고 있는 값을 알지 저장하지 않고 있어서 딱 시작점부터의 영역만 검색이 가능한데 이를 저장한다면 동일한 값을 가진 각각의 모든 영역을 탐색할 수 있다. - 수정 완료
 		}
 
 		// DFS - 시작 위치와 동일한 이웃 발견 시 그 방향으로 끝까지 파고드는 방식
