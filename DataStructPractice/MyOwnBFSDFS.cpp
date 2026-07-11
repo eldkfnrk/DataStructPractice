@@ -489,9 +489,86 @@ namespace Algorithm {
 		}
 
 		// DFS - 시작 위치와 동일한 이웃 발견 시 그 방향으로 끝까지 파고드는 방식
+		// DFS는 구현 방법이 2개
+		// 스택을 사용하는 방법과 재귀를 사용하는 방법
+		// 모든 문제는 대각선은 체크하지 않고 상하좌우만 체크
+		// 문제1 : 시작 지점과 동일한 값을 가진 영역을 확인하는 Flood Fill
+		// 문제2 : 몇 개의 영역이 있는지 검사하는 Flood Fill
 		void FloodFillDFS(const vector<vector<int>>& searchGraph, int startX, int startY)
 		{
+			// 문제 1
+			int count = 0;  // 영역 안에 존재하는 요소의 개수를 세는 변수
+			stack<pair<int, int>> dfsStack;
+			map<pair<int, int>, int> saveVisitPoint;  // 파이썬의 딕셔너리 문법을 그대로 사용하는 C++에 구현된 개념(어디까지 진행했는지를 저장하기 위한 자료구조)
 
+			vector<vector<bool>> visited = vector<vector<bool>>(searchGraph.size(), vector<bool>(searchGraph[startX].size(), false));
+
+			// 순서대로 상하좌우 인덱스를 의미
+			int dx[] = { 0,0,-1,1 };
+			int dy[] = { -1,1,0,0 };
+
+			int target = searchGraph[startX][startY];
+			dfsStack.push(make_pair(startX, startY));
+			visited[startX][startY] = true;
+			saveVisitPoint.insert(make_pair(dfsStack.top(), 0));  // map은 키-값 쌍을 이루는 데이터를 다루므로 키와 값을 pair로 만들어서 insert하여야 한다.
+			++count;
+
+			while (!dfsStack.empty()) {
+				pair<int, int> topValue = dfsStack.top();
+				int x = topValue.first;
+				int y = topValue.second;
+				// 혹시 모를 오류 방지를 위해 map의 키를 가진 데이터가 있는지 확인하는 것이 추가되어야 한다.
+				int start = saveVisitPoint.find(topValue)->second;  // 여타 반복자들과 마찬가지로 map도 find 함수는 반복자의 포인터를 반환한다. 그렇기 때문에 얼마나 진행했는지 저장되어 있는 값을 가져오려면 저장된 값에 해당하는 second를 가져와야 한다.
+
+				for (int i = start; i < 4; i++) {
+					int nx = x + dx[i];
+					int ny = y + dy[i];
+
+					// 인덱스 범위 이탈 시 오류 방지를 위한 예외 처리
+					if (nx >= searchGraph.size() || nx < 0)
+						continue;
+					if (ny >= searchGraph[nx].size() || ny < 0)
+						continue;
+
+					if (searchGraph[nx][ny] == target && !visited[nx][ny]) {
+						visited[nx][ny] = true;
+						pair<int, int> insertValue = make_pair(nx, ny);
+						dfsStack.push(insertValue);
+						auto savepoint = saveVisitPoint.find(insertValue);
+						// 반복자를 반환하는 모든 컨테이너들은 find 함수를 사용해서 값을 찾지 못한다면 컨테이너의 end()를 반환한다.
+						if (savepoint == saveVisitPoint.end())
+							saveVisitPoint.insert(make_pair(insertValue, i));  // 키 값을 가진 데이터가 없었기 때문에 새 데이터를 삽입
+						else
+							savepoint->second = i;  // 키 값을 가진 데이터가 있기 때문에 여기에 어디까지 갔는지 저장하는 데이터 값만 변경해준다.
+						++count;  // 새로 찾은 값이 증가했으므로 영역의 개수를 1증가시킨다.
+						break;
+					}
+				}
+
+				// 만약 위의 반복문에서 push가 이뤄지지 않았다면 while문 첫 번째 부분에서 저장한 스택의 top 값과 지금 현재 스택의 top값이 같을 것이다.
+				// 그렇다면 더 이상 이 값의 주변을 순회할 필요가 없으니 스택에서 삭제한다.
+				if (topValue == dfsStack.top())
+					dfsStack.pop();
+			}
+
+			// 모든 것이 순회가 끝났으니 map에 저장했던 모든 값들을 삭제한다.(혹시 모를 오류를 막기 위해)
+			saveVisitPoint.clear();
+
+			for (int i = 0; i < (int)searchGraph.size(); i++) {
+				for (int j = 0; j < (int)searchGraph[i].size(); j++) {
+					if (visited[i][j])
+						cout << "X ";
+					else
+						cout << searchGraph[i][j] << " ";
+				}
+				cout << endl;
+			}
+
+			cout << endl << "영역 안의 요소 개수 : " << count << endl;
+		}
+
+		void FloodFillRecursionDFS(const vector<vector<int>>& searchGraph, int startX, int startY)
+		{
 		}
 	}
 }

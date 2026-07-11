@@ -131,6 +131,7 @@ namespace Algorithm {
 	// 시작 위치 값이 2였다면 똑같이 값이 2인 연결된 영역을 탐색하는 것으로 이해하면 된다.
 	namespace FloodFill {
 		void FloodFillBFS(const vector<vector<int>>& searchGraph, int startX, int startY);
-		void FloodFillDFS(const vector<vector<int>>& searchGraph, int startX, int startY);
+		void FloodFillDFS(const vector<vector<int>>& searchGraph, int startX, int startY);  // 스택을 사용하는 DFS
+		void FloodFillRecursionDFS(const vector<vector<int>>& searchGraph, int startX, int startY);  // 재귀를 사용하는 DFS(Recursion - 재귀)
 	}
 }

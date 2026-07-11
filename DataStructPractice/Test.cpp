@@ -146,6 +146,7 @@ int main() {
 	floodFillMatrix[5] = { 0, 0, 1, 1, 0, 0 };
 
 	FloodFill::FloodFillBFS(floodFillMatrix, 1, 4);
+	FloodFill::FloodFillDFS(floodFillMatrix, 4, 2);
 
 	return 0;
 }
