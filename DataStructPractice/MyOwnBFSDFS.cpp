@@ -461,6 +461,7 @@ namespace Algorithm {
 					if (searchGraph[nx][ny] == target && !visited[nx][ny]) {
 						bfsQueue.push(make_pair(nx, ny));
 						visited[nx][ny] = true;
+						++count;
 					}
 				}
 
@@ -499,7 +500,6 @@ namespace Algorithm {
 			// 문제 1
 			int count = 0;  // 영역 안에 존재하는 요소의 개수를 세는 변수
 			stack<pair<int, int>> dfsStack;
-			map<pair<int, int>, int> saveVisitPoint;  // 파이썬의 딕셔너리 문법을 그대로 사용하는 C++에 구현된 개념(어디까지 진행했는지를 저장하기 위한 자료구조)
 
 			vector<vector<bool>> visited = vector<vector<bool>>(searchGraph.size(), vector<bool>(searchGraph[startX].size(), false));
 
@@ -510,17 +510,14 @@ namespace Algorithm {
 			int target = searchGraph[startX][startY];
 			dfsStack.push(make_pair(startX, startY));
 			visited[startX][startY] = true;
-			saveVisitPoint.insert(make_pair(dfsStack.top(), 0));  // map은 키-값 쌍을 이루는 데이터를 다루므로 키와 값을 pair로 만들어서 insert하여야 한다.
 			++count;
 
 			while (!dfsStack.empty()) {
 				pair<int, int> topValue = dfsStack.top();
 				int x = topValue.first;
 				int y = topValue.second;
-				// 혹시 모를 오류 방지를 위해 map의 키를 가진 데이터가 있는지 확인하는 것이 추가되어야 한다.
-				int start = saveVisitPoint.find(topValue)->second;  // 여타 반복자들과 마찬가지로 map도 find 함수는 반복자의 포인터를 반환한다. 그렇기 때문에 얼마나 진행했는지 저장되어 있는 값을 가져오려면 저장된 값에 해당하는 second를 가져와야 한다.
 
-				for (int i = start; i < 4; i++) {
+				for (int i = 0; i < 4; i++) {
 					int nx = x + dx[i];
 					int ny = y + dy[i];
 
@@ -534,14 +531,7 @@ namespace Algorithm {
 						visited[nx][ny] = true;
 						pair<int, int> insertValue = make_pair(nx, ny);
 						dfsStack.push(insertValue);
-						auto savepoint = saveVisitPoint.find(insertValue);
-						// 반복자를 반환하는 모든 컨테이너들은 find 함수를 사용해서 값을 찾지 못한다면 컨테이너의 end()를 반환한다.
-						if (savepoint == saveVisitPoint.end())
-							saveVisitPoint.insert(make_pair(insertValue, i));  // 키 값을 가진 데이터가 없었기 때문에 새 데이터를 삽입
-						else
-							savepoint->second = i;  // 키 값을 가진 데이터가 있기 때문에 여기에 어디까지 갔는지 저장하는 데이터 값만 변경해준다.
 						++count;  // 새로 찾은 값이 증가했으므로 영역의 개수를 1증가시킨다.
-						break;
 					}
 				}
 
@@ -550,9 +540,6 @@ namespace Algorithm {
 				if (topValue == dfsStack.top())
 					dfsStack.pop();
 			}
-
-			// 모든 것이 순회가 끝났으니 map에 저장했던 모든 값들을 삭제한다.(혹시 모를 오류를 막기 위해)
-			saveVisitPoint.clear();
 
 			for (int i = 0; i < (int)searchGraph.size(); i++) {
 				for (int j = 0; j < (int)searchGraph[i].size(); j++) {
@@ -565,6 +552,19 @@ namespace Algorithm {
 			}
 
 			cout << endl << "영역 안의 요소 개수 : " << count << endl;
+
+			// 이 코드의 반드시 고쳐야 할 점
+			// 1. 새 값을 저장하려면 0번부터 시작해야 하는데 i를 넣으면서 그 앞에 것들은 검사를 안 하는 경우가 발생할 수 있다.
+			// 2. 현재 스택의 top 값과 반복문 처음에 스택의 top 값이 같은 것을 분석하여 pop을 결정하는 것도 동작은 하지만 우회하는 방식이기에 bool로 찾았나 못 찾았나를 검사 후 못 찾았으면 pop을 하는 방식이 더 안정되고 명확해지는 방식이다.
+
+			// 아쉬운 부분
+			// 1. 방문 지점 구조가 너무 복잡하다. 키(pair) - 값(int) 구조가 간단하지 않고 복잡하다. 그리고 굳이 이렇게까지 할 필요가 없다.
+			// 2. map을 사용하면서 값을 찾는 find를 통해 O(logN)이라는 불필요한 시간 비용을 사용하고 있다. 이것 또한 굳이 필요치 않다. 
+			// 3. 굳이 map을 clear()할 필요가 없다.
+			// 1, 2, 3번 문제 모두 굳이 map 사용을 하지 않고 방문마다 4방향 검사를 하는 것이 낫다라는 것을 가리키고 있다. 이건 괜찮은 시도이나 Flood Fill에서는 과한 설계로 비용 낭비로 이어졌다.
+
+			// 위의 고쳐야 할 점, 아쉬운 부분 모두 억지로 어디까지 진행했는지를 저장하려고 해서 생긴 것인데 더 근본적으로 굳이 이렇게 설계하지 않고 BFS처럼 한 번에 4방향을 모두 삽입하고 스택에서 데이터를 pop하면 된다.
+			// 그러면 스택의 동작 원리에 따라 DFS의 깊게 탐색하는 방법이 진행된다. 즉, Flood Fill에서는 BFS나 DFS나 동작은 다른 게 없다. 단지 자료구조에 따른 탐색 방법의 차이가 있을 뿐인 것이다. - 수정 완료
 		}
 
 		void FloodFillRecursionDFS(const vector<vector<int>>& searchGraph, int startX, int startY)
