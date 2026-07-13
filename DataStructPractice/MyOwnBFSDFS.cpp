@@ -567,8 +567,53 @@ namespace Algorithm {
 			// 그러면 스택의 동작 원리에 따라 DFS의 깊게 탐색하는 방법이 진행된다. 즉, Flood Fill에서는 BFS나 DFS나 동작은 다른 게 없다. 단지 자료구조에 따른 탐색 방법의 차이가 있을 뿐인 것이다. - 수정 완료
 		}
 
+		vector<vector<bool>> recursionDfsVisted;
+
+		void CountElement(const vector<vector<int>>& searchGraph, int startX, int startY)
+		{
+			recursionDfsVisted = vector<vector<bool>>(searchGraph.size(), vector<bool>(searchGraph[startX].size(), false));
+			int count = 0;
+
+			FloodFillRecursionDFS(searchGraph, startX, startY);
+
+			for (int i = 0; i < (int)searchGraph.size(); i++) {
+				for (int j = 0; j < (int)searchGraph.size(); j++) {
+					if (recursionDfsVisted[i][j]) {
+						cout << "X ";
+						++count;
+					}
+					else
+						cout << searchGraph[i][j] << " ";
+				}
+				cout << endl;
+			}
+			cout << endl << "영역 안의 요소 개수 : " << count << endl;
+		}
+
 		void FloodFillRecursionDFS(const vector<vector<int>>& searchGraph, int startX, int startY)
 		{
+			int dx[] = { 0,0,-1,1 };
+			int dy[] = { -1,1,0,0 };
+			int target = searchGraph[startX][startY];
+
+			if (!recursionDfsVisted[startX][startY])
+				recursionDfsVisted[startX][startY] = true;
+
+			for (int i = 0; i < 4; i++) {
+				int nx = startX + dx[i];
+				int ny = startY + dy[i];
+
+				if (nx >= searchGraph.size() || nx < 0)
+					continue;
+
+				if (ny >= searchGraph[nx].size() || ny < 0)
+					continue;
+
+				if (searchGraph[nx][ny] == target && !recursionDfsVisted[nx][ny]) {
+					recursionDfsVisted[nx][ny] = true;
+					FloodFillRecursionDFS(searchGraph, nx, ny);
+				}
+			}
 		}
 	}
 }

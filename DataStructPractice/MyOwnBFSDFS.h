@@ -133,5 +133,6 @@ namespace Algorithm {
 		void FloodFillBFS(const vector<vector<int>>& searchGraph, int startX, int startY);
 		void FloodFillDFS(const vector<vector<int>>& searchGraph, int startX, int startY);  // 스택을 사용하는 DFS
 		void FloodFillRecursionDFS(const vector<vector<int>>& searchGraph, int startX, int startY);  // 재귀를 사용하는 DFS(Recursion - 재귀)
+		void CountElement(const vector<vector<int>>& searchGraph, int startX, int startY);
 	}
 }

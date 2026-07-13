@@ -148,5 +148,7 @@ int main() {
 	FloodFill::FloodFillBFS(floodFillMatrix, 1, 4);
 	FloodFill::FloodFillDFS(floodFillMatrix, 4, 2);
 
+	FloodFill::CountElement(floodFillMatrix, 0, 2);
+
 	return 0;
 }
