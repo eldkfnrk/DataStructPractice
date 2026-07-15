@@ -146,6 +146,7 @@ int main() {
 	floodFillMatrix[5] = { 0, 0, 1, 1, 0, 0 };
 
 	FloodFill::FloodFillBFS(floodFillMatrix, 1, 4);
+	cout << endl;
 	FloodFill::FloodFillDFS(floodFillMatrix, 4, 2);
 
 	FloodFill::CountElement(floodFillMatrix, 0, 2);

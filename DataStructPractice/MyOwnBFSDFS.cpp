@@ -428,58 +428,57 @@ namespace Algorithm {
 		// BFS - 시작 위치에 인접한 모든 이웃 검사, 그 다음 단계로 넓혀가는 방식
 		void FloodFillBFS(const vector<vector<int>>& searchGraph, int startX, int startY)
 		{
-			// 문제1
-			queue<pair<int,int>> bfsQueue;
-
-			int count = 0;  // 영역 안에 몇 개의 값이 있는지 개수를 세는 변수
-
+			queue<pair<int, int>> bfsQueue;
 			vector<vector<bool>> visited = vector<vector<bool>>(searchGraph.size(), vector<bool>(searchGraph[0].size(), false));
-
 			// 상하좌우에 해당하는 값을 저장한 배열(여기에 대각선을 추가하는 것도 가능하다.)
 			// dx는 x를 dy는 y를 상하좌우에 맞게 값을 맞추도록 하기 위해 추가한 배열
 			int dx[] = { 0,0,-1,1 };
 			int dy[] = { -1,1,0,0 };
 
-			bfsQueue.push(make_pair(startX, startY));
-			int target = searchGraph[startX][startY];
-			visited[startX][startY] = true;
-			++count;
+			// 문제1
 
-			while (!bfsQueue.empty()) {
-				pair<int, int> frontValue = bfsQueue.front();
-				int x = frontValue.first;
-				int y = frontValue.second;
+			//int count = 0;  // 영역 안에 몇 개의 값이 있는지 개수를 세는 변수
 
-				for (int i = 0; i < 4; i++) {
-					int nx = x + dx[i];
-					int ny = y + dy[i];
-					if (nx < 0 || nx >= searchGraph.size())
-						continue;
-					if (ny < 0 || ny >= searchGraph[nx].size())
-						continue;
+			//bfsQueue.push(make_pair(startX, startY));
+			//int target = searchGraph[startX][startY];
+			//visited[startX][startY] = true;
+			//++count;
 
-					if (searchGraph[nx][ny] == target && !visited[nx][ny]) {
-						bfsQueue.push(make_pair(nx, ny));
-						visited[nx][ny] = true;
-						++count;
-					}
-				}
+			//while (!bfsQueue.empty()) {
+			//	pair<int, int> frontValue = bfsQueue.front();
+			//	int x = frontValue.first;
+			//	int y = frontValue.second;
 
-				bfsQueue.pop();
-			}
+			//	for (int i = 0; i < 4; i++) {
+			//		int nx = x + dx[i];
+			//		int ny = y + dy[i];
+			//		if (nx < 0 || nx >= searchGraph.size())
+			//			continue;
+			//		if (ny < 0 || ny >= searchGraph[nx].size())
+			//			continue;
 
-			// Flood Fill로 찾은 영역은 X 표시, 찾지 못하거나 아닌 영역은 자기 값 그대로 출력
-			for (size_t i = 0; i < searchGraph.size(); i++) {
-				for (size_t j = 0; j < searchGraph[i].size(); j++) {
-					if (visited[i][j])
-						cout << "X" << " ";
-					else
-						cout << searchGraph[i][j] << " ";
-				}
-				cout << endl;
-			}
+			//		if (searchGraph[nx][ny] == target && !visited[nx][ny]) {
+			//			bfsQueue.push(make_pair(nx, ny));
+			//			visited[nx][ny] = true;
+			//			++count;
+			//		}
+			//	}
 
-			cout << "영역 안의 요소 개수 : " << count << endl;
+			//	bfsQueue.pop();
+			//}
+
+			//// Flood Fill로 찾은 영역은 X 표시, 찾지 못하거나 아닌 영역은 자기 값 그대로 출력
+			//for (size_t i = 0; i < searchGraph.size(); i++) {
+			//	for (size_t j = 0; j < searchGraph[i].size(); j++) {
+			//		if (visited[i][j])
+			//			cout << "X" << " ";
+			//		else
+			//			cout << searchGraph[i][j] << " ";
+			//	}
+			//	cout << endl;
+			//}
+
+			//cout << "영역 안의 요소 개수 : " << count << endl;
 
 			// 이 코드의 반드시 고쳐야 할 점
 			// 1. 범위 계산이 잘못 되고 있다.(y는 열을 나타내는데 행의 개수와 비교하고 있고 x는 반대로 행인데 열의 개수와 비교하고 있다.(y+1 비교와 x+1 비교 부분을 의미) -> 버그 발생 - 수정 완료
@@ -487,6 +486,63 @@ namespace Algorithm {
 			// 아쉬운 부분
 			// 1. if문을 따로따로 4회 실시하고 있으며 이로 인해 확장성이 막히고 있다.(보통 이런 경우 배열로 상하좌우를 가질 수 있도록 하는데 이렇게 하면 여기에 대각선도 추가할 수 있는 좋은 확장성을 가진다.) - 수정 완료
 			// 2. target 즉, 찾고 있는 값을 알지 저장하지 않고 있어서 딱 시작점부터의 영역만 검색이 가능한데 이를 저장한다면 동일한 값을 가진 각각의 모든 영역을 탐색할 수 있다. - 수정 완료
+
+
+			// 문제2
+
+			int elementCount = 0;
+			int areaCount = 0;
+			int target = searchGraph[startX][startY];
+			vector<int> count;  // 각 영역의 요소 개수를 저장하는 배열
+
+			for (int i = 0; i < (int)searchGraph.size(); i++) {
+				for (int j = 0; j < (int)searchGraph[i].size(); j++) {
+					if (searchGraph[i][j] == target && !visited[i][j]) {
+						visited[i][j] = true;
+						bfsQueue.push(make_pair(i, j));
+						++areaCount;
+						++elementCount;
+						// 따로 함수로 만들어도 되지만 이번에는 그냥 하나의 함수 내에서 모두 진행
+						while (!bfsQueue.empty()) {
+							pair<int, int> frontValue = bfsQueue.front();
+							for (int k = 0; k < 4; k++) {
+								int nx = frontValue.first + dx[k];
+								int ny = frontValue.second + dy[k];
+
+								if (nx >= searchGraph.size() || nx < 0)
+									continue;
+
+								if (ny >= searchGraph[nx].size() || ny < 0)
+									continue;
+
+								if (searchGraph[nx][ny] == target && !visited[nx][ny]) {
+									visited[nx][ny] = true;
+									bfsQueue.push(make_pair(nx, ny));
+									++elementCount;
+								}
+							}
+							bfsQueue.pop();
+						}
+						count.push_back(elementCount);
+						elementCount = 0;
+					}
+				}
+			}
+
+			for (int i = 0; i < (int)count.size(); i++) {
+				cout << "영역" << i + 1 << "의 요소 개수 : " << count[i] << endl;
+			}
+
+			// 혹시나 영역이 어떻게 되어있나 궁금할 수 있으니 탐색한 영역 출력
+			for (int i = 0; i < (int)searchGraph.size(); i++) {
+				for (int j = 0; j < (int)searchGraph[i].size(); j++) {
+					if (visited[i][j])
+						cout << "X ";
+					else
+						cout << searchGraph[i][j] << " ";
+				}
+				cout << endl;
+			}
 		}
 
 		// DFS - 시작 위치와 동일한 이웃 발견 시 그 방향으로 끝까지 파고드는 방식
@@ -568,16 +624,20 @@ namespace Algorithm {
 		}
 
 		vector<vector<bool>> recursionDfsVisted;
+		const int dx[] = { 0,0,-1,1 };
+		const int dy[] = { -1,1,0,0 };
 
 		void CountElement(const vector<vector<int>>& searchGraph, int startX, int startY)
 		{
-			recursionDfsVisted = vector<vector<bool>>(searchGraph.size(), vector<bool>(searchGraph[startX].size(), false));
+			// 문제 1
+			recursionDfsVisted = vector<vector<bool>>(searchGraph.size(), vector<bool>(searchGraph[0].size(), false));
+			int target = searchGraph[startX][startY];
 			int count = 0;
 
-			FloodFillRecursionDFS(searchGraph, startX, startY);
+			FloodFillRecursionDFS(searchGraph, recursionDfsVisted, startX, startY, target);
 
 			for (int i = 0; i < (int)searchGraph.size(); i++) {
-				for (int j = 0; j < (int)searchGraph.size(); j++) {
+				for (int j = 0; j < (int)searchGraph[i].size(); j++) {
 					if (recursionDfsVisted[i][j]) {
 						cout << "X ";
 						++count;
@@ -588,16 +648,20 @@ namespace Algorithm {
 				cout << endl;
 			}
 			cout << endl << "영역 안의 요소 개수 : " << count << endl;
+
+			// 개선 사항
+			// 1. 방문 여부 저장 배열의 초기화 시 열의 개수를 초기화 할 때 [startX]를 사용하는데 이보다는 [0]이 더 일반적이고 안전하다.(행마다 열의 개수가 다를 경우에는 이와 같이 진행하여야 오류가 없다.) - 수정 완료
+			// 2. 출력을 위한 반복문에서 열의 개수를 확인하기 위한 for문의 탈출 조건에 행의 개수를 확인하는 오류가 있다.(searchGraph[i].size()여야 열의 개수를 확인하는데 searchGraph.size()를 하면서 행의 개수를 확인하는 오류를 범하고 있다.) - 수정 완료
+			// 3. 상하좌우를 구분하기 위해 만든 배열이 재귀할 때마다 생기고 있기 때문에 메모리 낭비가 있게 되니 따로 빼서 사용하는 것이 좋다.(값이 변할 일이 없으니 const를 하여 수정을 방지하는 것이 좋다.) - 수정 완료
+			// 4. DFS 내에서 방문 여부를 확인하고 방문했음을 저장하는데 이미 DFS가 호출된 순간 방문을 한 것이니 방문했음을 저장하면 되는데 필요 없이 조건문을 사용하고 있으므로 이는 수정하여야 한다. - 수정 완료
+			// 5. 방문 여부를 저장하는 배열이나 시작 지점의 값(타겟)을 매번 생성하기 싫어서 전역으로 두거나 반복 초기화하는 것보다 지역으로 두고 이 값을 매개 변수로 넘기는 것이 메모리적으로나 안정성 측면에서 좋기 때문에 필요한 건 매개 변수로 전달하는 것이 좋다. - 수정 완료
 		}
 
-		void FloodFillRecursionDFS(const vector<vector<int>>& searchGraph, int startX, int startY)
+		// 재귀 방식 DFS
+		void FloodFillRecursionDFS(const vector<vector<int>>& searchGraph, vector<vector<bool>>& visited, int startX, int startY, int target)
 		{
-			int dx[] = { 0,0,-1,1 };
-			int dy[] = { -1,1,0,0 };
-			int target = searchGraph[startX][startY];
-
-			if (!recursionDfsVisted[startX][startY])
-				recursionDfsVisted[startX][startY] = true;
+			// 문제 1
+			visited[startX][startY] = true;
 
 			for (int i = 0; i < 4; i++) {
 				int nx = startX + dx[i];
@@ -611,7 +675,7 @@ namespace Algorithm {
 
 				if (searchGraph[nx][ny] == target && !recursionDfsVisted[nx][ny]) {
 					recursionDfsVisted[nx][ny] = true;
-					FloodFillRecursionDFS(searchGraph, nx, ny);
+					FloodFillRecursionDFS(searchGraph, visited, nx, ny, target);
 				}
 			}
 		}
