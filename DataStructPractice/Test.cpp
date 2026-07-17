@@ -147,8 +147,8 @@ int main() {
 
 	FloodFill::FloodFillBFS(floodFillMatrix, 1, 4);
 	cout << endl;
-	FloodFill::FloodFillDFS(floodFillMatrix, 4, 2);
-
+	FloodFill::FloodFillDFS(floodFillMatrix, 0, 2);
+	cout << endl;
 	FloodFill::CountElement(floodFillMatrix, 0, 2);
 
 	return 0;

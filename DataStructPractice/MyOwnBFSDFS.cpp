@@ -429,7 +429,10 @@ namespace Algorithm {
 		void FloodFillBFS(const vector<vector<int>>& searchGraph, int startX, int startY)
 		{
 			queue<pair<int, int>> bfsQueue;
-			vector<vector<bool>> visited = vector<vector<bool>>(searchGraph.size(), vector<bool>(searchGraph[0].size(), false));
+			vector<vector<bool>> visited;
+			for (int i = 0; i < (int)searchGraph.size(); i++) {
+				visited.push_back(vector<bool>(searchGraph[i].size(), false));
+			}
 			// 상하좌우에 해당하는 값을 저장한 배열(여기에 대각선을 추가하는 것도 가능하다.)
 			// dx는 x를 dy는 y를 상하좌우에 맞게 값을 맞추도록 하기 위해 추가한 배열
 			int dx[] = { 0,0,-1,1 };
@@ -543,6 +546,11 @@ namespace Algorithm {
 				}
 				cout << endl;
 			}
+
+			cout << "영역의 총 개수 : " << areaCount << endl;
+
+			// 아쉬운 점
+			// 1. areaCount 변수로 영역 개수를 세놓고 사용하지 않았다. - 수정 완료(그러나 이 부분은 요소 개수를 저장한 배열의 크기를 가지고 해도 되기 때문에 굳이 변수를 만들 필요가 없었다. - 참고용)
 		}
 
 		// DFS - 시작 위치와 동일한 이웃 발견 시 그 방향으로 끝까지 파고드는 방식
@@ -557,57 +565,60 @@ namespace Algorithm {
 			int count = 0;  // 영역 안에 존재하는 요소의 개수를 세는 변수
 			stack<pair<int, int>> dfsStack;
 
-			vector<vector<bool>> visited = vector<vector<bool>>(searchGraph.size(), vector<bool>(searchGraph[startX].size(), false));
+			vector<vector<bool>> visited;
+			for (int i = 0; i < (int)searchGraph.size(); i++) {
+				visited.push_back(vector<bool>(searchGraph[i].size(), false));
+			}
 
-			// 순서대로 상하좌우 인덱스를 의미
 			int dx[] = { 0,0,-1,1 };
 			int dy[] = { -1,1,0,0 };
 
 			int target = searchGraph[startX][startY];
-			dfsStack.push(make_pair(startX, startY));
-			visited[startX][startY] = true;
-			++count;
 
-			while (!dfsStack.empty()) {
-				pair<int, int> topValue = dfsStack.top();
-				int x = topValue.first;
-				int y = topValue.second;
+			//dfsStack.push(make_pair(startX, startY));
+			//visited[startX][startY] = true;
+			//++count;
 
-				for (int i = 0; i < 4; i++) {
-					int nx = x + dx[i];
-					int ny = y + dy[i];
+			//while (!dfsStack.empty()) {
+			//	pair<int, int> topValue = dfsStack.top();
+			//	int x = topValue.first;
+			//	int y = topValue.second;
 
-					// 인덱스 범위 이탈 시 오류 방지를 위한 예외 처리
-					if (nx >= searchGraph.size() || nx < 0)
-						continue;
-					if (ny >= searchGraph[nx].size() || ny < 0)
-						continue;
+			//	for (int i = 0; i < 4; i++) {
+			//		int nx = x + dx[i];
+			//		int ny = y + dy[i];
 
-					if (searchGraph[nx][ny] == target && !visited[nx][ny]) {
-						visited[nx][ny] = true;
-						pair<int, int> insertValue = make_pair(nx, ny);
-						dfsStack.push(insertValue);
-						++count;  // 새로 찾은 값이 증가했으므로 영역의 개수를 1증가시킨다.
-					}
-				}
+			//		// 인덱스 범위 이탈 시 오류 방지를 위한 예외 처리
+			//		if (nx >= searchGraph.size() || nx < 0)
+			//			continue;
+			//		if (ny >= searchGraph[nx].size() || ny < 0)
+			//			continue;
 
-				// 만약 위의 반복문에서 push가 이뤄지지 않았다면 while문 첫 번째 부분에서 저장한 스택의 top 값과 지금 현재 스택의 top값이 같을 것이다.
-				// 그렇다면 더 이상 이 값의 주변을 순회할 필요가 없으니 스택에서 삭제한다.
-				if (topValue == dfsStack.top())
-					dfsStack.pop();
-			}
+			//		if (searchGraph[nx][ny] == target && !visited[nx][ny]) {
+			//			visited[nx][ny] = true;
+			//			pair<int, int> insertValue = make_pair(nx, ny);
+			//			dfsStack.push(insertValue);
+			//			++count;  // 새로 찾은 값이 증가했으므로 영역의 개수를 1증가시킨다.
+			//		}
+			//	}
 
-			for (int i = 0; i < (int)searchGraph.size(); i++) {
-				for (int j = 0; j < (int)searchGraph[i].size(); j++) {
-					if (visited[i][j])
-						cout << "X ";
-					else
-						cout << searchGraph[i][j] << " ";
-				}
-				cout << endl;
-			}
+			//	// 만약 위의 반복문에서 push가 이뤄지지 않았다면 while문 첫 번째 부분에서 저장한 스택의 top 값과 지금 현재 스택의 top값이 같을 것이다.
+			//	// 그렇다면 더 이상 이 값의 주변을 순회할 필요가 없으니 스택에서 삭제한다.
+			//	if (topValue == dfsStack.top())
+			//		dfsStack.pop();
+			//}
 
-			cout << endl << "영역 안의 요소 개수 : " << count << endl;
+			//for (int i = 0; i < (int)searchGraph.size(); i++) {
+			//	for (int j = 0; j < (int)searchGraph[i].size(); j++) {
+			//		if (visited[i][j])
+			//			cout << "X ";
+			//		else
+			//			cout << searchGraph[i][j] << " ";
+			//	}
+			//	cout << endl;
+			//}
+
+			//cout << endl << "영역 안의 요소 개수 : " << count << endl;
 
 			// 이 코드의 반드시 고쳐야 할 점
 			// 1. 새 값을 저장하려면 0번부터 시작해야 하는데 i를 넣으면서 그 앞에 것들은 검사를 안 하는 경우가 발생할 수 있다.
@@ -621,6 +632,55 @@ namespace Algorithm {
 
 			// 위의 고쳐야 할 점, 아쉬운 부분 모두 억지로 어디까지 진행했는지를 저장하려고 해서 생긴 것인데 더 근본적으로 굳이 이렇게 설계하지 않고 BFS처럼 한 번에 4방향을 모두 삽입하고 스택에서 데이터를 pop하면 된다.
 			// 그러면 스택의 동작 원리에 따라 DFS의 깊게 탐색하는 방법이 진행된다. 즉, Flood Fill에서는 BFS나 DFS나 동작은 다른 게 없다. 단지 자료구조에 따른 탐색 방법의 차이가 있을 뿐인 것이다. - 수정 완료
+
+			// 문제 2
+			vector<int> elementInArea;
+			for (int i = 0; i < (int)searchGraph.size(); i++) {
+				for (int j = 0; j < (int)searchGraph[i].size(); j++) {
+					if (searchGraph[i][j] == target && !visited[i][j]) {
+						visited[i][j] = true;
+						dfsStack.push(make_pair(i, j));
+						++count;
+						while (!dfsStack.empty()) {
+							pair<int, int> topValue = dfsStack.top();
+							dfsStack.pop();
+							for (int k = 0; k < 4; k++) {
+								int nx = topValue.first + dx[k];
+								int ny = topValue.second + dy[k];
+
+								if (nx >= searchGraph.size() || nx < 0)
+									continue;
+								if (ny >= searchGraph[nx].size() || ny < 0)
+									continue;
+
+								if (searchGraph[nx][ny] == target && !visited[nx][ny]) {
+									visited[nx][ny] = true;
+									dfsStack.push(make_pair(nx, ny));
+									++count;
+								}
+							}
+						}
+						elementInArea.push_back(count);
+						count = 0;
+					}
+				}
+			}
+
+			for (int i = 0; i < (int)elementInArea.size(); i++) {
+				cout << "영역 " << i + 1 << " 요소 개수 : " << elementInArea[i] << endl;
+			}
+
+			for (int i = 0; i < (int)searchGraph.size(); i++) {
+				for (int j = 0; j < (int)searchGraph[i].size(); j++) {
+					if (visited[i][j])
+						cout << "X ";
+					else
+						cout << searchGraph[i][j] << " ";
+				}
+				cout << endl;
+			}
+
+			cout << "영역의 총 개수 : " << elementInArea.size() << endl;
 		}
 
 		vector<vector<bool>> recursionDfsVisted;
