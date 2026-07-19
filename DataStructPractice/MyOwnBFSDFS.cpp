@@ -689,25 +689,24 @@ namespace Algorithm {
 
 		void CountElement(const vector<vector<int>>& searchGraph, int startX, int startY)
 		{
-			// 문제 1
 			recursionDfsVisted = vector<vector<bool>>(searchGraph.size(), vector<bool>(searchGraph[0].size(), false));
 			int target = searchGraph[startX][startY];
 			int count = 0;
+			// 문제 1
+			//FloodFillRecursionDFS(searchGraph, recursionDfsVisted, startX, startY, target);
 
-			FloodFillRecursionDFS(searchGraph, recursionDfsVisted, startX, startY, target);
-
-			for (int i = 0; i < (int)searchGraph.size(); i++) {
-				for (int j = 0; j < (int)searchGraph[i].size(); j++) {
-					if (recursionDfsVisted[i][j]) {
-						cout << "X ";
-						++count;
-					}
-					else
-						cout << searchGraph[i][j] << " ";
-				}
-				cout << endl;
-			}
-			cout << endl << "영역 안의 요소 개수 : " << count << endl;
+			//for (int i = 0; i < (int)searchGraph.size(); i++) {
+			//	for (int j = 0; j < (int)searchGraph[i].size(); j++) {
+			//		if (recursionDfsVisted[i][j]) {
+			//			cout << "X ";
+			//			++count;
+			//		}
+			//		else
+			//			cout << searchGraph[i][j] << " ";
+			//	}
+			//	cout << endl;
+			//}
+			//cout << endl << "영역 안의 요소 개수 : " << count << endl;
 
 			// 개선 사항
 			// 1. 방문 여부 저장 배열의 초기화 시 열의 개수를 초기화 할 때 [startX]를 사용하는데 이보다는 [0]이 더 일반적이고 안전하다.(행마다 열의 개수가 다를 경우에는 이와 같이 진행하여야 오류가 없다.) - 수정 완료
@@ -715,6 +714,29 @@ namespace Algorithm {
 			// 3. 상하좌우를 구분하기 위해 만든 배열이 재귀할 때마다 생기고 있기 때문에 메모리 낭비가 있게 되니 따로 빼서 사용하는 것이 좋다.(값이 변할 일이 없으니 const를 하여 수정을 방지하는 것이 좋다.) - 수정 완료
 			// 4. DFS 내에서 방문 여부를 확인하고 방문했음을 저장하는데 이미 DFS가 호출된 순간 방문을 한 것이니 방문했음을 저장하면 되는데 필요 없이 조건문을 사용하고 있으므로 이는 수정하여야 한다. - 수정 완료
 			// 5. 방문 여부를 저장하는 배열이나 시작 지점의 값(타겟)을 매번 생성하기 싫어서 전역으로 두거나 반복 초기화하는 것보다 지역으로 두고 이 값을 매개 변수로 넘기는 것이 메모리적으로나 안정성 측면에서 좋기 때문에 필요한 건 매개 변수로 전달하는 것이 좋다. - 수정 완료
+
+			// 문제 2
+			// 문제 2번을 해결하는 데에 있어서 DFS는 변형이 필요 없었고 그저 무엇을 얻으려 하는지 몇 번 반복할 것인지 등을 정의한 이 함수만 수정하면 되었다.
+			for (int i = 0; i < (int)searchGraph.size(); i++) {
+				for (int j = 0; j < (int)searchGraph[i].size(); j++) {
+					if (searchGraph[i][j] == target && !recursionDfsVisted[i][j]) {
+						FloodFillRecursionDFS(searchGraph, recursionDfsVisted, i, j, target);
+						++count;
+					}
+				}
+			}
+
+			for (int i = 0; i < (int)searchGraph.size(); i++) {
+				for (int j = 0; j < (int)searchGraph[i].size(); j++) {
+					if (recursionDfsVisted[i][j])
+						cout << "X ";
+					else
+						cout << searchGraph[i][j] << " ";
+				}
+				cout << endl;
+			}
+
+			cout << endl << "총 영역 개수 : " << count << endl;
 		}
 
 		// 재귀 방식 DFS

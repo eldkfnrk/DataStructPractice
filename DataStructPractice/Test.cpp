@@ -149,7 +149,7 @@ int main() {
 	cout << endl;
 	FloodFill::FloodFillDFS(floodFillMatrix, 0, 2);
 	cout << endl;
-	FloodFill::CountElement(floodFillMatrix, 0, 2);
+	FloodFill::CountElement(floodFillMatrix, 5, 3);
 
 	return 0;
 }
