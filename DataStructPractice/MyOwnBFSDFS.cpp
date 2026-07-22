@@ -762,4 +762,70 @@ namespace Algorithm {
 			}
 		}
 	}
+
+	// 최단 거리 BFS 문제를 해결하는 BFS
+	namespace ShortestPath {
+		void ShortestPathBFS(const vector<vector<int>>& searchgraph, pair<int, int> startNode, pair<int, int> endNode)
+		{
+			queue<pair<int, int>> bfsQueue;
+			vector<vector<bool>> visited;
+			visited = vector<vector<bool>>(searchgraph.size(), vector<bool>(searchgraph[0].size(), false));  // 모든 행의 개수가 일치하고 모든 열의 개수가 일치하는 행렬이라는 것을 알고 이를 사용하기 위한 방문 여부 저장 배열
+
+			int startX = startNode.first;
+			int startY = startNode.second;
+
+			int canMoveValue = 0;
+			int targetX = endNode.first;
+			int targetY = endNode.second;
+
+			int dx[] = { 0,0,-1,1 };
+			int dy[] = { -1,1,0,0 };
+
+			bool findDestination = false;  // 목적지를 찾은 경우 true가 되는 변수
+
+			int countDistance = 0;
+
+			visited[startX][startY] = true;
+			bfsQueue.push(make_pair(startX, startY));
+
+			while (!findDestination) {
+				++countDistance;
+				int queueLength = (int)bfsQueue.size();
+
+				for (int i = 0; i < queueLength; i++) {
+					pair<int, int> frontValue = bfsQueue.front();
+
+					for (int j = 0; j < 4; j++) {
+						int nx = frontValue.first + dx[j];
+						int ny = frontValue.second + dy[j];
+
+						if (nx < 0 || nx >= searchgraph.size())
+							continue;
+						if (ny < 0 || ny >= searchgraph[nx].size())
+							continue;
+
+						if (nx == targetX && ny == targetY) {
+							findDestination = true;
+							break;
+						}
+
+						if (searchgraph[nx][ny] == canMoveValue && !visited[nx][ny]) {
+							visited[nx][ny] = true;
+							bfsQueue.push(make_pair(nx, ny));
+						}
+					}
+
+					bfsQueue.pop();
+				}
+
+				if (!findDestination && bfsQueue.empty())
+					break;
+			}
+
+			if (findDestination)
+				cout << "이동 거리 : " << countDistance << endl;
+			else
+				cout << "목적지를 찾지 못하였다." << endl;
+		}
+	}
 }

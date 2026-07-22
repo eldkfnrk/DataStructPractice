@@ -135,4 +135,14 @@ namespace Algorithm {
 		void FloodFillRecursionDFS(const vector<vector<int>>& searchGraph, vector<vector<bool>>& visited, int startX, int startY, int target);  // 재귀를 사용하는 DFS(Recursion - 재귀)
 		void CountElement(const vector<vector<int>>& searchGraph, int startX, int startY);
 	}
+
+	// 최단 거리 BFS(무방향, 무가중치)
+	// 이 문제는 우선 행렬을 사용하여 구현(추후 인접 리스트 그래프로도 할 예정)
+	// 최단 거리 BFS는 말 그대로 두 노드 사이 경로 중 가장 짧은 거리의 경로를 구하는 것이다.
+	// 최단 거리를 구하는 방식은 BFS가 적합하기에 BFS만 진행(DFS는 깊이 탐색하는 것을 목표로 하기 때문이다.)
+	namespace ShortestPath {
+		// 대각선 이동은 없고 두 노드의 값이 같지는 않아도 된다. 그러나 이동 가능한 요소 값은 존재한다.
+		// 그러니 미로라고 생각하고 요소 값들은 이동 가능한 요소와 지나가지 못하는 요소를 두고 시작 노드에서 목표 노드까지 가장 빠르게 가는 거리를 찾는 것이다.
+		void ShortestPathBFS(const vector<vector<int>>& searchgraph, pair<int,int> startNode, pair<int, int> endNode);
+	}
 }
