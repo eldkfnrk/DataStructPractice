@@ -767,9 +767,19 @@ namespace Algorithm {
 	namespace ShortestPath {
 		void ShortestPathBFS(const vector<vector<int>>& searchgraph, pair<int, int> startNode, pair<int, int> endNode)
 		{
+			if (startNode == endNode) {
+				cout << "출발지와 도착지가 같음으로 실행 종료" << endl;
+				return;
+			}
+
+			// 최단 거리를 찾았을 때 자신의 앞 노드 값을 알면 어떤 길로 왔는지 쉽게 알 수 있다.
+			// 혹은 부모 노드를 기준으로 자신이 어느 방향에 있었는지를 알아도 진행된 경로를 추정할 수 있다.
+			// 0:상, 1:하, 2:좌, 3:우, -1:부모 노드가 없음(부모 노드는 나한테 오기 전 방문한 노드를 의미하니 아예 방문을 안 했다 혹은 출발지라는 의미로 사용할 수 있다.)
+
 			queue<pair<int, int>> bfsQueue;
-			vector<vector<bool>> visited;
-			visited = vector<vector<bool>>(searchgraph.size(), vector<bool>(searchgraph[0].size(), false));  // 모든 행의 개수가 일치하고 모든 열의 개수가 일치하는 행렬이라는 것을 알고 이를 사용하기 위한 방문 여부 저장 배열
+			vector<vector<pair<bool, int>>> visited;
+			// 모든 행의 개수가 일치하고 모든 열의 개수가 일치하는 행렬이라는 것을 알고 이를 사용하기 위한 방문 여부 저장 배열
+			visited = vector<vector<pair<bool, int>>>(searchgraph.size(), vector<pair<bool, int>>(searchgraph[0].size(), make_pair(false, -1)));  
 
 			int startX = startNode.first;
 			int startY = startNode.second;
@@ -785,7 +795,7 @@ namespace Algorithm {
 
 			int countDistance = 0;
 
-			visited[startX][startY] = true;
+			visited[startX][startY].first = true;
 			bfsQueue.push(make_pair(startX, startY));
 
 			while (!findDestination) {
@@ -806,11 +816,14 @@ namespace Algorithm {
 
 						if (nx == targetX && ny == targetY) {
 							findDestination = true;
+							visited[nx][ny].first = true;
+							visited[nx][ny].second = j;
 							break;
 						}
 
-						if (searchgraph[nx][ny] == canMoveValue && !visited[nx][ny]) {
-							visited[nx][ny] = true;
+						if (searchgraph[nx][ny] == canMoveValue && !visited[nx][ny].first) {
+							visited[nx][ny].first = true;
+							visited[nx][ny].second = j;
 							bfsQueue.push(make_pair(nx, ny));
 						}
 					}
@@ -822,10 +835,53 @@ namespace Algorithm {
 					break;
 			}
 
-			if (findDestination)
+			// 출발지에서 목적지까지 온 경로를 확인하는 과정
+			
+			// 이동 루트를 순서대로 확인할 수 있도록 저장하는 자료구조
+			// 스택을 사용한 이유는 도착지부터 역순으로 찾아나갈 것이기 때문에 뒷 순서부터 저장이 될테니 출력할 때 위에서부터 출력할 수 있도록 하기 위해서이다.
+			stack<pair<int, int>> pathStack;  
+			// 부모 노드를 기준으로 상하좌우를 숫자로 저장했으니 자식 노드 입장에서는 반대가 될테니 이에 맞도록 하상우좌 순서대로 이동 가능하도록 하는 배열 선언
+			int cx[] = { 0,0,1,-1 };
+			int cy[] = { 1,-1,0,0 };
+			bool isComplete = false;
+
+			pathStack.push(endNode);
+
+			if (findDestination) {
 				cout << "이동 거리 : " << countDistance << endl;
-			else
+				while (!isComplete) {
+					pair<int, int> curNode = pathStack.top();
+					int restoreDir = visited[curNode.first][curNode.second].second;
+					int nx = curNode.first + cx[restoreDir];
+					int ny = curNode.second + cy[restoreDir];
+					pathStack.push(make_pair(nx, ny));
+					
+					if (nx == startX && ny == startY)
+						isComplete = true;
+				}
+			}
+			else {
 				cout << "목적지를 찾지 못하였다." << endl;
+				pathStack.pop();  // 혹시 모를 상황을 대비해 스택을 비워두기 위한 pop
+			}
+
+			if (isComplete) {
+				int order = 1;
+				while (!pathStack.empty()) {
+					pair<int, int> curNode = pathStack.top();
+					if ((int)pathStack.size() == 1) {
+						cout << "도착 노드 : (" << curNode.first << "," << curNode.second << ")" << endl;
+					}
+					else if (order != 1) {
+						cout << order << "번째 방문 노드 : (" << curNode.first << "," << curNode.second << ")" << endl;
+					}
+					else {
+						cout << "출발 노드 : (" << curNode.first << "," << curNode.second << ")" << endl;
+					}
+					++order;
+					pathStack.pop();
+				}
+			}
 		}
 	}
 }

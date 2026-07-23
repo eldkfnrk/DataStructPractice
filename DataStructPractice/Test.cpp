@@ -47,7 +47,7 @@ int main() {
 	shortestPathMatrix[13] = { 0,1,0,0,1,0,0,0,1,1,0,1,1,0,1,0 };
 	shortestPathMatrix[14] = { 0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0 };
 
-	ShortestPath::ShortestPathBFS(shortestPathMatrix, make_pair(2, 2), make_pair(3, 5));
+	ShortestPath::ShortestPathBFS(shortestPathMatrix, make_pair(2, 2), make_pair(14, 13));
 
 	return 0;
 }
