@@ -765,21 +765,104 @@ namespace Algorithm {
 
 	// 최단 거리 BFS 문제를 해결하는 BFS
 	namespace ShortestPath {
+		// 부모 노드가 어느 방향에 있는지 저장하는 열거형
+		enum Direction {
+			Up,
+			Down,
+			Left,
+			Right,
+			None,  // 출발지이기 때문에 부모 노드가 없을 수 있으니 이를 알리기 위한 값
+			NoVisit,
+		};
+
+		struct node
+		{
+			pair<int, int> nodeLocation;
+			Direction dir;
+		};
+
+		// 노드를 저장하기 위한 해시 테이블
+		class NodeHashTable {
+		public:
+			NodeHashTable(const vector<vector<int>>& searchgraph) {
+				maxX = (int)searchgraph.size();
+				maxY = (int)searchgraph[0].size();
+				for (int i = 0; i < maxX + maxY - 1; i++) {
+					directions.push_back(vector<pair<Direction, int>>());
+				}
+			}
+
+			void Insert(const node& insertNode) {
+				pair<int, int> loc = insertNode.nodeLocation;
+				if (loc.first >= maxX || loc.second >= maxY) {
+					cout << "삽입 불가" << endl;
+					return;
+				}
+				int key = Hashing(loc);
+				pair<Direction, int> direction = make_pair(insertNode.dir, loc.first);
+				directions[key].push_back(direction);
+			}
+
+			Direction Find(const pair<int, int>& FindLoc) {
+				int key = Hashing(FindLoc);
+				if (directions[key].empty()) {
+					cout << "해당 위치의 값이 저장되어 있지 않음" << endl;
+					return Direction::NoVisit;
+				}
+
+				Direction dir = Direction::NoVisit;
+				int vectorSize = (int)directions[key].size();
+
+				if (vectorSize == 1) {
+					if (directions[key][0].second == FindLoc.first)
+						dir = directions[key][0].first;
+				}
+				else {
+					for (int i = 0; i < vectorSize; i++) {
+						if (directions[key][i].second == FindLoc.first) {
+							dir = directions[key][i].first;
+							break;
+						}
+					}
+				}
+
+				if (dir == Direction::NoVisit)
+					cout << "해당 위치의 값이 저장되어 있지 않음" << endl;
+
+				return dir;
+			}
+
+		private:
+			int Hashing(const pair<int, int>& loc) {
+				return loc.first + loc.second;
+			}
+
+			int maxX;
+			int maxY;
+			vector<vector<pair<Direction, int>>> directions;
+		};
+
 		void ShortestPathBFS(const vector<vector<int>>& searchgraph, pair<int, int> startNode, pair<int, int> endNode)
 		{
+			if (searchgraph.empty()) {
+				cout << "행렬에 값이 존재하지 않음으로 실행 종료" << endl;
+				return;
+			}
+
 			if (startNode == endNode) {
 				cout << "출발지와 도착지가 같음으로 실행 종료" << endl;
 				return;
 			}
 
 			// 최단 거리를 찾았을 때 자신의 앞 노드 값을 알면 어떤 길로 왔는지 쉽게 알 수 있다.
-			// 혹은 부모 노드를 기준으로 자신이 어느 방향에 있었는지를 알아도 진행된 경로를 추정할 수 있다.
-			// 0:상, 1:하, 2:좌, 3:우, -1:부모 노드가 없음(부모 노드는 나한테 오기 전 방문한 노드를 의미하니 아예 방문을 안 했다 혹은 출발지라는 의미로 사용할 수 있다.)
+			// 혹은 자신을 기준으로 부모 노드가 어느 방향에 있었는지를 알아도 진행된 경로를 추정할 수 있다.
 
-			queue<pair<int, int>> bfsQueue;
-			vector<vector<pair<bool, int>>> visited;
+			queue<node> bfsQueue;
+			vector<vector<bool>> visited;
 			// 모든 행의 개수가 일치하고 모든 열의 개수가 일치하는 행렬이라는 것을 알고 이를 사용하기 위한 방문 여부 저장 배열
-			visited = vector<vector<pair<bool, int>>>(searchgraph.size(), vector<pair<bool, int>>(searchgraph[0].size(), make_pair(false, -1)));  
+			visited = vector<vector<bool>>(searchgraph.size(), vector<bool>(searchgraph[0].size(), false));
+
+			NodeHashTable visitedNodes(searchgraph);
 
 			int startX = startNode.first;
 			int startY = startNode.second;
@@ -795,15 +878,18 @@ namespace Algorithm {
 
 			int countDistance = 0;
 
-			visited[startX][startY].first = true;
-			bfsQueue.push(make_pair(startX, startY));
+			visited[startX][startY] = true;
+
+			node curNode = { make_pair(startX, startY), Direction::None };
+			bfsQueue.push(curNode);
+			visitedNodes.Insert(curNode);
 
 			while (!findDestination) {
 				++countDistance;
 				int queueLength = (int)bfsQueue.size();
 
 				for (int i = 0; i < queueLength; i++) {
-					pair<int, int> frontValue = bfsQueue.front();
+					pair<int, int> frontValue = bfsQueue.front().nodeLocation;
 
 					for (int j = 0; j < 4; j++) {
 						int nx = frontValue.first + dx[j];
@@ -816,17 +902,24 @@ namespace Algorithm {
 
 						if (nx == targetX && ny == targetY) {
 							findDestination = true;
-							visited[nx][ny].first = true;
-							visited[nx][ny].second = j;
+							visited[nx][ny] = true;
+							int dir = j % 2 == 0 ? j + 1 : j - 1;
+							node curNode = { make_pair(nx, ny),(Direction)dir };
+							visitedNodes.Insert(curNode);
 							break;
 						}
 
-						if (searchgraph[nx][ny] == canMoveValue && !visited[nx][ny].first) {
-							visited[nx][ny].first = true;
-							visited[nx][ny].second = j;
-							bfsQueue.push(make_pair(nx, ny));
+						if (searchgraph[nx][ny] == canMoveValue && !visited[nx][ny]) {
+							visited[nx][ny] = true;
+							// 짝수 값(상0,좌2)는 +1을 하면 홀수 값(하1,우3)이 되고 반대로 홀수 값은(하1,우3) -1을 하면 홀수 값(상0,좌2)가 되는 것을 활용한 식이다.
+							int dir = j % 2 == 0 ? j + 1 : j - 1;  // 자식이 바라보는 부모의 방향은 부모가 바라보는 자식의 방향과 반대이기 때문에 좌-우, 상-하가 반대되게 하도록 해당 식을 사용
+							node curNode = { make_pair(nx, ny),(Direction)dir };  // int형 변수 값을 열거형으로 전환
+							visitedNodes.Insert(curNode);
+							bfsQueue.push(curNode);
 						}
 					}
+					if (findDestination)
+						break;
 
 					bfsQueue.pop();
 				}
@@ -839,10 +932,7 @@ namespace Algorithm {
 			
 			// 이동 루트를 순서대로 확인할 수 있도록 저장하는 자료구조
 			// 스택을 사용한 이유는 도착지부터 역순으로 찾아나갈 것이기 때문에 뒷 순서부터 저장이 될테니 출력할 때 위에서부터 출력할 수 있도록 하기 위해서이다.
-			stack<pair<int, int>> pathStack;  
-			// 부모 노드를 기준으로 상하좌우를 숫자로 저장했으니 자식 노드 입장에서는 반대가 될테니 이에 맞도록 하상우좌 순서대로 이동 가능하도록 하는 배열 선언
-			int cx[] = { 0,0,1,-1 };
-			int cy[] = { 1,-1,0,0 };
+			stack<pair<int, int>> pathStack;
 			bool isComplete = false;
 
 			pathStack.push(endNode);
@@ -851,9 +941,9 @@ namespace Algorithm {
 				cout << "이동 거리 : " << countDistance << endl;
 				while (!isComplete) {
 					pair<int, int> curNode = pathStack.top();
-					int restoreDir = visited[curNode.first][curNode.second].second;
-					int nx = curNode.first + cx[restoreDir];
-					int ny = curNode.second + cy[restoreDir];
+					int restoreDir = (int)visitedNodes.Find(curNode);
+					int nx = curNode.first + dx[restoreDir];
+					int ny = curNode.second + dy[restoreDir];
 					pathStack.push(make_pair(nx, ny));
 					
 					if (nx == startX && ny == startY)
@@ -882,6 +972,18 @@ namespace Algorithm {
 					pathStack.pop();
 				}
 			}
+
+			// 아쉬운 점
+			// 1. visited에 역할을 두 개로 늘렸다.(실무에서 사용하거나 유용성이 높으려면 구조체를 따로 만들어 정리하는 방법이 읽기 쉽다.)
+			// 2. 방향 값을 따로 주석을 달고 숫자만 작성하였다.(이런 방식보다는 열거형을 사용해 이름을 따로 주면 코드를 공유해야 하는 상황에 더 확실한 전달이 가능하다.)
+			// 3. dx, dy와 cx, cy가 따로 존재한다.(따로 두는 것보다 하나만 두고 이걸 활용하는 방향으로 진행하는 것이 더욱 유지보수 등에서 쉽고 유리하다.)
+			// 4. 탐색과 출력이 한 함수에 몰려있다.(지금은 만들어보는 시간이라 이렇게 해도 되지만 실무나 실제 사용할 예정이 있다면 따로 분리하는 연습이 필요하다.)
+
+			// 고쳐야 할 점
+			// 1. 나는 시작 노드는 이동이 불가능한 지역에서 시작해도 된다고 생각했는데 AI 분석을 받고 보니 이동 불가 지역에서 시작하면 다른 곳 이동이 불가능 할 수도 있고 아예 이동 불가 지역은 시작 지점으로 둬서는 안 된다는 생각을 하지 못하였다. 이를 검사하는 기능이 필요하다.
+			// 2. 목적지도 1번과 마찬가지로 이동 가능한 지역인지 검사해서 가능한 지역인지 확인하는 것이 필요하다.
+			// 3. 목적지 발견 시 바로 끝나지 않고 레벨 순회를 완료할 때까지 돈다. 이는 결과에 영향은 없지만 불필요한 동작이기에 수정이 필요하다.
+			// 4. 빈 행렬인지와 시작지외 목적지의 위치가 행렬의 범위를 벗어났는지를 검사하여 혹시나 생길 문제를 미연에 방지하는 것이 좋다.
 		}
 	}
 }
