@@ -145,4 +145,12 @@ namespace Algorithm {
 		// 그러니 미로라고 생각하고 요소 값들은 이동 가능한 요소와 지나가지 못하는 요소를 두고 시작 노드에서 목표 노드까지 가장 빠르게 가는 거리를 찾는 것이다.
 		void ShortestPathBFS(const vector<vector<int>>& searchgraph, pair<int,int> startNode, pair<int, int> endNode);
 	}
+
+	// 다중 시작점(Multi Source) BFS
+	// 여러 개의 시작점에서 동시에 BFS를 시작하여 모든 시작점으로부터의 최단 거리를 한 번에 구하는 알고리즘
+	// 중점은 어떤 시작점이든 상관없이 나에게 가장 가까운 시작점이 몇 칸 떨어져 있는가이다.
+	namespace MultiSource {
+		void Result(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc);
+		void MultiSourceBFS(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc, vector<vector<bool>>& visited, vector<vector<int>>& saveDistances, int target);
+	}
 }

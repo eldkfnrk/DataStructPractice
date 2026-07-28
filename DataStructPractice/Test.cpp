@@ -49,5 +49,10 @@ int main() {
 
 	ShortestPath::ShortestPathBFS(shortestPathMatrix, make_pair(2, 2), make_pair(14, 13));
 
+	vector<pair<int, int>> convenience;
+	convenience.push_back(make_pair(2, 3));
+	convenience.push_back(make_pair(9, 9));
+	MultiSource::Result(shortestPathMatrix, convenience);
+
 	return 0;
 }

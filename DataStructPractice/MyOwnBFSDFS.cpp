@@ -986,4 +986,87 @@ namespace Algorithm {
 			// 4. 빈 행렬인지와 시작지외 목적지의 위치가 행렬의 범위를 벗어났는지를 검사하여 혹시나 생길 문제를 미연에 방지하는 것이 좋다.
 		}
 	}
+
+	// 다중 시작점 BFS 문제를 해결하는 BFS
+	namespace MultiSource {
+		// 이번엔 BFS와 출력을 분리해보는 작업을 함께 진행해 볼 것이다.
+		// 문제는 총 4개를 해결해 볼 예정이다.
+		// 문제 1. 편의점까지 최단 거리 지도 만들기 - 여러 편의점이 있다고 가정할 때 모든 칸에 대해 가장 가까운 편의점은 몇 분 걸리는 구하는 문제(1칸을 1분이라고 가정)
+		// 문제 2. 좀비 감염 확산 시간 구하기 - 여러 지역에서 감염자가 발생했을 때 특정 좌표에 있는 사람이 감염되기까지 며칠이 걸릴지 구하는 문제(1칸을 하루라고 가정)
+		// 문제 3. 여러 스피커의 소리 도달 범위 - 공연장에서 여러 대의 스피커가 동시에 소리를 퍼뜨린다고 할 때 가장 마지막에 소리가 도달하는 좌석까지 몇 초가 걸리는지 구하는 문제(1칸을 1초라고 가정)
+		// 문제 4. 퍼지는 불 속에서 플레이어가 살아남을 수 있는가 - 불의 발원지에서 불이 퍼지고 불이 퍼지지 않은 장소로만 플레이어가 이동 가능할 때 탈출구까지 이동하여 생존이 가능한지 판단하는 문제(둘 다 동일하게 1칸씩만 이동한다고 가정)
+		// 1 - 모든 칸의 거리를 구하고 이를 출력, 2 - 모든 칸의 거리를 구하고 특정 위치의 값만 출력, 3 - 모든 칸의 거리를 구하고 그 중 가장 큰 값을 출력, 4 - 모든 칸의 거리를 구하고 일반 BFS로 생존 가능 여부를 판단
+		void Result(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc)
+		{
+			// 문제 1
+			// 모든 행의 열 개수가 똑같은 행렬을 사용한다는 것을 알고 진행하는 문제
+			// 요소 값이 0이면 길 1이면 벽 2면 공사 중이라고 가정하고 0만 이동이 가능하며 편의점의 위치는 0 위에만 있을 수 있다.
+
+			if (searchGraph.empty()) {
+				cout << "탐색할 지도가 비어있다. 탐색 종료" << endl;
+				return;
+			}
+
+			if (startLoc.empty()) {
+				cout << "탐색할 편의점 위치가 지정되어 있지 않다. 탐색 종료" << endl;
+				return;
+			}
+
+			vector<vector<bool>> visited = vector<vector<bool>>((int)searchGraph.size(), vector<bool>((int)searchGraph[0].size(), false));
+			vector<vector<int>> saveDistances = vector<vector<int>>((int)searchGraph.size(), vector<int>((int)searchGraph[0].size(), -1));  // -1은 방문 불가, 실패 지역임을 의미
+
+			MultiSourceBFS(searchGraph, startLoc, visited, saveDistances, 0);
+
+			for (int i = 0; i < (int)saveDistances.size(); i++) {
+				for (int j = 0; j < (int)saveDistances[i].size(); j++) {
+					if (saveDistances[i][j] == -1)
+						cout << "#  ";
+					else if (saveDistances[i][j] != 0)
+						cout << saveDistances[i][j] << "  ";
+					else
+						cout << "B  ";
+				}
+				cout << endl;
+			}
+		}
+
+		void MultiSourceBFS(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc, vector<vector<bool>>& visited, vector<vector<int>>& saveDistances, int target)
+		{
+			queue<pair<int, int>> bfsQueue;
+			int dx[] = { 0,0,-1,1 };
+			int dy[] = { -1,1,0,0 };
+			int distance = 0;
+			for (int i = 0; i < (int)startLoc.size(); i++) {
+				pair<int, int> startPoint = startLoc[i];
+				bfsQueue.push(startPoint);
+				visited[startPoint.first][startPoint.second] = true;
+				saveDistances[startPoint.first][startPoint.second] = distance;
+			}
+
+			while (!bfsQueue.empty()) {
+				int queueLength = (int)bfsQueue.size();
+				++distance;
+
+				for (int i = 0; i < queueLength; i++) {
+					pair<int, int> checkPoint = bfsQueue.front();
+					for (int j = 0; j < 4; j++) {
+						int nx = checkPoint.first + dx[j];
+						int ny = checkPoint.second + dy[j];
+
+						if (nx >= (int)searchGraph.size() || nx < 0)
+							continue;
+						if (ny >= (int)searchGraph[j].size() || ny < 0)
+							continue;
+
+						if (searchGraph[nx][ny] == target && !visited[nx][ny]) {
+							visited[nx][ny] = true;
+							bfsQueue.push(make_pair(nx, ny));
+							saveDistances[nx][ny] = distance;
+						}
+					}
+					bfsQueue.pop();
+				}
+			}
+		}
+	}
 }
