@@ -52,7 +52,34 @@ int main() {
 	vector<pair<int, int>> convenience;
 	convenience.push_back(make_pair(2, 3));
 	convenience.push_back(make_pair(9, 9));
-	MultiSource::Result(shortestPathMatrix, convenience);
+	//MultiSource::Result(shortestPathMatrix, convenience);
+	//MultiSource::Result(shortestPathMatrix, convenience, make_pair(6, 5));
+
+	cout << "-----------------------------------------------" << endl;
+	vector<vector<int>> hallMatrix;
+	hallMatrix.resize(10);
+	for (int i = 0; i < (int)hallMatrix.size(); i++) {
+		hallMatrix[i].resize(10);
+	}
+
+	// 0 - 스피커, 좌석, 빈 공간  1 - 무대(확인하지 않아도 되는 공간)  2 - 복도(소리는 이동하지만 좌석은 아니여서 결과 값에 포함되지 않아야 하는 공간)
+	hallMatrix[0] = { 0,0,1,1,1,1,1,1,0,0 };
+	hallMatrix[1] = { 0,0,1,1,1,1,1,1,0,0 };
+	hallMatrix[2] = { 2,2,2,2,2,2,2,2,2,2 };
+	hallMatrix[3] = { 0,0,2,0,0,0,0,2,0,0 };
+	hallMatrix[4] = { 0,0,2,0,0,0,0,2,0,0 };
+	hallMatrix[5] = { 0,0,2,0,0,0,0,2,0,0 };
+	hallMatrix[6] = { 2,2,2,2,2,2,2,2,2,2 };
+	hallMatrix[7] = { 0,0,2,0,0,0,0,2,0,0 };
+	hallMatrix[8] = { 0,0,2,0,0,0,0,2,0,0 };
+	hallMatrix[9] = { 0,0,2,0,0,0,0,2,0,0 };
+
+	vector<pair<int, int>> speakerPos;
+	speakerPos.push_back(make_pair(0, 0));
+	speakerPos.push_back(make_pair(0, 9));
+	speakerPos.push_back(make_pair(9, 9));
+	speakerPos.push_back(make_pair(9, 0));
+	MultiSource::Result(hallMatrix, speakerPos);
 
 	return 0;
 }

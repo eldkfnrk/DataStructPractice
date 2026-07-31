@@ -151,6 +151,7 @@ namespace Algorithm {
 	// 중점은 어떤 시작점이든 상관없이 나에게 가장 가까운 시작점이 몇 칸 떨어져 있는가이다.
 	namespace MultiSource {
 		void Result(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc);
-		void MultiSourceBFS(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc, vector<vector<bool>>& visited, vector<vector<int>>& saveDistances, int target);
+		void Result(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc, const pair<int, int>& checkPoint);
+		bool MultiSourceBFS(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc, vector<vector<int>>& saveDistances, int target);
 	}
 }

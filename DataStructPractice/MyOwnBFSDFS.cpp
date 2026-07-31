@@ -998,8 +998,9 @@ namespace Algorithm {
 		// 1 - 모든 칸의 거리를 구하고 이를 출력, 2 - 모든 칸의 거리를 구하고 특정 위치의 값만 출력, 3 - 모든 칸의 거리를 구하고 그 중 가장 큰 값을 출력, 4 - 모든 칸의 거리를 구하고 일반 BFS로 생존 가능 여부를 판단
 		void Result(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc)
 		{
+			// 모든 행의 열 개수가 똑같은 행렬을 사용한다는 것을 알고 진행
+			
 			// 문제 1
-			// 모든 행의 열 개수가 똑같은 행렬을 사용한다는 것을 알고 진행하는 문제
 			// 요소 값이 0이면 길 1이면 벽 2면 공사 중이라고 가정하고 0만 이동이 가능하며 편의점의 위치는 0 위에만 있을 수 있다.
 
 			if (searchGraph.empty()) {
@@ -1008,65 +1009,191 @@ namespace Algorithm {
 			}
 
 			if (startLoc.empty()) {
-				cout << "탐색할 편의점 위치가 지정되어 있지 않다. 탐색 종료" << endl;
+				//cout << "탐색할 편의점 위치가 지정되어 있지 않다. 탐색 종료" << endl;
+				cout << "스피커가 위한 자리가 지정되어 있지 않다. 탐색 종료" << endl;
 				return;
 			}
 
-			vector<vector<bool>> visited = vector<vector<bool>>((int)searchGraph.size(), vector<bool>((int)searchGraph[0].size(), false));
 			vector<vector<int>> saveDistances = vector<vector<int>>((int)searchGraph.size(), vector<int>((int)searchGraph[0].size(), -1));  // -1은 방문 불가, 실패 지역임을 의미
 
-			MultiSourceBFS(searchGraph, startLoc, visited, saveDistances, 0);
+			//bool searchComplete = MultiSourceBFS(searchGraph, startLoc, saveDistances, 0);
 
-			for (int i = 0; i < (int)saveDistances.size(); i++) {
-				for (int j = 0; j < (int)saveDistances[i].size(); j++) {
-					if (saveDistances[i][j] == -1)
-						cout << "#  ";
-					else if (saveDistances[i][j] != 0)
-						cout << saveDistances[i][j] << "  ";
-					else
-						cout << "B  ";
+			//if (!searchComplete)
+			//	return;
+
+			//for (int i = 0; i < (int)saveDistances.size(); i++) {
+			//	for (int j = 0; j < (int)saveDistances[i].size(); j++) {
+			//		if (saveDistances[i][j] == -1)
+			//			cout << "#  ";
+			//		else if (saveDistances[i][j] != 0)
+			//			cout << saveDistances[i][j] << "  ";
+			//		else
+			//			cout << "B  ";
+			//	}
+			//	cout << endl;
+			//}
+
+			// 문제 3
+
+			bool searchComplete = MultiSourceBFS(searchGraph, startLoc, saveDistances, 0);
+
+			if (!searchComplete)
+				return;
+
+			int maxValue = 0;
+			vector<pair<int, int>> maxValuePos;
+
+			// 최대 값을 찾을 때 해당 요소의 값이 2인 요소라면 이 요소는 제외하고 그 다음 값을 가진 요소를 찾아야 한다.
+			for (int i = 0; i < (int)searchGraph.size(); i++) {
+				for (int j = 0; j < (int)searchGraph[i].size(); j++) {
+					cout << saveDistances[i][j] << "  ";
+					if (saveDistances[i][j] > maxValue && searchGraph[i][j] == 0) {
+						maxValue = saveDistances[i][j];
+						maxValuePos.clear();
+					}
+					if (saveDistances[i][j] == maxValue)
+						maxValuePos.push_back(make_pair(i, j));
 				}
 				cout << endl;
 			}
+
+			cout << "가장 마지막에 소리가 도달한 좌석 위치" << endl;
+			for (int i = 0; i < (int)maxValuePos.size(); i++) {
+				cout << "(" << maxValuePos[i].first << ", " << maxValuePos[i].second << ")" << endl;
+			}
+			cout << "가장 마지막에 소리가 도달하는 좌석까지 소리가 이동한 시간 : " << maxValue << "초" << endl;
 		}
 
-		void MultiSourceBFS(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc, vector<vector<bool>>& visited, vector<vector<int>>& saveDistances, int target)
+		void Result(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc, const pair<int, int>& checkPoint)
 		{
+			// 문제 2
+			// 모든 행의 열 개수가 똑같은 행렬을 사용한다는 것을 알고 진행하는 문제
+			// 요소 값이 0이면 길 1이면 벽 2면 공사 중이라고 가정하고 0만 이동이 가능하며 편의점의 위치는 0 위에만 있을 수 있다.
+
+			//if (searchGraph.empty()) {
+			//	cout << "탐색할 지도가 비어있다. 탐색 종료" << endl;
+			//	return;
+			//}
+
+			//if (startLoc.empty()) {
+			//	cout << "탐색할 편의점 위치가 지정되어 있지 않다. 탐색 종료" << endl;
+			//	return;
+			//}
+
+			//vector<vector<int>> saveDistances = vector<vector<int>>((int)searchGraph.size(), vector<int>((int)searchGraph[0].size(), -1));  // -1은 방문 불가, 실패 지역임을 의미
+
+			//bool searchComplete = MultiSourceBFS(searchGraph, startLoc, saveDistances, 0);
+
+			//if (!searchComplete)
+			//	return;
+
+			//for (int i = 0; i < (int)startLoc.size(); i++) {
+			//	cout << "감염 시작 점" << i + 1 << " : (" << startLoc[i].first << ", " << startLoc[i].second << ")" << endl;
+			//}
+			//cout << "(" << checkPoint.first << ", " << checkPoint.second << ") 위치의 사람이 감염이 시작된 시점부터 감염되기까지 걸린 일 수 : " << saveDistances[checkPoint.first][checkPoint.second] << endl;
+		}
+
+		// 아쉬운 점
+		// 1. visited를 사용하지 않아도 되는데 사용하면서 메모리 손해를 보고 있다. - 수정 완료
+		//    지금까지는 visited를 통해 방문 여부를 저장하였어야 했는데 지금은 이를 대체할 거리를 저장하는 배열이 있으니 이를 이용하여 방문하지 않은 숫자인 경우 방문했음과 몇 번째 순서로 방문했는지를 저장하면 된다.
+		// 2. distance를 따로 저장할 필요가 없다. - 수정 완료
+		//    레벨 순서 순회 방법을 사용한 거리 저장도 나쁘지 않으나 이전 방문지보다 +1 더 가는 것으로 설정하는 것이 추후 개념 확장(알고리즘 개념 확장)으로 더욱 쉽게 이어질 수 있다.
+		// 고쳐야 할 점
+		// 1. ny 범위를 볼 때 크기보다 더 크면 안 된다고 조건문을 달아둔 곳에 배열 인덱스를 방향 값인 j로 두는 버그가 있다. nx로 수정하여야 한다. - 수정 완료
+		// 2. 시작점 검증이 되지 않고 있다. - 수정 완료
+		// 3. checkPoint 검증이 이뤄지지 않고 그대로 사용되고 있다. 범위 검사가 필요하다. - 수정 완료
+
+		bool MultiSourceBFS(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc, vector<vector<int>>& saveDistances, int target)
+		{
+			// 문제 1, 2
+			//queue<pair<int, int>> bfsQueue;
+			//int dx[] = { 0,0,-1,1 };
+			//int dy[] = { -1,1,0,0 };
+			//for (int i = 0; i < (int)startLoc.size(); i++) {
+			//	if (startLoc[i].first >= searchGraph.size() || startLoc[i].first < 0) {
+			//		cout << "범위를 벗어난 값 발견. 탐색 종료" << endl;
+			//		return false;
+			//	}
+			//	if (startLoc[i].second >= searchGraph[startLoc[i].first].size() || startLoc[i].second < 0) {
+			//		cout << "범위를 벗어난 값 발견. 탐색 종료" << endl;
+			//		return false;
+			//	}
+			//	pair<int, int> startPoint = startLoc[i];
+			//	bfsQueue.push(startPoint);
+			//	saveDistances[startLoc[i].first][startLoc[i].second] += 1;
+			//}
+
+			//while (!bfsQueue.empty()) {
+			//	int queueLength = (int)bfsQueue.size();
+
+			//	for (int i = 0; i < queueLength; i++) {
+			//		pair<int, int> checkPoint = bfsQueue.front();
+			//		for (int j = 0; j < 4; j++) {
+			//			int nx = checkPoint.first + dx[j];
+			//			int ny = checkPoint.second + dy[j];
+
+			//			if (nx >= (int)searchGraph.size() || nx < 0)
+			//				continue;
+			//			if (ny >= (int)searchGraph[nx].size() || ny < 0)
+			//				continue;
+
+			//			if (searchGraph[nx][ny] == target && saveDistances[nx][ny] == -1) {
+			//				bfsQueue.push(make_pair(nx, ny));
+			//				saveDistances[nx][ny] = saveDistances[checkPoint.first][checkPoint.second] + 1;
+			//			}
+			//		}
+			//		bfsQueue.pop();
+			//	}
+			//}
+
+			//return true;
+
+			// 문제 3
 			queue<pair<int, int>> bfsQueue;
 			int dx[] = { 0,0,-1,1 };
 			int dy[] = { -1,1,0,0 };
-			int distance = 0;
 			for (int i = 0; i < (int)startLoc.size(); i++) {
-				pair<int, int> startPoint = startLoc[i];
-				bfsQueue.push(startPoint);
-				visited[startPoint.first][startPoint.second] = true;
-				saveDistances[startPoint.first][startPoint.second] = distance;
+				// 범위를 벗어나거나 단 하나의 스피커라도 스피커가 있을 수 없는 위치에 있다면 탐색 불가로 판정하고 탐색 종료
+				if (startLoc[i].first >= (int)searchGraph.size() || startLoc[i].first < 0) {
+					cout << "범위를 벗어난 값 발견. 탐색 종료." << endl;
+					return false;
+				}
+				if (startLoc[i].second >= (int)searchGraph[startLoc[i].first].size() || startLoc[i].second < 0) {
+					cout << "범위를 벗어난 값 발견. 탐색 종료." << endl;
+					return false;
+				}
+				
+				if (searchGraph[startLoc[i].first][startLoc[i].second] != 0) {
+					cout << "스피커가 존재할 수 없는 위치에 존재. 탐색 불가." << endl;
+					return false;
+				}
+
+				bfsQueue.push(startLoc[i]);
+				saveDistances[startLoc[i].first][startLoc[i].second] += 1;
 			}
+
+			// 0 - 스피커, 좌석, 빈 공간  1 - 무대(확인하지 않아도 되는 공간)  2 - 복도(소리는 이동하지만 좌석은 아니여서 결과 값에 포함되지 않아야 하는 공간)
 
 			while (!bfsQueue.empty()) {
-				int queueLength = (int)bfsQueue.size();
-				++distance;
+				pair<int, int> curPoint = bfsQueue.front();
+				for (int i = 0; i < 4; i++) {
+					int nx = curPoint.first + dx[i];
+					int ny = curPoint.second + dy[i];
 
-				for (int i = 0; i < queueLength; i++) {
-					pair<int, int> checkPoint = bfsQueue.front();
-					for (int j = 0; j < 4; j++) {
-						int nx = checkPoint.first + dx[j];
-						int ny = checkPoint.second + dy[j];
+					if (nx >= (int)searchGraph.size() || nx < 0)
+						continue;
+					if (ny >= (int)searchGraph[nx].size() || ny < 0)
+						continue;
 
-						if (nx >= (int)searchGraph.size() || nx < 0)
-							continue;
-						if (ny >= (int)searchGraph[j].size() || ny < 0)
-							continue;
-
-						if (searchGraph[nx][ny] == target && !visited[nx][ny]) {
-							visited[nx][ny] = true;
-							bfsQueue.push(make_pair(nx, ny));
-							saveDistances[nx][ny] = distance;
-						}
+					if ((searchGraph[nx][ny] == target || searchGraph[nx][ny] == 2) && saveDistances[nx][ny] == -1) {
+						saveDistances[nx][ny] = saveDistances[curPoint.first][curPoint.second] + 1;
+						bfsQueue.push(make_pair(nx, ny));
 					}
-					bfsQueue.pop();
 				}
+				bfsQueue.pop();
 			}
+
+			return true;
 		}
 	}
 }
