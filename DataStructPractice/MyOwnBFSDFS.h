@@ -152,6 +152,7 @@ namespace Algorithm {
 	namespace MultiSource {
 		void Result(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc);
 		void Result(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc, const pair<int, int>& checkPoint);
-		bool MultiSourceBFS(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc, vector<vector<int>>& saveDistances, int target);
+		void Result(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& fireLocs, const pair<int, int>& playerLoc, const pair<int, int>& exitLoc);
+		void MultiSourceBFS(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc, vector<vector<int>>& saveDistances, int target);
 	}
 }

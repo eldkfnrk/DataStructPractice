@@ -79,7 +79,16 @@ int main() {
 	speakerPos.push_back(make_pair(0, 9));
 	speakerPos.push_back(make_pair(9, 9));
 	speakerPos.push_back(make_pair(9, 0));
-	MultiSource::Result(hallMatrix, speakerPos);
+	//MultiSource::Result(hallMatrix, speakerPos);
+
+	vector<pair<int, int>> fireOrigins;
+	pair<int, int> playerStartPoint = make_pair(14, 15);
+	pair<int, int> exitPoint = make_pair(5, 4);
+
+	fireOrigins.push_back(make_pair(4, 0));
+	fireOrigins.push_back(make_pair(1, 14));
+	fireOrigins.push_back(make_pair(14, 0));
+	MultiSource::Result(shortestPathMatrix, fireOrigins, playerStartPoint, exitPoint);
 
 	return 0;
 }

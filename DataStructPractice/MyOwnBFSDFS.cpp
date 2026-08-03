@@ -1014,6 +1014,13 @@ namespace Algorithm {
 				return;
 			}
 
+			for (int i = 0; i < (int)startLoc.size(); i++) {
+				if (startLoc[i].first >= (int)searchGraph.size() || startLoc[i].first < 0 || startLoc[i].second >= (int)searchGraph[startLoc[i].first].size() || startLoc[i].second < 0) {
+					cout << "범위를 벗어난 값이 존재. 탐색 종료" << endl;
+					return;
+				}
+			}
+
 			vector<vector<int>> saveDistances = vector<vector<int>>((int)searchGraph.size(), vector<int>((int)searchGraph[0].size(), -1));  // -1은 방문 불가, 실패 지역임을 의미
 
 			//bool searchComplete = MultiSourceBFS(searchGraph, startLoc, saveDistances, 0);
@@ -1035,10 +1042,7 @@ namespace Algorithm {
 
 			// 문제 3
 
-			bool searchComplete = MultiSourceBFS(searchGraph, startLoc, saveDistances, 0);
-
-			if (!searchComplete)
-				return;
+			MultiSourceBFS(searchGraph, startLoc, saveDistances, 0);
 
 			int maxValue = 0;
 			vector<pair<int, int>> maxValuePos;
@@ -1051,7 +1055,7 @@ namespace Algorithm {
 						maxValue = saveDistances[i][j];
 						maxValuePos.clear();
 					}
-					if (saveDistances[i][j] == maxValue)
+					if (saveDistances[i][j] == maxValue && searchGraph[i][j] == 0)
 						maxValuePos.push_back(make_pair(i, j));
 				}
 				cout << endl;
@@ -1062,6 +1066,13 @@ namespace Algorithm {
 				cout << "(" << maxValuePos[i].first << ", " << maxValuePos[i].second << ")" << endl;
 			}
 			cout << "가장 마지막에 소리가 도달하는 좌석까지 소리가 이동한 시간 : " << maxValue << "초" << endl;
+
+			// 고쳐야 할 점
+			// 1. 최대 값을 가진 좌석을 찾는 코드에서 좌석만 들어가도록 하는 조건이 없어 복도가 들어갈 수 있는 문제가 있다. - 수정 완료
+			// 2. 시작점 거리 초기화 방식이 의도를 명확하게 전달하지 못하고 있음으로 +1을 하는 것이 아닌 0이라는 확실한 값을 전달하는 것이 나을 것이다. - 수정 완료
+
+			// 고쳐야 할 버릇
+			// 매직 넘버를 그대로 사용하는 버릇이 있는데 이를 변수를 사용해 의미를 전달하는 방법 등의 여러 방법을 이용하여 진행하는 것이 더 범용성 있고 협업이 가능한 코드가 될 것이다.
 		}
 
 		void Result(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc, const pair<int, int>& checkPoint)
@@ -1093,6 +1104,124 @@ namespace Algorithm {
 			//cout << "(" << checkPoint.first << ", " << checkPoint.second << ") 위치의 사람이 감염이 시작된 시점부터 감염되기까지 걸린 일 수 : " << saveDistances[checkPoint.first][checkPoint.second] << endl;
 		}
 
+		void Result(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& fireLocs, const pair<int, int>& playerLoc, const pair<int, int>& exitLoc)
+		{
+			// 문제 4
+			// fireLocs - 불의 시작점, playerLoc - 플레이어의 위치, exitLoc - 탈출구의 위치
+			// 문제 4는 여러 곳에서 퍼지는 불을 피해 플레이어가 탈출할 수 있는가를 찾는 문제로 플레이어는 불이 퍼지지 않은 위치로만 이동이 가능하다.
+
+			// 불의 확산도를 다중 시작점 BFS를 통해 습득 후 플레이어를 BFS를 통해 길찾기를 실시하여 도착이 가능한지 여부를 판단
+			// 플레이어의 동시 도착도 불가능으로 판단할 것이며 도착하지 못하였는데 더 이상 이동할 수 있는 곳이 없다면 실패로 도착했다면 성공으로 판단
+			
+			// 다중 시작점 BFS를 통해 각 불의 이동 시간과 위치를 확인할 수 있는 배열을 생성 - 이 배열에 저장된 위치의 값과 비교해가면서 플레이어의 이동 경로 생성
+
+			if (searchGraph.empty()) {
+				cout << "탐색할 행렬이 비어있는 상태. 탐색 불가" << endl;
+				return;
+			}
+
+			if (fireLocs.empty()) {
+				// 만약 불의 시작점을 저장한 배열이 비어있다면 그것은 불이 나지 않았다는 뜻이니 플레이어는 탈출 성공했음을 알린다.(에러지만 논리적으로 성공이기에 성공 표시)
+				cout << "불의 시작점이 없으므로 플레이어 탈출 성공" << endl;
+				return;
+			}
+
+			if (exitLoc.first >= searchGraph.size() || exitLoc.first < 0 || exitLoc.second >= searchGraph[exitLoc.first].size() || exitLoc.second < 0) {
+				cout << "탈출 위치가 범위를 벗어나 있는 상태. 탐색 불가" << endl;
+				return;
+			}
+
+			if (searchGraph[exitLoc.first][exitLoc.second] != 0) {
+				cout << "탈출 위치가 이동 불가능한 위치에 존재. 탐색 불가" << endl;
+				return;
+			}
+
+			for (int i = 0; i < (int)fireLocs.size(); i++) {
+				if (fireLocs[i].first >= (int)searchGraph.size() || fireLocs[i].first < 0 || fireLocs[i].second >= (int)searchGraph[fireLocs[i].first].size() || fireLocs[i].second < 0) {
+					cout << "범위를 벗어난 값이 존재. 탐색 종료" << endl;
+					return;
+				}
+			}
+
+			if (playerLoc.first >= searchGraph.size() || playerLoc.first < 0 || playerLoc.second >= searchGraph[playerLoc.first].size() || playerLoc.second < 0) {
+				cout << "플레이어 위치가 범위를 벗어나 있는 상태. 탐색 불가" << endl;
+				return;
+			}
+
+			if (searchGraph[playerLoc.first][playerLoc.second] != 0) {
+				cout << "플레이어 위치가 위치할 수 없는 위치에 존재. 탐색 불가" << endl;
+				return;
+			}
+
+			// 모든 행의 개수가 동일한 행렬을 사용
+			// -1은 방문하지 않음 혹은 방문 불가를 의미
+			// 행렬의 요소들 중 값이 0인 요소만 이동 가능한 공간으로 판정하여 이동
+			vector<vector<int>> saveFireMoveTime = vector<vector<int>>(searchGraph.size(), vector<int>(searchGraph[0].size(), -1));
+			vector<vector<bool>> playerVisited = vector<vector<bool>>(searchGraph.size(), vector<bool>(searchGraph[0].size(), false)); // 플레이어가 방문했는지 여부를 저장(불의 이동과는 다른 저장 공간이 필요하기에 추가)
+
+			MultiSourceBFS(searchGraph, fireLocs, saveFireMoveTime, 0);
+
+			// 따로 BFS를 만들어야 하지만 문제 해결이니 간단하게 결과 함수 내에서 BFS 정의
+			queue<pair<int, int>> bfsQueue;
+			int moveTime = 0;
+			bool exitSuccess = false;
+			int dx[] = { 0,0,-1,1 };
+			int dy[] = { -1,1,0,0 };
+			playerVisited[playerLoc.first][playerLoc.second] = true;
+			bfsQueue.push(playerLoc);
+
+			while (!bfsQueue.empty()) {
+				int queueLength = (int)bfsQueue.size();
+				++moveTime;
+
+				for (int i = 0; i < queueLength; i++) {
+					pair<int, int> checkPoint = bfsQueue.front();
+					for (int j = 0; j < 4; j++) {
+						int nx = checkPoint.first + dx[j];
+						int ny = checkPoint.second + dy[j];
+
+						if (nx >= (int)searchGraph.size() || nx < 0)
+							continue;
+						if (ny >= (int)searchGraph[nx].size() || ny < 0)
+							continue;
+
+						// 탈출 위치에 도착한 즉시 모든 탐색이 종료될 것이고 그렇다는 것은 이 위치에 방문은 이번 한 번이 끝일 것이라는 의미이기 때문에 방문 검사는 하지 않는다.
+						if (make_pair(nx, ny) == exitLoc && saveFireMoveTime[nx][ny] > moveTime) {
+							exitSuccess = true;
+							playerVisited[nx][ny] = true;
+							break;
+						}
+
+						// saveFireMoveTime[nx][ny] > moveDistance => 불의 이동 경로를 저장한 배열에 저장된 값은 불이 도착한 시간대를 의미 그러니까 현재 이동 중인 시간보다 값이 작거나 같다면 이미 도착했다는 의미이기 때문에 현재 이동 중인 시간보다 크지 않다면 방문이 불가
+						if (searchGraph[nx][ny] == 0 && !playerVisited[nx][ny] && saveFireMoveTime[nx][ny] > moveTime) {
+							playerVisited[nx][ny] = true;
+							bfsQueue.push(make_pair(nx, ny));
+						}
+					}
+					
+					if (exitSuccess)
+						break;
+
+					bfsQueue.pop();
+				}
+
+				// 탈출 성공 시 바로 반복문 종료
+				if (exitSuccess) {
+					// 혹시 몰라서 큐에 저장된 내용을 전부 삭제
+					int currentQueueLength = (int)bfsQueue.size();
+					for (int i = 0; i < currentQueueLength; i++) {
+						bfsQueue.pop();
+					}
+					break;
+				}
+			}
+
+			if (exitSuccess)
+				cout << "탈출 성공" << endl;
+			else
+				cout << "탈출 실패" << endl;
+		}
+
 		// 아쉬운 점
 		// 1. visited를 사용하지 않아도 되는데 사용하면서 메모리 손해를 보고 있다. - 수정 완료
 		//    지금까지는 visited를 통해 방문 여부를 저장하였어야 했는데 지금은 이를 대체할 거리를 저장하는 배열이 있으니 이를 이용하여 방문하지 않은 숫자인 경우 방문했음과 몇 번째 순서로 방문했는지를 저장하면 된다.
@@ -1103,8 +1232,11 @@ namespace Algorithm {
 		// 2. 시작점 검증이 되지 않고 있다. - 수정 완료
 		// 3. checkPoint 검증이 이뤄지지 않고 그대로 사용되고 있다. 범위 검사가 필요하다. - 수정 완료
 
-		bool MultiSourceBFS(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc, vector<vector<int>>& saveDistances, int target)
+		void MultiSourceBFS(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc, vector<vector<int>>& saveDistances, int target)
 		{
+			queue<pair<int, int>> bfsQueue;
+			int dx[] = { 0,0,-1,1 };
+			int dy[] = { -1,1,0,0 };
 			// 문제 1, 2
 			//queue<pair<int, int>> bfsQueue;
 			//int dx[] = { 0,0,-1,1 };
@@ -1149,30 +1281,52 @@ namespace Algorithm {
 			//return true;
 
 			// 문제 3
-			queue<pair<int, int>> bfsQueue;
-			int dx[] = { 0,0,-1,1 };
-			int dy[] = { -1,1,0,0 };
-			for (int i = 0; i < (int)startLoc.size(); i++) {
-				// 범위를 벗어나거나 단 하나의 스피커라도 스피커가 있을 수 없는 위치에 있다면 탐색 불가로 판정하고 탐색 종료
-				if (startLoc[i].first >= (int)searchGraph.size() || startLoc[i].first < 0) {
-					cout << "범위를 벗어난 값 발견. 탐색 종료." << endl;
-					return false;
-				}
-				if (startLoc[i].second >= (int)searchGraph[startLoc[i].first].size() || startLoc[i].second < 0) {
-					cout << "범위를 벗어난 값 발견. 탐색 종료." << endl;
-					return false;
-				}
-				
-				if (searchGraph[startLoc[i].first][startLoc[i].second] != 0) {
-					cout << "스피커가 존재할 수 없는 위치에 존재. 탐색 불가." << endl;
-					return false;
-				}
+			//for (int i = 0; i < (int)startLoc.size(); i++) {
+			//	// 범위를 벗어나거나 단 하나의 스피커라도 스피커가 있을 수 없는 위치에 있다면 탐색 불가로 판정하고 탐색 종료
+			//	if (startLoc[i].first >= (int)searchGraph.size() || startLoc[i].first < 0) {
+			//		cout << "범위를 벗어난 값 발견. 탐색 종료." << endl;
+			//		return false;
+			//	}
+			//	if (startLoc[i].second >= (int)searchGraph[startLoc[i].first].size() || startLoc[i].second < 0) {
+			//		cout << "범위를 벗어난 값 발견. 탐색 종료." << endl;
+			//		return false;
+			//	}
+			//	
+			//	if (searchGraph[startLoc[i].first][startLoc[i].second] != 0) {
+			//		cout << "스피커가 존재할 수 없는 위치에 존재. 탐색 불가." << endl;
+			//		return false;
+			//	}
 
-				bfsQueue.push(startLoc[i]);
-				saveDistances[startLoc[i].first][startLoc[i].second] += 1;
-			}
+			//	bfsQueue.push(startLoc[i]);
+			//	saveDistances[startLoc[i].first][startLoc[i].second] = 0;
+			//}
 
 			// 0 - 스피커, 좌석, 빈 공간  1 - 무대(확인하지 않아도 되는 공간)  2 - 복도(소리는 이동하지만 좌석은 아니여서 결과 값에 포함되지 않아야 하는 공간)
+
+			//while (!bfsQueue.empty()) {
+			//	pair<int, int> curPoint = bfsQueue.front();
+			//	for (int i = 0; i < 4; i++) {
+			//		int nx = curPoint.first + dx[i];
+			//		int ny = curPoint.second + dy[i];
+
+			//		if (nx >= (int)searchGraph.size() || nx < 0)
+			//			continue;
+			//		if (ny >= (int)searchGraph[nx].size() || ny < 0)
+			//			continue;
+
+			//		if ((searchGraph[nx][ny] == target || searchGraph[nx][ny] == 2) && saveDistances[nx][ny] == -1) {
+			//			saveDistances[nx][ny] = saveDistances[curPoint.first][curPoint.second] + 1;
+			//			bfsQueue.push(make_pair(nx, ny));
+			//		}
+			//	}
+			//	bfsQueue.pop();
+			//}
+
+			// 문제 4
+			for (int i = 0; i < (int)startLoc.size(); i++) {
+				bfsQueue.push(startLoc[i]);
+				saveDistances[startLoc[i].first][startLoc[i].second] = 0;
+			}
 
 			while (!bfsQueue.empty()) {
 				pair<int, int> curPoint = bfsQueue.front();
@@ -1185,15 +1339,13 @@ namespace Algorithm {
 					if (ny >= (int)searchGraph[nx].size() || ny < 0)
 						continue;
 
-					if ((searchGraph[nx][ny] == target || searchGraph[nx][ny] == 2) && saveDistances[nx][ny] == -1) {
+					if (searchGraph[nx][ny] == target && saveDistances[nx][ny] == -1) {
 						saveDistances[nx][ny] = saveDistances[curPoint.first][curPoint.second] + 1;
 						bfsQueue.push(make_pair(nx, ny));
 					}
 				}
 				bfsQueue.pop();
 			}
-
-			return true;
 		}
 	}
 }
