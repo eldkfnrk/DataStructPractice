@@ -1167,7 +1167,10 @@ namespace Algorithm {
 			bool exitSuccess = false;
 			int dx[] = { 0,0,-1,1 };
 			int dy[] = { -1,1,0,0 };
+			// 방문하지 않았거나 방문 불가 지역은 -2,-2 값을 갖고 시작점은 -1,-1의 값을 갖고 방문한 지역은 해당 방문 전 도달한 지역의 좌표를 저장한다.
+			vector<vector<pair<int, int>>> parent = vector<vector<pair<int, int>>>(searchGraph.size(), vector<pair<int, int>>(searchGraph[0].size(), make_pair(-2, -2)));
 			playerVisited[playerLoc.first][playerLoc.second] = true;
+			parent[playerLoc.first][playerLoc.second] = make_pair(-1, -1);
 			bfsQueue.push(playerLoc);
 
 			while (!bfsQueue.empty()) {
@@ -1189,12 +1192,14 @@ namespace Algorithm {
 						if (make_pair(nx, ny) == exitLoc && saveFireMoveTime[nx][ny] > moveTime) {
 							exitSuccess = true;
 							playerVisited[nx][ny] = true;
+							parent[nx][ny] = make_pair(checkPoint.first, checkPoint.second);
 							break;
 						}
 
 						// saveFireMoveTime[nx][ny] > moveDistance => 불의 이동 경로를 저장한 배열에 저장된 값은 불이 도착한 시간대를 의미 그러니까 현재 이동 중인 시간보다 값이 작거나 같다면 이미 도착했다는 의미이기 때문에 현재 이동 중인 시간보다 크지 않다면 방문이 불가
 						if (searchGraph[nx][ny] == 0 && !playerVisited[nx][ny] && saveFireMoveTime[nx][ny] > moveTime) {
 							playerVisited[nx][ny] = true;
+							parent[nx][ny] = make_pair(checkPoint.first, checkPoint.second);
 							bfsQueue.push(make_pair(nx, ny));
 						}
 					}
@@ -1216,10 +1221,38 @@ namespace Algorithm {
 				}
 			}
 
-			if (exitSuccess)
+			if (exitSuccess) {
 				cout << "탈출 성공" << endl;
+				cout << "이동 경로" << endl;
+				stack<pair<int, int>> routeStack;
+				routeStack.push(exitLoc);
+				bool finish = false;
+				while (!finish) {
+					pair<int, int> previousNode = routeStack.top();
+					pair<int, int> parentNode = parent[previousNode.first][previousNode.second];
+					if (parentNode == make_pair(-1, -1)) {
+						finish = true;
+						break;
+					}
+					routeStack.push(parentNode);
+				}
+
+				int stackLength = (int)routeStack.size();
+				for (int i = 0; i < stackLength; i++) {
+					cout << i << " - (" << routeStack.top().first << ", " << routeStack.top().second << ")" << endl;
+					routeStack.pop();
+				}
+			}
 			else
 				cout << "탈출 실패" << endl;
+
+			cout << "불의 이동 경로" << endl;
+			for (int i = 0; i < (int)saveFireMoveTime.size(); i++) {
+				for (int j = 0; j < (int)saveFireMoveTime[i].size(); j++) {
+					cout << saveFireMoveTime[i][j] << "   ";
+				}
+				cout << endl;
+			}
 		}
 
 		// 아쉬운 점

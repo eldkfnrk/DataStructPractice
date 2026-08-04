@@ -83,7 +83,7 @@ int main() {
 
 	vector<pair<int, int>> fireOrigins;
 	pair<int, int> playerStartPoint = make_pair(14, 15);
-	pair<int, int> exitPoint = make_pair(5, 4);
+	pair<int, int> exitPoint = make_pair(11, 11);
 
 	fireOrigins.push_back(make_pair(4, 0));
 	fireOrigins.push_back(make_pair(1, 14));
