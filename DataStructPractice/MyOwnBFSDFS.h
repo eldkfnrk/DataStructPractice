@@ -155,4 +155,25 @@ namespace Algorithm {
 		void Result(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& fireLocs, const pair<int, int>& playerLoc, const pair<int, int>& exitLoc);
 		void MultiSourceBFS(const vector<vector<int>>& searchGraph, const vector<pair<int, int>>& startLoc, vector<vector<int>>& saveDistances, int target);
 	}
+
+	// 인접 리스트 BFS/DFS
+	// 지금까지는 인접 행렬을 사용하는 그래프를 탐색하는 것을 많이 진행하였으니 인접 리스트를 사용하는 그래프 탐색에 대하여 진행
+	// 그래프의 구성 차이일 뿐이나 동작은 살짝 다르게 진행되는 것을 파악하는 알고리즘
+	namespace AdjacencyList {
+		// 문제 1
+		void ResultQ1();
+		void AdjacencyListDFSQ1(const vector<vector<int>>& adjacencyList, vector<bool>& visited, stack<int>& dfsStack);
+		void AdjacencyListBFSQ1(const vector<vector<int>>& adjacencyList, vector<bool>& visited, queue<int>& bfsQueue);
+		void SortAdjacencyList(vector<vector<int>>& adjacencyList);
+		void SortList(vector<int>& list);
+
+		// 문제 2
+
+		// 문제 3
+
+		// 문제 4
+
+		// 문제 5
+
+	}
 }

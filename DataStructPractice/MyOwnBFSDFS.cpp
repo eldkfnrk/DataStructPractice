@@ -1153,13 +1153,45 @@ namespace Algorithm {
 				return;
 			}
 
+			if (playerLoc == exitLoc) {
+				cout << "출발 위치와 탈출 위치가 같기 때문에 탈출 성공. 탐색 종료" << endl;
+				return;
+			}
+
+			for (int i = 0; i < (int)fireLocs.size(); i++) {
+				if (searchGraph[fireLocs[i].first][fireLocs[i].second] != 0) {
+					cout << "불의 시작 위치가 존재할 수 없는 위치에 존재하는 문제가 존재. 탐색 불가" << endl;
+					return;
+				}
+			}
+
+			for (int i = 0; i < (int)fireLocs.size(); i++) {
+				if (playerLoc == fireLocs[i]) {
+					cout << "플레이어의 시작 위치가 불의 시작 위치와 동일하기에 탈출 실패. 탐색 종료" << endl;
+					return;
+				}
+
+				if (exitLoc == fireLocs[i]) {
+					cout << "탈출 지점의 위치가 불의 시작 위치와 동일하기에 탈출 실패. 탐색 종료" << endl;
+					return;
+				}
+			}
+
+
 			// 모든 행의 개수가 동일한 행렬을 사용
 			// -1은 방문하지 않음 혹은 방문 불가를 의미
 			// 행렬의 요소들 중 값이 0인 요소만 이동 가능한 공간으로 판정하여 이동
 			vector<vector<int>> saveFireMoveTime = vector<vector<int>>(searchGraph.size(), vector<int>(searchGraph[0].size(), -1));
-			vector<vector<bool>> playerVisited = vector<vector<bool>>(searchGraph.size(), vector<bool>(searchGraph[0].size(), false)); // 플레이어가 방문했는지 여부를 저장(불의 이동과는 다른 저장 공간이 필요하기에 추가)
 
 			MultiSourceBFS(searchGraph, fireLocs, saveFireMoveTime, 0);
+
+			// 불이 도달하지 못하는 공간이 있을 수 있으니 이에 대한 것을 알리기 위한 값 변경을 수행하려 한다.(-2라는 값을 전달하여 불이 도달하지 못하였지만 이동은 가능한 곳이라는 것을 표시)
+			for (int i = 0; i < (int)saveFireMoveTime.size(); i++) {
+				for (int j = 0; j < (int)saveFireMoveTime[i].size(); j++) {
+					if (saveFireMoveTime[i][j] == -1 && searchGraph[i][j] == 0)
+						saveFireMoveTime[i][j] = -2;
+				}
+			}
 
 			// 따로 BFS를 만들어야 하지만 문제 해결이니 간단하게 결과 함수 내에서 BFS 정의
 			queue<pair<int, int>> bfsQueue;
@@ -1169,7 +1201,6 @@ namespace Algorithm {
 			int dy[] = { -1,1,0,0 };
 			// 방문하지 않았거나 방문 불가 지역은 -2,-2 값을 갖고 시작점은 -1,-1의 값을 갖고 방문한 지역은 해당 방문 전 도달한 지역의 좌표를 저장한다.
 			vector<vector<pair<int, int>>> parent = vector<vector<pair<int, int>>>(searchGraph.size(), vector<pair<int, int>>(searchGraph[0].size(), make_pair(-2, -2)));
-			playerVisited[playerLoc.first][playerLoc.second] = true;
 			parent[playerLoc.first][playerLoc.second] = make_pair(-1, -1);
 			bfsQueue.push(playerLoc);
 
@@ -1191,14 +1222,13 @@ namespace Algorithm {
 						// 탈출 위치에 도착한 즉시 모든 탐색이 종료될 것이고 그렇다는 것은 이 위치에 방문은 이번 한 번이 끝일 것이라는 의미이기 때문에 방문 검사는 하지 않는다.
 						if (make_pair(nx, ny) == exitLoc && saveFireMoveTime[nx][ny] > moveTime) {
 							exitSuccess = true;
-							playerVisited[nx][ny] = true;
 							parent[nx][ny] = make_pair(checkPoint.first, checkPoint.second);
 							break;
 						}
 
 						// saveFireMoveTime[nx][ny] > moveDistance => 불의 이동 경로를 저장한 배열에 저장된 값은 불이 도착한 시간대를 의미 그러니까 현재 이동 중인 시간보다 값이 작거나 같다면 이미 도착했다는 의미이기 때문에 현재 이동 중인 시간보다 크지 않다면 방문이 불가
-						if (searchGraph[nx][ny] == 0 && !playerVisited[nx][ny] && saveFireMoveTime[nx][ny] > moveTime) {
-							playerVisited[nx][ny] = true;
+						// saveFireMoveTime[nx][ny] == -2 는 불이 오지 않은 공간이지만 이동이 가능한 공간을 의미한다.
+						if (searchGraph[nx][ny] == 0 && saveFireMoveTime[nx][ny] != -1 && (saveFireMoveTime[nx][ny] > moveTime || saveFireMoveTime[nx][ny] == -2)) {
 							parent[nx][ny] = make_pair(checkPoint.first, checkPoint.second);
 							bfsQueue.push(make_pair(nx, ny));
 						}
@@ -1212,11 +1242,6 @@ namespace Algorithm {
 
 				// 탈출 성공 시 바로 반복문 종료
 				if (exitSuccess) {
-					// 혹시 몰라서 큐에 저장된 내용을 전부 삭제
-					int currentQueueLength = (int)bfsQueue.size();
-					for (int i = 0; i < currentQueueLength; i++) {
-						bfsQueue.pop();
-					}
 					break;
 				}
 			}
@@ -1230,11 +1255,10 @@ namespace Algorithm {
 				while (!finish) {
 					pair<int, int> previousNode = routeStack.top();
 					pair<int, int> parentNode = parent[previousNode.first][previousNode.second];
-					if (parentNode == make_pair(-1, -1)) {
+					if (parentNode == make_pair(-1, -1))
 						finish = true;
-						break;
-					}
-					routeStack.push(parentNode);
+					else
+						routeStack.push(parentNode);
 				}
 
 				int stackLength = (int)routeStack.size();
@@ -1253,6 +1277,18 @@ namespace Algorithm {
 				}
 				cout << endl;
 			}
+
+			// 아쉬운 점
+			// 1. while 조건이 finish인데 굳이 정의 안에서 finish로 break를 하고 있다. - 수정 완료
+			// 2. 큐를 반드시 다 비우지 않아도 함수 종료 시 삭제되는데 불필요한 동작을 하고 있다. - 수정 완료
+			// 3. 부모를 저장한 것을 활용하면 되는데 visited를 따로 둬서 불필요한 메모리 낭비를 하게 되었다. - 수정 완료
+
+			// 반드시 고쳐야 할 점
+			// 1. 시작점과 도착점이 같을 경우에 대한 검사가 진행되지 않았다. - 수정 완료
+			// 2. 탈출구도 불이 시작하는 지점일 수 있는데 이를 적용하지 않았다. - 수정 완료
+			// 3. 시작점이 이미 불일 수도 있으니 이에 대해서도 확인해봐야 한다. - 수정 완료
+			// 4. 불이 존재할 수 없는 위치에서 시작할 수도 있으니 검사해야 한다. - 수정 완료
+			// 5. 불이 절대 안 오는 곳에 플레이어도 못 가는 버그가 있다. 불이 안 간 곳과 못 가는 곳을 모두 -1로 처리했기 때문으로 이는 명백한 에러이니 반드시 수정하여야 한다. - 수정 완료
 		}
 
 		// 아쉬운 점
@@ -1378,6 +1414,108 @@ namespace Algorithm {
 					}
 				}
 				bfsQueue.pop();
+			}
+		}
+	}
+
+	// 인접 리스트를 사용하는 문제를 해결하는 BFS/DFS
+	namespace AdjacencyList {
+		// 각 문제는 옵시디언에서 확인
+		// 문제 1
+		void ResultQ1()
+		{
+			// 모든 예외의 경우 함수를 종료시키도록 설정
+
+			int vertexCount;
+			int edgeCount;
+			int startVertexNum;
+			cin >> vertexCount >> edgeCount >> startVertexNum;
+			
+			if (vertexCount <= 0 || vertexCount > 1000) {
+				cout << "범위를 초과한 정점 개수 입력. 기능 종료." << endl;
+				return;
+			}
+
+			if (edgeCount <= 0 || edgeCount > 10000) {
+				cout << "범위를 초과한 간선 개수 입력. 기능 종료." << endl;
+				return;
+			}
+
+			if (startVertexNum <= 0 || startVertexNum > vertexCount) {
+				cout << "범위 안에 없는 시작 정점 번호 입력. 기능 종료." << endl;
+				return;
+			}
+
+			vector<vector<int>> adjacencyList;
+			adjacencyList.resize(vertexCount);
+
+			// 간선 개수를 지정했기 때문에 딱 이 정도의 간선만 생기도록 제한
+			for (int i = 0; i < edgeCount; i++) {
+				int vertexNum;
+				int connectVertexNum;
+				cin >> vertexNum >> connectVertexNum;
+				if (vertexNum <= 0 || vertexNum > vertexCount) {
+					cout << "범위를 벗어난 정점 입력. 기능 종료." << endl;
+					return;
+				}
+				if (connectVertexNum <= 0 || connectVertexNum > vertexCount) {
+					cout << "범위를 벗어난 정점 입력. 기능 종료." << endl;
+					return;
+				}
+
+				if (connectVertexNum == vertexNum) {
+					cout << "동일한 정점 입력. 기능 종료." << endl;
+					return;
+				}
+
+				// 어떤 두 정점 사이에 여러 개의 간선이 있을 수 있다라는 문장을 두 정점의 연결이 여러 개일 수 있다 즉, 동일한 간선이 존재할 수 있다고 판단하여 이에 대한 검사는 진행하지 않고 인접 리스트에 추가
+				adjacencyList[vertexNum].push_back(connectVertexNum - 1);  // 각 정점의 번호는 배열의 인덱스 값과 매치되도록 -1을 하고 인접 리스트에 추가한다.(시작 정점 또한 마찬가지로 진행)
+			}
+
+			SortAdjacencyList(adjacencyList);
+
+			vector<bool> visited = vector<bool>(vertexCount, false);
+			stack<int> dfsStack;
+			queue<int> bfsQueue;
+		}
+
+		void AdjacencyListDFSQ1(const vector<vector<int>>& adjacencyList, vector<bool>& visited, stack<int>& dfsStack)
+		{
+			// visited를 한 번 사용했을 경우를 대비하여 visited의 모든 값을 false로 초기화하는 작업
+			for (int i = 0; i < (int)adjacencyList.size(); i++) {
+				visited[i] = false;
+			}
+		}
+
+		void AdjacencyListBFSQ1(const vector<vector<int>>& adjacencyList, vector<bool>& visited, queue<int>& bfsQueue)
+		{
+			// visited를 한 번 사용했을 경우를 대비하여 visited의 모든 값을 false로 초기화하는 작업
+			for (int i = 0; i < (int)adjacencyList.size(); i++) {
+				visited[i] = false;
+			}
+		}
+
+		// 인접 리스트의 요소 순서를 작은 값부터 정렬하는 함수
+		void SortAdjacencyList(vector<vector<int>>& adjacencyList) {
+			for (int i = 0; i < (int)adjacencyList.size(); i++) {
+				SortList(adjacencyList[i]);
+			}
+		}
+
+		void SortList(vector<int>& list) {
+			// 정점에 연결된 정점이 1개 이하라면 정렬을 할 필요가 없으니 바로 넘어가도록 설정
+			if ((int)list.size() <= 1)
+				return;
+
+			// 삽입 정렬 방식 활용
+			for (int i = 1; i < (int)list.size(); i++) {
+				int j = i;
+				while (j > 0 && list[j - 1] > list[j]) {
+					int temp = list[j];
+					list[j] = list[j - 1];
+					list[j - 1] = temp;
+					--j;
+				}
 			}
 		}
 	}
