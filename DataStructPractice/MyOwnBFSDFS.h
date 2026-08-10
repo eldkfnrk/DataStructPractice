@@ -162,8 +162,8 @@ namespace Algorithm {
 	namespace AdjacencyList {
 		// ¹®Á¦ 1
 		void ResultQ1();
-		void AdjacencyListDFSQ1(const vector<vector<int>>& adjacencyList, vector<bool>& visited, stack<int>& dfsStack);
-		void AdjacencyListBFSQ1(const vector<vector<int>>& adjacencyList, vector<bool>& visited, queue<int>& bfsQueue);
+		void AdjacencyListDFSQ1(const vector<vector<int>>& adjacencyList, vector<bool>& visited, vector<int>& dfsResult, int startVertex);
+		void AdjacencyListBFSQ1(const vector<vector<int>>& adjacencyList, vector<bool>& visited, vector<int>& bfsResult, int startVertex);
 		void SortAdjacencyList(vector<vector<int>>& adjacencyList);
 		void SortList(vector<int>& list);
 

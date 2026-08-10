@@ -1469,29 +1469,84 @@ namespace Algorithm {
 				}
 
 				// 어떤 두 정점 사이에 여러 개의 간선이 있을 수 있다라는 문장을 두 정점의 연결이 여러 개일 수 있다 즉, 동일한 간선이 존재할 수 있다고 판단하여 이에 대한 검사는 진행하지 않고 인접 리스트에 추가
-				adjacencyList[vertexNum].push_back(connectVertexNum - 1);  // 각 정점의 번호는 배열의 인덱스 값과 매치되도록 -1을 하고 인접 리스트에 추가한다.(시작 정점 또한 마찬가지로 진행)
+				adjacencyList[vertexNum - 1].push_back(connectVertexNum - 1);  // 각 정점의 번호는 배열의 인덱스 값과 매치되도록 -1을 하고 인접 리스트에 추가한다.(시작 정점 또한 마찬가지로 진행)
+				adjacencyList[connectVertexNum - 1].push_back(vertexNum - 1);  // 양방향 간선이기 때문에 반대 쪽도 동시에 연결되기 때문에 인접 리스트에 추가한다.
 			}
+			cout << endl;
 
 			SortAdjacencyList(adjacencyList);
 
 			vector<bool> visited = vector<bool>(vertexCount, false);
-			stack<int> dfsStack;
-			queue<int> bfsQueue;
+			vector<int> dfsResult;
+			vector<int> bfsResult;
+
+			AdjacencyListDFSQ1(adjacencyList, visited, dfsResult, startVertexNum);
+
+			for (int i = 0; i < (int)dfsResult.size(); i++) {
+				cout << dfsResult[i] + 1 << " ";
+			}
+			cout << endl;
 		}
 
-		void AdjacencyListDFSQ1(const vector<vector<int>>& adjacencyList, vector<bool>& visited, stack<int>& dfsStack)
+		void AdjacencyListDFSQ1(const vector<vector<int>>& adjacencyList, vector<bool>& visited, vector<int>& dfsResult, int startVertexNum)
 		{
 			// visited를 한 번 사용했을 경우를 대비하여 visited의 모든 값을 false로 초기화하는 작업
 			for (int i = 0; i < (int)adjacencyList.size(); i++) {
 				visited[i] = false;
 			}
+
+			stack<pair<int, int>> dfsStack;
+
+			int startVertex = startVertexNum - 1;  // 배열에 정점을 대입하면서 배열의 인덱스를 활용하기 위해 이에 대응하도록 1씩 뺀 값에 저장하였으니 이를 위해 시작 정점 번호를 받으면 그 값의 1을 뺀 값부터 시작하는 것이다.
+
+			visited[startVertex] = true;
+			dfsStack.push(make_pair(startVertex, 0));
+			dfsResult.push_back(startVertex);
+
+			while (!dfsStack.empty()) {
+				pair<int, int> topData = dfsStack.top();
+				int currentVertex = topData.first;
+				int listLength = (int)adjacencyList[currentVertex].size();
+
+				if (listLength == 0) {
+					dfsStack.pop();
+					break;
+				}
+
+				bool insertData = false;
+
+				for (int i = topData.second; i < listLength; i++) {
+					int connectVertex = adjacencyList[currentVertex][i];
+					if (!visited[connectVertex]) {
+						visited[connectVertex] = true;
+						dfsStack.top().second = i + 1;  // topData 변수는 스택의 top 값을 대입한 것일 뿐인 다른 변수이기 때문에 직접 호출하여 다음에 시작할 위치를 바꿔주어야 한다.
+						dfsStack.push(make_pair(connectVertex, 0));
+						dfsResult.push_back(connectVertex);
+						insertData = true;
+						break;
+					}
+				}
+
+				if (!insertData)
+					dfsStack.pop();
+			}
 		}
 
-		void AdjacencyListBFSQ1(const vector<vector<int>>& adjacencyList, vector<bool>& visited, queue<int>& bfsQueue)
+		void AdjacencyListBFSQ1(const vector<vector<int>>& adjacencyList, vector<bool>& visited, vector<int>& bfsResult, int startVertex)
 		{
 			// visited를 한 번 사용했을 경우를 대비하여 visited의 모든 값을 false로 초기화하는 작업
 			for (int i = 0; i < (int)adjacencyList.size(); i++) {
 				visited[i] = false;
+			}
+
+			queue<int> bfsQueue;
+
+			visited[startVertex] = true;
+			bfsQueue.push(startVertex);
+			bfsResult.push_back(startVertex);
+
+			while (!bfsQueue.empty()) {
+
 			}
 		}
 
