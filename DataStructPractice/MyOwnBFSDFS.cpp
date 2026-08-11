@@ -1481,11 +1481,16 @@ namespace Algorithm {
 			vector<int> bfsResult;
 
 			AdjacencyListDFSQ1(adjacencyList, visited, dfsResult, startVertexNum);
+			AdjacencyListBFSQ1(adjacencyList, visited, bfsResult, startVertexNum);
 
 			for (int i = 0; i < (int)dfsResult.size(); i++) {
 				cout << dfsResult[i] + 1 << " ";
 			}
 			cout << endl;
+
+			for (int i = 0; i < (int)bfsResult.size(); i++) {
+				cout << bfsResult[i] + 1 << " ";
+			}
 		}
 
 		void AdjacencyListDFSQ1(const vector<vector<int>>& adjacencyList, vector<bool>& visited, vector<int>& dfsResult, int startVertexNum)
@@ -1532,13 +1537,14 @@ namespace Algorithm {
 			}
 		}
 
-		void AdjacencyListBFSQ1(const vector<vector<int>>& adjacencyList, vector<bool>& visited, vector<int>& bfsResult, int startVertex)
+		void AdjacencyListBFSQ1(const vector<vector<int>>& adjacencyList, vector<bool>& visited, vector<int>& bfsResult, int startVertexNum)
 		{
 			// visited를 한 번 사용했을 경우를 대비하여 visited의 모든 값을 false로 초기화하는 작업
 			for (int i = 0; i < (int)adjacencyList.size(); i++) {
 				visited[i] = false;
 			}
 
+			int startVertex = startVertexNum - 1;
 			queue<int> bfsQueue;
 
 			visited[startVertex] = true;
@@ -1546,7 +1552,24 @@ namespace Algorithm {
 			bfsResult.push_back(startVertex);
 
 			while (!bfsQueue.empty()) {
+				int currentVertex = bfsQueue.front();
+				int listLength = (int)adjacencyList[currentVertex].size();
 
+				if (listLength <= 0) {
+					bfsQueue.pop();
+					break;
+				}
+
+				for (int i = 0; i < listLength; i++) {
+					int connectVertex = adjacencyList[currentVertex][i];
+					if (!visited[connectVertex]) {
+						visited[connectVertex] = true;
+						bfsQueue.push(connectVertex);
+						bfsResult.push_back(connectVertex);
+					}
+				}
+
+				bfsQueue.pop();
 			}
 		}
 
