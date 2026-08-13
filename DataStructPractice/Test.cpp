@@ -90,7 +90,8 @@ int main() {
 	//fireOrigins.push_back(make_pair(14, 0));
 	//MultiSource::Result(shortestPathMatrix, fireOrigins, playerStartPoint, exitPoint);
 
-	AdjacencyList::ResultQ1();
+	//AdjacencyList::ResultQ1();
+	AdjacencyList::ResultQ2();
 
 	return 0;
 }

@@ -168,6 +168,9 @@ namespace Algorithm {
 		void SortList(vector<int>& list);
 
 		// 문제 2
+		void ResultQ2();
+		int AdjacencyListDFSQ2(const vector<vector<int>>& adjacencyList, int startVertexNum);
+		int AdjacencyListBFSQ2(const vector<vector<int>>& adjacencyList, int startVertexNum);
 
 		// 문제 3
 

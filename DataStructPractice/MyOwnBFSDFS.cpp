@@ -1422,6 +1422,11 @@ namespace Algorithm {
 	namespace AdjacencyList {
 		// 각 문제는 옵시디언에서 확인
 		// 문제 1
+		// 아쉬운 점
+		// 1. 벡터를 초기화할 때 바로 크기를 정하면 되는데 굳이 resize를 사용하여 번거로움과 불필요한 작업을 수행하고 있다. - 수정 완료
+
+		// 고쳐야 할 점
+		// 1. BFS와 DFS 모두 인접 리스트의 길이가 0인 경우 해당 정점을 스킵한다는 의미에서 if문을 사용하였는데 문제는 break를 사용하여 해당 정점만 스킵해야 하는데 아예 반복문을 종료시켜 탐색이 종료되어 버린다. - 수정 완료
 		void ResultQ1()
 		{
 			// 모든 예외의 경우 함수를 종료시키도록 설정
@@ -1446,8 +1451,7 @@ namespace Algorithm {
 				return;
 			}
 
-			vector<vector<int>> adjacencyList;
-			adjacencyList.resize(vertexCount);
+			vector<vector<int>> adjacencyList(vertexCount);
 
 			// 간선 개수를 지정했기 때문에 딱 이 정도의 간선만 생기도록 제한
 			for (int i = 0; i < edgeCount; i++) {
@@ -1515,7 +1519,7 @@ namespace Algorithm {
 
 				if (listLength == 0) {
 					dfsStack.pop();
-					break;
+					continue;
 				}
 
 				bool insertData = false;
@@ -1557,7 +1561,7 @@ namespace Algorithm {
 
 				if (listLength <= 0) {
 					bfsQueue.pop();
-					break;
+					continue;
 				}
 
 				for (int i = 0; i < listLength; i++) {
@@ -1595,6 +1599,147 @@ namespace Algorithm {
 					--j;
 				}
 			}
+		}
+
+		// 문제 2
+
+		void ResultQ2()
+		{
+			int computerCount;  // 컴퓨터 수(정점의 수)
+			int connectNetworkCount;  // 네트워크 상 연결되어 있는 컴퓨터 쌍의 수(양방향 간선의 수)
+			
+			cin >> computerCount;
+			if (computerCount > 100 || computerCount <= 0) {
+				cout << "범위를 벗어난 값 입력. 탐색 종료" << endl;
+				return;
+			}
+
+			cin >> connectNetworkCount;
+			if (connectNetworkCount < 0) {
+				cout << "음수가 입력될 수 없음. 탐색 종료" << endl;
+				return;
+			}
+
+			vector<vector<int>> adjacencyList(computerCount);
+
+			for (int i = 0; i < connectNetworkCount; i++) {
+				int a, b;
+				cin >> a >> b;
+				a = a - 1;
+				b = b - 1;
+				// 이번 문제에는 두 정점 사이의 여러 개의 간선이 있을 수 있다 즉, 동일한 간선이 존재할 수 있다는 조건이 없기 때문에 이에 대한 검사 후 간선이 존재한다면 탐색 종료.
+				int aListSize = (int)adjacencyList[a].size();
+				int bListSize = (int)adjacencyList[b].size();
+				for (int j = 0; j < aListSize; j++) {
+					if (adjacencyList[a][j] == b) {
+						cout << "동일한 간선이 이미 존재. 동일한 간선은 존재할 수 없으므로 탐색 종료." << endl;
+						return;
+					}
+				}
+				for (int j = 0; j < bListSize; j++) {
+					if (adjacencyList[b][j] == a) {
+						cout << "동일한 간선이 이미 존재. 동일한 간선은 존재할 수 없으므로 탐색 종료." << endl;
+						return;
+					}
+				}
+
+				adjacencyList[a].push_back(b);
+				adjacencyList[b].push_back(a);
+			}
+
+			// 이번 문제는 1번 컴퓨터가 감염된 상황을 가정하지만 다른 시작점이 있을 수도 있다고 생각하고 따로 감염 시작 번호를 받는 형식으로 변형
+			int startComputerNum;
+			cin >> startComputerNum;
+			if (startComputerNum <= 0 || startComputerNum > computerCount) {
+				cout << "범위를 벗어난 값. 탐색 종료" << endl;
+				return;
+			}
+
+			int dfsResult = AdjacencyListDFSQ2(adjacencyList, startComputerNum);
+			int bfsResult = AdjacencyListBFSQ2(adjacencyList, startComputerNum);
+
+			if (dfsResult != bfsResult) {
+				cout << "로직 오류 발생. 탐색 종료." << endl;
+				return;
+			}
+
+			cout << dfsResult << endl;
+		}
+
+		int AdjacencyListDFSQ2(const vector<vector<int>>& adjacencyList, int startVertexNum)
+		{
+			vector<bool> visited((int)adjacencyList.size(), false);
+
+			stack<pair<int, int>> dfsStack;
+			int count = 0;  // 시작 정점은 갯수에서 제외되므로 시작에서는 + 하지 않는다.
+			int startVertex = startVertexNum - 1;
+			visited[startVertex] = true;
+			dfsStack.push(make_pair(startVertex, 0));
+
+			while (!dfsStack.empty()) {
+				pair<int, int> topData = dfsStack.top();
+				int curVertex = topData.first;
+				int listLength = (int)adjacencyList[curVertex].size();
+
+				if (listLength <= 0) {
+					dfsStack.pop();
+					continue;
+				}
+
+				int startIndex = topData.second;
+				bool doInsert = false;
+
+				for (int i = startIndex; i < listLength; i++) {
+					int nextVertex = adjacencyList[curVertex][i];
+					if (!visited[nextVertex]) {
+						visited[nextVertex] = true;
+						dfsStack.top().second = i + 1;
+						dfsStack.push(make_pair(nextVertex, 0));
+						doInsert = true;
+						++count;
+						break;
+					}
+				}
+
+				if (!doInsert)
+					dfsStack.pop();
+			}
+
+			return count;
+		}
+
+		int AdjacencyListBFSQ2(const vector<vector<int>>& adjacencyList, int startVertexNum)
+		{
+			vector<bool> visited((int)adjacencyList.size(), false);
+
+			queue<int> bfsQueue;
+			int count = 0;  // 시작 정점은 갯수에서 제외되므로 시작에서는 + 하지 않는다.
+			int startVertex = startVertexNum - 1;
+			visited[startVertex] = true;
+			bfsQueue.push(startVertex);
+
+			while (!bfsQueue.empty()) {
+				int curVertex = bfsQueue.front();
+				int listLength = (int)adjacencyList[curVertex].size();
+
+				if (listLength <= 0) {
+					bfsQueue.pop();
+					continue;
+				}
+
+				for (int i = 0; i < listLength; i++) {
+					int nextVertex = adjacencyList[curVertex][i];
+					if (!visited[nextVertex]) {
+						visited[nextVertex] = true;
+						bfsQueue.push(nextVertex);
+						++count;
+					}
+				}
+
+				bfsQueue.pop();
+			}
+
+			return count;
 		}
 	}
 }
