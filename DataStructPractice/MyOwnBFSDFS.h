@@ -173,6 +173,9 @@ namespace Algorithm {
 		int AdjacencyListBFSQ2(const vector<vector<int>>& adjacencyList, int startVertexNum);
 
 		// 문제 3
+		void ResultQ3();
+		int AdjacencyListDFSQ3(const vector<vector<int>>& adjacencyList, int startVertexNum, int targetVertexNum, vector<bool>& visited, int count);
+		int AdjacencyListBFSQ3(const vector<vector<int>>& adjacencyList, int startVertexNum, int targetVertexNum);
 
 		// 문제 4
 

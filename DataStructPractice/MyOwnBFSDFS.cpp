@@ -1602,6 +1602,10 @@ namespace Algorithm {
 		}
 
 		// 문제 2
+		// 아쉬운 점
+		// 1. 간선 연결 과정에서 정점 번호 범위를 검사하지 않고 있다. - 수정 완료
+		// 2. 자기 자신을 연결하는 간선을 검사하지 않아 문제가 발생할 수 있다. - 수정 완료
+		// 3. 중복 간선 검사를 입력할 때 양방향 간선을 추가하는데 이를 활용하지 않고 두 방향을 모두 확인하고 있다. - 수정 완료
 
 		void ResultQ2()
 		{
@@ -1627,17 +1631,22 @@ namespace Algorithm {
 				cin >> a >> b;
 				a = a - 1;
 				b = b - 1;
+				int listLength = (int)adjacencyList.size();
+				if (a<0 || a>listLength || b<0 || b>listLength){
+					cout << "입력한 정점이 범위를 벗어남. 탐색 종료" << endl;
+					return;
+				}
+
+				if (a == b) {
+					cout << "자기 자신을 연결하는 간선 추가가 발견. 오류 발생으로 인식하여 탐색 종료." << endl;
+					return;
+				}
+
 				// 이번 문제에는 두 정점 사이의 여러 개의 간선이 있을 수 있다 즉, 동일한 간선이 존재할 수 있다는 조건이 없기 때문에 이에 대한 검사 후 간선이 존재한다면 탐색 종료.
+				// 중복 간선 문제는 사실 없어도 되지만 학습 목적으로 추가
 				int aListSize = (int)adjacencyList[a].size();
-				int bListSize = (int)adjacencyList[b].size();
 				for (int j = 0; j < aListSize; j++) {
 					if (adjacencyList[a][j] == b) {
-						cout << "동일한 간선이 이미 존재. 동일한 간선은 존재할 수 없으므로 탐색 종료." << endl;
-						return;
-					}
-				}
-				for (int j = 0; j < bListSize; j++) {
-					if (adjacencyList[b][j] == a) {
 						cout << "동일한 간선이 이미 존재. 동일한 간선은 존재할 수 없으므로 탐색 종료." << endl;
 						return;
 					}
@@ -1738,6 +1747,139 @@ namespace Algorithm {
 
 				bfsQueue.pop();
 			}
+
+			return count;
+		}
+
+		// 문제 3.
+
+		void ResultQ3()
+		{
+			int totalPeopleCount;
+			cin >> totalPeopleCount;
+			if (totalPeopleCount < 1 || totalPeopleCount>100) {
+				cout << "전체 사람의 수에 범위를 초과한 값 입력. 탐색 종료." << endl;
+				return;
+			}
+
+			int familyA, familyB;
+			cin >> familyA >> familyB;
+			if (familyA == familyB) {
+				cout << "두 숫자가 동일하여 탐색 불가. 탐색 종료." << endl;
+				return;
+			}
+
+			int relationCount;
+			cin >> relationCount;
+			if (relationCount < 0) {
+				cout << "관계의 수 값으로 불가능한 값 입력. 탐색 종료" << endl;
+				return;
+			}
+
+			vector<vector<int>> adjacencyList(totalPeopleCount);
+			vector<bool> childCheck(totalPeopleCount, false);  // 자식이 된 적이 있는지 확인하기 위한 배열(자식은 부모가 최대 한 명이기 때문에 이 조건을 만족할 수 있도록 하기 위한 방지책)
+
+			for (int i = 0; i < relationCount; i++) {
+				int x, y;
+				cin >> x >> y;
+				if (x == y) {
+					cout << "두 숫자가 동일하여 탐색 불가. 탐색 종료." << endl;
+					return;
+				}
+				if (x > totalPeopleCount || x < 1 || y > totalPeopleCount || y < 1) {
+					cout << "정점 값으로 범위를 초과한 값 입력. 탐색 종료." << endl;
+					return;
+				}
+				x = x - 1;
+				y = y - 1;
+				if (childCheck[y]) {
+					cout << y << "정점의 부모가 2개가 되면서 에러 발생. 탐색 종료." << endl;
+					return;
+				}
+				childCheck[y] = true;
+				adjacencyList[x].push_back(y);
+				adjacencyList[y].push_back(x);
+			}
+
+			vector<bool> visited(adjacencyList.size(), false);
+
+			// 이 문제는 최단 거리를 구하는 문제이기 때문에 BFS만으로 충분하지만 DFS로도 구할 수 있는지 확인하기 위하여 DFS도 구현
+			int relativeBFSNum = AdjacencyListBFSQ3(adjacencyList, familyA, familyB);
+			int relativeDFSNum = AdjacencyListDFSQ3(adjacencyList, familyA, familyB, visited, 0);
+
+			cout << relativeBFSNum << endl;
+			cout << relativeBFSNum << endl;
+		}
+
+		int AdjacencyListDFSQ3(const vector<vector<int>>& adjacencyList, int startVertexNum, int targetVertexNum, vector<bool>& visited, int count)
+		{
+			int startVertex = startVertexNum - 1;
+			visited[startVertex] = true;
+
+			if (startVertexNum == targetVertexNum) 
+				return ++count;
+
+			int listSize = (int)adjacencyList[startVertex].size();
+			int resultCount = 0;
+
+			for (int i = 0; i < listSize; i++) {
+				int connectVertex = adjacencyList[startVertex][i];
+				if (!visited[connectVertex]) {
+					resultCount = AdjacencyListDFSQ3(adjacencyList, connectVertex + 1, targetVertexNum, visited, count + 1);
+					if (resultCount > 0)
+						break;
+				}
+			}
+
+			if (resultCount > 0)
+				return resultCount;
+
+			return -1;
+		}
+
+		int AdjacencyListBFSQ3(const vector<vector<int>>& adjacencyList, int startVertexNum, int targetVertexNum)
+		{
+			int count = 0;
+			int startVertex = startVertexNum - 1;
+			int targetVertex = targetVertexNum - 1;
+
+			queue<int> bfsQueue;
+			vector<bool> visited(adjacencyList.size(), false);
+			bool connectTarget = false;
+
+			visited[startVertex] = true;
+			bfsQueue.push(startVertex);
+
+			while (!bfsQueue.empty()) {
+				int queueLength = (int)bfsQueue.size();
+				++count;
+				for (int i = 0; i < queueLength; i++) {
+					int currentVertex = bfsQueue.front();
+					int listSize = (int)adjacencyList[currentVertex].size();
+					for (int j = 0; j < listSize; j++) {
+						int connectVertex = adjacencyList[currentVertex][j];
+						if (!visited[connectVertex]) {
+							visited[connectVertex] = true;
+							if (connectVertex == targetVertex) {
+								connectTarget = true;
+								break;
+							}
+							bfsQueue.push(connectVertex);
+						}
+					}
+
+					if (connectTarget)
+						break;
+
+					bfsQueue.pop();
+				}
+
+				if (connectTarget)
+					break;
+			}
+
+			if (!connectTarget)
+				count = -1;
 
 			return count;
 		}
