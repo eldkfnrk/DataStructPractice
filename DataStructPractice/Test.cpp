@@ -92,7 +92,8 @@ int main() {
 
 	//AdjacencyList::ResultQ1();
 	//AdjacencyList::ResultQ2();
-	AdjacencyList::ResultQ3();
+	//AdjacencyList::ResultQ3();
+	AdjacencyList::ResultQ4();
 
 	return 0;
 }

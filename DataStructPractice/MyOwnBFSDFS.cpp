@@ -1752,6 +1752,9 @@ namespace Algorithm {
 		}
 
 		// 문제 3.
+		// 아쉬운 점 
+		// 1. DFS는 최단 거리를 찾는 문제에 맞지 않으니 생략해도 되었지만 그렇지 않았던 점과 DFS의 결과 값이 답보다 항상 +1이 되는 구조로 되어 있는 점 - 수정 완료
+		// 2. DFS의 가독성이 떨어지는 문제 - 수정 완료(값을 바로 반환하는 것으로 무엇을 가독성을 약간 높였다.)
 
 		void ResultQ3()
 		{
@@ -1808,7 +1811,7 @@ namespace Algorithm {
 			int relativeDFSNum = AdjacencyListDFSQ3(adjacencyList, familyA, familyB, visited, 0);
 
 			cout << relativeBFSNum << endl;
-			cout << relativeBFSNum << endl;
+			cout << relativeDFSNum << endl;
 		}
 
 		int AdjacencyListDFSQ3(const vector<vector<int>>& adjacencyList, int startVertexNum, int targetVertexNum, vector<bool>& visited, int count)
@@ -1817,22 +1820,18 @@ namespace Algorithm {
 			visited[startVertex] = true;
 
 			if (startVertexNum == targetVertexNum) 
-				return ++count;
+				return count;
 
 			int listSize = (int)adjacencyList[startVertex].size();
-			int resultCount = 0;
 
 			for (int i = 0; i < listSize; i++) {
 				int connectVertex = adjacencyList[startVertex][i];
 				if (!visited[connectVertex]) {
-					resultCount = AdjacencyListDFSQ3(adjacencyList, connectVertex + 1, targetVertexNum, visited, count + 1);
+					int resultCount = AdjacencyListDFSQ3(adjacencyList, connectVertex + 1, targetVertexNum, visited, count + 1);
 					if (resultCount > 0)
-						break;
+						return resultCount;
 				}
 			}
-
-			if (resultCount > 0)
-				return resultCount;
 
 			return -1;
 		}
@@ -1882,6 +1881,113 @@ namespace Algorithm {
 				count = -1;
 
 			return count;
+		}
+
+		// 문제 4
+		// 아쉬운 점
+		// 1. 재귀 DFS를 사용(범위가 크면 스택 오버플로우가 발생할 수 있기에 스택 방법을 사용하는 것이 문제를 방지할 수 있다.) - 다음 문제부터 적용
+		// 2. visited를 또 초기화하는 동작이 불필요하다.(아예 DFS와 BFS를 따로 두는 것도 방법이 될 수 있고 algorithm STL에 있는 std::fill 함수를 사용하여 초기화 할 수도 있다.) - 수정 완료
+
+		void ResultQ4()
+		{
+			int n, m;  // n - 정점 개수, m - 간선 개수
+			cin >> n >> m;
+
+			if (n < 1 || n > 1000 || m < 0 || m > n * (n - 1) / 2) {
+				cout << "범위를 벗어난 값 입력. 탐색 종료." << endl;
+				return;
+			}
+
+			vector<vector<int>> adjacencyList(n);
+
+			for (int i = 0; i < m; i++) {
+				int u, v;  // 연결되는 정점 번호
+				cin >> u >> v;
+				if (u == v) {  // 정점 번호가 동일한지 검사
+					cout << "동일한 정점 번호가 입력되면서 오류 발생. 탐색 종료." << endl;
+					return;
+				}
+				if (u<1 || u>n || v<1 || v>n) {  // 정점 번호가 범위를 벗어나는 것을 검사
+					cout << "범위를 벗어난 값 입력으로 인한 오류 발생. 탐색 종료." << endl;
+					return;
+				}
+
+				u -= 1;
+				v -= 1;
+
+				int listSize = (int)adjacencyList[u].size();
+				for (int j = 0; j < listSize; j++) {  // 같은 간선은 하나만 있을 수 있다는 조건 검사
+					if (adjacencyList[u][j] == v) {
+						cout << "동일한 간선은 존재할 수 없는데 생성하려는 오류 발생. 탐색 종료." << endl;
+						return;
+					}
+				}
+
+				adjacencyList[u].push_back(v);
+				adjacencyList[v].push_back(u);
+			}
+
+			vector<bool> visited(n, false);
+			int count = 0;
+
+			// bfs 순회
+			for (int i = 0; i < n; i++) {
+				if (!visited[i]) {
+					AdjacencyListBFSQ4(adjacencyList, i, visited);
+					++count;
+				}
+			}
+
+			cout << "BFS 결과 : " << count << endl;
+
+			count = 0;
+			// bfs를 순회하며 값이 변경된 배열의 값을 다시 초기화
+			//for (int i = 0; i < n; i++) {
+			//	visited[i] = false;
+			//}
+			std::fill(visited.begin(), visited.end(), false);
+
+			// dfs 순회
+			for (int i = 0; i < n; i++) {
+				if (!visited[i]) {
+					AdjacencyListDFSQ4(adjacencyList, i, visited);
+					++count;
+				}
+			}
+
+			cout << "DFS 결과 : " << count << endl;
+		}
+
+		void AdjacencyListDFSQ4(const vector<vector<int>>& adjacencyList, int startVertexNum, vector<bool>& visited)
+		{
+			visited[startVertexNum] = true;
+			int listSize = (int)adjacencyList[startVertexNum].size();
+
+			for (int i = 0; i < listSize; i++) {
+				int connectVertex = adjacencyList[startVertexNum][i];
+				if (!visited[connectVertex])
+					AdjacencyListDFSQ4(adjacencyList, connectVertex, visited);
+			}
+		}
+
+		void AdjacencyListBFSQ4(const vector<vector<int>>& adjacencyList, int startVertexNum, vector<bool>& visited)
+		{
+			queue<int> bfsQueue;
+			visited[startVertexNum] = true;
+			bfsQueue.push(startVertexNum);
+
+			while (!bfsQueue.empty()) {
+				int currentVertex = bfsQueue.front();
+				int listSize = (int)adjacencyList[currentVertex].size();
+				for (int i = 0; i < listSize; i++) {
+					int connectVertex = adjacencyList[currentVertex][i];
+					if (!visited[connectVertex]) {
+						visited[connectVertex] = true;
+						bfsQueue.push(connectVertex);
+					}
+				}
+				bfsQueue.pop();
+			}
 		}
 	}
 }
