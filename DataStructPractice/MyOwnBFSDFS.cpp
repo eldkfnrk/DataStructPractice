@@ -1989,5 +1989,159 @@ namespace Algorithm {
 				bfsQueue.pop();
 			}
 		}
+
+		// 문제 5
+
+		void ResultQ5()
+		{
+			int tcCount;
+			cin >> tcCount;
+			if (tcCount < 2 || tcCount>5) {
+				cout << "범위를 벗어난 값. 탐색 종료." << endl;
+				return;
+			}
+
+			vector<string> result(tcCount);
+
+			for (int i = 0; i < tcCount; i++) {
+				int v, e;  // 정점 갯수, 간선 갯수
+				cout << i + 1 << "번째 TC" << endl;
+				cin >> v >> e;
+				if (v < 1 || v > 20000 || e < 1 || e > 200000) {
+					cout << "범위를 벗어난 값의 입력 발생. 탐색 종료." << endl;
+					return;
+				}
+
+				vector<vector<int>> adjacencyList(v);
+				for (int j = 0; j < e; j++) {
+					int a, b;
+					cin >> a >> b;
+					if (a > v || a < 1 || b > v || b < 1) {
+						cout << "범위를 벗어난 정점 번호 값 입력 발생. 탐색 종료." << endl;
+						return;
+					}
+
+					if (a == b) {
+						cout << "동일한 값 입력. 간선 생성 불가로 인한 탐색 종료." << endl;
+						return;
+					}
+
+					a -= 1;
+					b -= 1;
+					adjacencyList[a].push_back(b);
+					adjacencyList[b].push_back(a);
+
+					// 이분 그래프 - 알아본 바로는 정점들이 색깔을 가지고 있다고 보면 된다는 것이다.
+					// 만약 인접 정점의 색깔이 같은 색깔을 가지고 있다면 이는 이분 그래프가 되지 않는 것이다. 왜냐하면 색깔을 정점의 구분이라고 봤을 때 같은 색이 인접한 정점에 있다면 이는 같은 집합에 정점끼리 연결되어 있다는 의미이기 때문이다.
+					// 이때 색상은 시작 정점을 기준으로 인접한 값들을 시작 정점과 다른 색으로 칠하는 것으로 이제 이 색칠한 정점이 시작 정점이 되어서 점차 색을 칠하다 보면 모두 칠해질 것이고 이때 같은 색이 인접한다면 이분 그래프가 아니게 되는 것이다.
+				}
+
+				if (AdjacencyListDFSQ5(adjacencyList))
+					cout << "DFS TEST : YES" << endl;
+				else
+					cout << "DFS TEST : NO" << endl;
+
+				if (AdjacencyListBFSQ5(adjacencyList))
+					cout << "BFS TEST : YES" << endl;
+				else
+					cout << "BFS TEST : NO" << endl;
+			}
+		}
+
+		bool AdjacencyListDFSQ5(const vector<vector<int>>& adjacencyList)
+		{
+			int listSize = (int)adjacencyList.size();
+			stack<pair<int, int>> dfsStack;
+			vector<bool> visited(listSize, false);
+			vector<int> colors(listSize, 0);
+			bool isBipartiteGraph = true;
+
+			for (int i = 0; i < listSize; i++) {
+				if (!visited[i]) {
+					if (colors[i] == 0)
+						colors[i] = 1;
+
+					visited[i] = true;
+					dfsStack.push(make_pair(i, 0));
+					while (!dfsStack.empty()) {
+						pair<int, int> topData = dfsStack.top();
+						bool isInsertData = false;
+						int currentVertex = topData.first;
+						int currentListSize = (int)adjacencyList[currentVertex].size();
+
+						for (int j = topData.second; j < currentListSize; j++) {
+							int connectVertex = adjacencyList[currentVertex][j];
+							if (!visited[connectVertex]) {
+								if (colors[connectVertex] == 0)
+									colors[connectVertex] = colors[currentVertex] == 1 ? 2 : 1;
+								visited[connectVertex] = true;
+								topData.second = j + 1;
+								dfsStack.push(make_pair(connectVertex, 0));
+								isInsertData = true;
+								break;
+							}
+							else if (colors[currentVertex] == colors[connectVertex]) {
+								isBipartiteGraph = false;
+								break;
+							}
+						}
+
+						if (!isBipartiteGraph)
+							break;
+
+						if (!isInsertData)
+							dfsStack.pop();
+					}
+				}
+
+				if (!isBipartiteGraph)
+					break;
+			}
+
+			return isBipartiteGraph;
+		}
+
+		bool AdjacencyListBFSQ5(const vector<vector<int>>& adjacencyList)
+		{
+			int listSize = (int)adjacencyList.size();
+			queue<int> bfsQueue;
+			vector<bool> visited(listSize, false);
+			vector<int> colors(listSize, 0);  // 1과 2의 값만 가지도록 설정, 0은 색이 없는 것으로 판별
+			bool isBipartiteGraph = true;
+
+			for (int i = 0; i < listSize; i++) {
+				if (!visited[i]) {
+					if (colors[i] == 0)
+						colors[i] = 1;
+					visited[i] = true;
+					bfsQueue.push(i);
+					while (!bfsQueue.empty()) {
+						int currentVertex = bfsQueue.front();
+						int currentListSize = (int)adjacencyList[currentVertex].size();
+						for (int j = 0; j < currentListSize; j++) {
+							int connectVertex = adjacencyList[currentVertex][j];
+
+							if (!visited[connectVertex]) {
+								if (colors[connectVertex] == 0)
+									colors[connectVertex] = colors[currentVertex] == 1 ? 2 : 1;
+								visited[connectVertex] = true;
+								bfsQueue.push(connectVertex);
+							}
+							else if (colors[connectVertex] == colors[currentVertex]) {  // 인접한 정점끼리 동일한 색상이면 이분 그래프가 아니기 때문에 이분 그래프가 아님을 표시하고 
+								isBipartiteGraph = false;
+								break;
+							}
+						}
+
+						bfsQueue.pop();
+					}
+				}
+
+				if (!isBipartiteGraph)
+					break;
+			}
+
+			return isBipartiteGraph;
+		}
 	}
 }

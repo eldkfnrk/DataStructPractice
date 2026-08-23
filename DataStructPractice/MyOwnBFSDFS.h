@@ -183,6 +183,8 @@ namespace Algorithm {
 		void AdjacencyListBFSQ4(const vector<vector<int>>& adjacencyList, int startVertexNum, vector<bool>& visited);
 
 		// ¹®Á¦ 5
-
+		void ResultQ5();
+		bool AdjacencyListDFSQ5(const vector<vector<int>>& adjacencyList);
+		bool AdjacencyListBFSQ5(const vector<vector<int>>& adjacencyList);
 	}
 }
