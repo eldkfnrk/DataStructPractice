@@ -1991,6 +1991,11 @@ namespace Algorithm {
 		}
 
 		// 문제 5
+		// 아쉬운 점
+		// 1. colors가 방문 정보를 갖고 있지만 visited를 또 생성하여 방문을 검사하고 있다. colors가 모두 할 수 있으니 colors를 이용하는 방법을 모색하는 것이 좋다. - 수정 완료
+		// 2. BFS에서 탐색 종료 조건인 이분 그래프가 아님을 확인해도 while문을 불필요하게 반복하는 문제가 있다. 이분 그래프가 아님을 확인하면 while문도 종료되도록 수정하여야 한다. - 수정 완료
+		// 3. DFS에서 스택 재방문 인덱스 저장이 되고 있지 않다. 어디까지 검사했는지 저장하는 값을 수정하도록 하였는데 그것이 스택에 저장된 값을 수정하는 것이 아니라 실질적 영향이 없는 상태이기에 수정이 필요하다. - 수정 완료
+		// 4. return을 써서 오류 발생 시 바로 프로그램을 종료시키고 있는데 이때 찌꺼기 데이터가 그대로 남을 수 있기에 이를 없애는 방법으로 수정하는 것이 좋다.(지금 단계에서는 수정하지 않아도 된다.)
 
 		void ResultQ5()
 		{
@@ -2052,30 +2057,25 @@ namespace Algorithm {
 		{
 			int listSize = (int)adjacencyList.size();
 			stack<pair<int, int>> dfsStack;
-			vector<bool> visited(listSize, false);
 			vector<int> colors(listSize, 0);
 			bool isBipartiteGraph = true;
 
 			for (int i = 0; i < listSize; i++) {
-				if (!visited[i]) {
-					if (colors[i] == 0)
-						colors[i] = 1;
-
-					visited[i] = true;
+				if (colors[i] == 0) {
+					colors[i] = 1;
 					dfsStack.push(make_pair(i, 0));
+
 					while (!dfsStack.empty()) {
-						pair<int, int> topData = dfsStack.top();
+						pair<int, int>& topData = dfsStack.top();  // 여기서는 참조를 사용하여 수정하였다.
 						bool isInsertData = false;
 						int currentVertex = topData.first;
 						int currentListSize = (int)adjacencyList[currentVertex].size();
 
 						for (int j = topData.second; j < currentListSize; j++) {
 							int connectVertex = adjacencyList[currentVertex][j];
-							if (!visited[connectVertex]) {
-								if (colors[connectVertex] == 0)
-									colors[connectVertex] = colors[currentVertex] == 1 ? 2 : 1;
-								visited[connectVertex] = true;
-								topData.second = j + 1;
+							if (colors[connectVertex] == 0) {
+								colors[connectVertex] = colors[currentVertex] == 1 ? 2 : 1;
+								topData.second = j + 1;  // 이렇게 하면 해당 변수 값만 바뀌고 실제 스택에 저장되어 있는 값은 변하지 않는다.(해결할 방법은 2가지로 스택에 저장되어 있는 값을 직접 변경하거나 변수 참조/포인터로 만들어 값 수정이 적용되도록 하는 방법이다.)
 								dfsStack.push(make_pair(connectVertex, 0));
 								isInsertData = true;
 								break;
@@ -2105,26 +2105,22 @@ namespace Algorithm {
 		{
 			int listSize = (int)adjacencyList.size();
 			queue<int> bfsQueue;
-			vector<bool> visited(listSize, false);
 			vector<int> colors(listSize, 0);  // 1과 2의 값만 가지도록 설정, 0은 색이 없는 것으로 판별
 			bool isBipartiteGraph = true;
 
 			for (int i = 0; i < listSize; i++) {
-				if (!visited[i]) {
-					if (colors[i] == 0)
-						colors[i] = 1;
-					visited[i] = true;
+				if (colors[i] == 0) {
+					colors[i] = 1;
 					bfsQueue.push(i);
+
 					while (!bfsQueue.empty()) {
 						int currentVertex = bfsQueue.front();
 						int currentListSize = (int)adjacencyList[currentVertex].size();
 						for (int j = 0; j < currentListSize; j++) {
 							int connectVertex = adjacencyList[currentVertex][j];
 
-							if (!visited[connectVertex]) {
-								if (colors[connectVertex] == 0)
-									colors[connectVertex] = colors[currentVertex] == 1 ? 2 : 1;
-								visited[connectVertex] = true;
+							if (colors[connectVertex] == 0) {
+								colors[connectVertex] = colors[currentVertex] == 1 ? 2 : 1;
 								bfsQueue.push(connectVertex);
 							}
 							else if (colors[connectVertex] == colors[currentVertex]) {  // 인접한 정점끼리 동일한 색상이면 이분 그래프가 아니기 때문에 이분 그래프가 아님을 표시하고 
@@ -2132,6 +2128,9 @@ namespace Algorithm {
 								break;
 							}
 						}
+
+						if (!isBipartiteGraph)
+							break;
 
 						bfsQueue.pop();
 					}

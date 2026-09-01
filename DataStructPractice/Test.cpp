@@ -6,6 +6,7 @@
 #include "MyOwnGraph.h"
 #include "MyOwnBFSDFS.h"
 #include "MyOwnHashTable.h"
+#include "MyOwnHeap.h"
 
 int main() {
 	using namespace std;
@@ -94,7 +95,33 @@ int main() {
 	//AdjacencyList::ResultQ2();
 	//AdjacencyList::ResultQ3();
 	//AdjacencyList::ResultQ4();
-	AdjacencyList::ResultQ5();
+	//AdjacencyList::ResultQ5();
+
+	// 우선순위 큐(Priority Queue)
+	// 들어온 순서와 상관없이 우선순위가 가장 높은 데이터를 가장 먼저 꺼내는 자료구조
+	// 큐와 비슷하지만 우선순위에 따라 정렬이 된다는 차이점이 있다.
+	// 배열, 연결 리스트로도 구현을 할 수는 있지만 힙으로 구현하는 것이 가장 효율적이다. 왜냐하면 힙은 데이터 삽입 시에 정렬이 이루어지기 때문이다.
+
+	// 힙 -> 우선순위 큐 => 우선순위 큐를 만들기 위해서는 힙을 알아야 한다. 우선순위 큐를 위해 힙이 만들어졌다고 볼 수 있다.
+
+	OwnHeap heapTest1;
+	heapTest1.HeapInsertNode(5);
+	heapTest1.HeapInsertNode(75);
+	heapTest1.HeapInsertNode(32);
+	heapTest1.HeapInsertNode(21);
+	heapTest1.HeapInsertNode(17);
+	heapTest1.HeapInsertNode(22);
+	heapTest1.HeapInsertNode(22);
+	heapTest1.HeapInsertNode(226);
+	heapTest1.HeapInsertNode(78);
+	heapTest1.HeapInsertNode(1);
+	heapTest1.HeapInsertNode(2);
+	heapTest1.HeapInsertNode(2200);
+	heapTest1.HeapState();
+	cout << heapTest1.MaxValue() << endl;
+	heapTest1.HeapDeleteNode();
+	cout << heapTest1.MaxValue() << endl;
+	heapTest1.HeapState();
 
 	return 0;
 }
