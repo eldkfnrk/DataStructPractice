@@ -17,13 +17,13 @@ namespace DataStruct {
 	// 특징 : 힙은 중복 값을 허용
 	// 연산 : 삽입, 삭제, 최대(최소) 값 반환
 	// 힙은 완전 이진 트리이다.
-	class OwnHeap
+	class OwnMaxHeap
 	{
 	public:
 		// 1. 최대 힙
 		// 우선 순위는 부모 - 왼쪽 - 오른쪽 순이다.
-		OwnHeap() {
-			root = nullptr;
+		OwnMaxHeap() : root(nullptr) {
+			
 		}
 
 		// 삽입
@@ -38,10 +38,48 @@ namespace DataStruct {
 
 		// 최대 값 반환
 		int MaxValue() {
+			if (!root) {
+				std::cout << "힙이 비어있다." << std::endl;
+				return -999999;
+			}
+
 			return root->data;
 		}
 
+		~OwnMaxHeap();
+
 	private:
 		heapNode* root;  // 최대 힙이면 root 값이 가장 크고 최소 힙이면 가장 작다.
+	};
+
+	class OwnMinHeap
+	{
+	public:
+		// 삽입
+		void MinHeapInsert(int data);
+
+		// 삭제
+		void MinDataDelete();
+
+		// 힙의 저장 상태 확인
+		void MinHeapState();
+
+		// 최대 값 반환
+		int MinValue() {
+			if (minHeapStorage.empty()) {
+				std::cout << "힙이 비어있다." << std::endl;
+				return -999999;
+			}
+
+			return minHeapStorage[0];
+		}
+
+		// 복사에 관한 것을 만들기 위한 연산자 오버로딩
+		//void operator=(std::vector<int> a);
+
+		~OwnMinHeap();
+
+	private:
+		std::vector<int> minHeapStorage;
 	};
 }

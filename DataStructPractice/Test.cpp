@@ -104,7 +104,7 @@ int main() {
 
 	// 힙 -> 우선순위 큐 => 우선순위 큐를 만들기 위해서는 힙을 알아야 한다. 우선순위 큐를 위해 힙이 만들어졌다고 볼 수 있다.
 
-	OwnHeap heapTest1;
+	OwnMaxHeap heapTest1;
 	heapTest1.HeapInsertNode(5);
 	heapTest1.HeapInsertNode(75);
 	heapTest1.HeapInsertNode(32);
@@ -122,6 +122,21 @@ int main() {
 	heapTest1.HeapDeleteNode();
 	cout << heapTest1.MaxValue() << endl;
 	heapTest1.HeapState();
+
+	cout << "------------------------------------------------------" << endl;
+
+	OwnMinHeap heapTest2;
+	heapTest2.MinHeapInsert(10);
+	heapTest2.MinHeapInsert(30);
+	heapTest2.MinHeapInsert(20);
+	heapTest2.MinHeapInsert(60);
+	heapTest2.MinHeapInsert(90);
+	heapTest2.MinHeapInsert(70);
+	heapTest2.MinHeapInsert(50);
+	heapTest2.MinHeapInsert(80);
+	heapTest2.MinHeapInsert(40);
+	heapTest2.MinHeapInsert(10);
+	heapTest2.MinHeapState();
 
 	return 0;
 }

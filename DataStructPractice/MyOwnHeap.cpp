@@ -1,12 +1,26 @@
 #include "MyOwnHeap.h"
 
 namespace DataStruct {
-	void OwnHeap::HeapInsertNode(int data)
+	void OwnMaxHeap::HeapInsertNode(int data)
 	{
 		// 힙의 삽입 연산(검색을 통해 알게 된 점)
 		// 우선 삽입할 노드를 완전 이진 트리를 만족하는 위치에 삽입
 		// 삽입 이후 부모와 값을 비교하여 부모의 값보다 크면 값을 교환
 		// 좌 우 자식의 위치는 대소 관계를 반영하지 않기 때문에 좌 우 비교는 필요하지 않다.
+
+		// 잘 된 부분
+		// 1. 힙에 대한 개념 파악은 잘 완수되었다.
+		// 2. 삽입 연산에서 부모와 값을 비교하여 교환하는 것을 잘 구현하였다.
+		// 3. 삭제에서도 동일하게 값 비교와 교환을 잘 구현하였다.
+		// 4. 중복 값 허용을 잘 적용하였다.
+
+		// 아쉬운 점
+		// 1. 삽입, 삭제를 제외한 다른 연산에서는 빈 힙에 대한 예외 처리가 없다. - 수정 완료
+		// 2. 시간 복잡도가 높아졌다.(힙은 배열로 구현할 수 있는 자료구조로 O(LogN)을 보장할 수 있는데 트리로 구현하면서 O(N)까지 높아졌다. 배열로 힙을 구현하는 것은 최소 힙을 만들어보면서 진행할 예정. 최대 힙에서는 수정 x)
+		// 3. 삭제에서 스택을 사용하면서 메모리 손해가 발생하였다.(그러나 이 문제는 배열로 구현했을 때 해결되는 문제고 트리 구조에서는 이 방법을 사용해야 하기 때문에 배열로 구현하면 알아서 해결되니 수정 x)
+
+		// 반드시 고쳐야 할 점
+		// 1. 소멸자가 없어 메모리 누수가 발생하고 있으니 소멸자를 추가하여야 한다. - 수정 완료
 
 		heapNode* insertNode = new heapNode();
 		insertNode->data = data; 
@@ -66,7 +80,7 @@ namespace DataStruct {
 		}
 	}
 
-	void OwnHeap::HeapDeleteNode()
+	void OwnMaxHeap::HeapDeleteNode()
 	{
 		// 이 모든 정보는 검색을 통해 습득하였다.
 		// 힙의 삭제 연산은 항상 root 노드를 삭제
@@ -153,8 +167,13 @@ namespace DataStruct {
 		}
 	}
 
-	void OwnHeap::HeapState()
+	void OwnMaxHeap::HeapState()
 	{
+		if (!root) {
+			std::cout << "힙이 비어있다." << std::endl;
+			return;
+		}
+
 		std::queue<heapNode*> levelNodes;
 		levelNodes.push(root);
 
@@ -173,5 +192,131 @@ namespace DataStruct {
 			}
 			std::cout << std::endl;
 		}
+	}
+
+	OwnMaxHeap::~OwnMaxHeap()
+	{
+		std::queue<heapNode*> bfsQueue;
+		bfsQueue.push(root);
+		while (!bfsQueue.empty()) {
+			heapNode* curNode = bfsQueue.front();
+
+			if (!curNode->leftNode)
+				bfsQueue.push(curNode->leftNode);
+			if (!curNode->rightNode)
+				bfsQueue.push(curNode->rightNode);
+
+			bfsQueue.pop();
+			delete(curNode);
+		}
+	}
+
+	void OwnMinHeap::MinHeapInsert(int data)
+	{
+		minHeapStorage.push_back(data);
+
+		int lastIndex = (int)minHeapStorage.size() - 1;
+		
+		while (lastIndex != 0) {
+			int parentIndex = (lastIndex - 1) / 2;
+			if (minHeapStorage[parentIndex] > minHeapStorage[lastIndex]) {
+				int temp = minHeapStorage[parentIndex];
+				minHeapStorage[parentIndex] = minHeapStorage[lastIndex];
+				minHeapStorage[lastIndex] = temp;
+
+				lastIndex = parentIndex;
+			}
+			else {
+				break;
+			}
+		}
+	}
+
+	void OwnMinHeap::MinDataDelete()
+	{
+		if (minHeapStorage.empty()) {
+			std::cout << "힙이 비어있으므로 연산 불가" << std::endl;
+			return;
+		}
+
+		int lastIndex = (int)minHeapStorage.size() - 1;
+
+		if (lastIndex == 0) {
+			minHeapStorage.pop_back();
+			return;
+		}
+
+		minHeapStorage[0] = minHeapStorage[lastIndex];
+		minHeapStorage.pop_back();
+
+		lastIndex = (int)minHeapStorage.size() - 1;
+		int currentIndex = 0;  // root부터 아래로 비교해 가면서 교환을 해야 하기 때문에 
+
+		// 정렬
+		while (currentIndex < lastIndex) {
+			// 자식 노드의 인덱스는 2i+1, 2i+2이다.
+			int leftIndex = currentIndex * 2 + 1;
+			int rightIndex = currentIndex * 2 + 2;
+			int childIndex;  // 현재 노드 값과 비교할 자식 노드의 인덱스
+
+			if (leftIndex > lastIndex) {  // 왼쪽 자식의 순서보다 배열의 마지막 인덱스가 작다는 것은 자식이 없는 노드라는 의미이고 이는 정렬이 완료되었다는 의미이므로 정렬을 종료
+				break;
+			}
+			else if (leftIndex == lastIndex) {  // 왼쪽 자식만 있는 경우는 왼쪽 자식이 마지막인 경우 밖에 없기 때문에 따로 비교 없이 바로 왼쪽 자식의 순서 인덱스 값을 저장
+				childIndex = lastIndex;
+			}
+			else {  // 자식이 둘 다 있기 때문에 둘 중 더 작은 값을 가진 노드의 인덱스를 저장하여 부모와 비교
+				childIndex = minHeapStorage[leftIndex] > minHeapStorage[rightIndex] ? rightIndex : leftIndex;
+			}
+
+			if (minHeapStorage[currentIndex] > minHeapStorage[childIndex]) {  // 부모의 값이 자식의 값보다 작아야 최소 힙을 만족하니 부모 값이 더 크면 값 교환
+				int temp = minHeapStorage[currentIndex];
+				minHeapStorage[currentIndex] = minHeapStorage[childIndex];
+				minHeapStorage[childIndex] = temp;
+
+				currentIndex = childIndex;
+			}
+			else {  // 부모 값이 자식 값보다 작거나 같으면 더 이상 교환은 안 해도 되고 그러면 최소 힙을 만족하는 것이기 때문에 정렬 종료
+				break;
+			}
+		}
+	}
+
+	void OwnMinHeap::MinHeapState()
+	{
+		int floor = 0;
+		int floorMaxIndex = 1;
+		int lastIndex = (int)minHeapStorage.size() - 1;
+		bool traversalComplete = false;  // traversal - 순회, 힙 순회를 마쳤는지에 대한 정보를 저장하는 변수
+
+		// 비효율적이지만 층대로 나눠서 보여줄 수 있도록 설정
+		while (!traversalComplete) {
+			int floorElementCount = 1;
+			for (int i = 0; i < floor; i++) {
+				floorElementCount *= 2;
+			}
+			if (floorElementCount == 1)
+				floorElementCount = 0;
+
+			floorMaxIndex += floorElementCount;
+
+			int startIndex = floor == 0 ? 0 : 2 * floor - 1;
+
+			for (int i = startIndex; i < floorMaxIndex; i++) {
+				std::cout << minHeapStorage[i] << " ";
+				if (i == lastIndex) {
+					traversalComplete = true;
+					break;
+				}
+			}
+			std::cout << std::endl;
+
+			++floor;
+		}
+	}
+
+	OwnMinHeap::~OwnMinHeap()
+	{
+
 	}
 }
